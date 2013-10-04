@@ -94,7 +94,7 @@ projects.
 
         {
           objs: [{
-            coords: [],
+            coords: [<coordinate>, ...],
             text: <string>,
             params: [<string>, ...]
           }, ...],
@@ -103,14 +103,15 @@ projects.
         }
 
     Format of `<coordinate>` depends of whether you have [Leaflet](http://leafletjs.com)
-    library included: it will be either `L.LatLng` object or an array of two numbers: `[lat, lng]`.
-* `objectsToString(object)` converts an object in the same format as `stringToObjects`
+    library included: it will be either `L.LatLng` object or an array of two numbers:
+    `[latitude, longitude]`.
+* `objectsToString(object)` takes an object in the same format as the `stringToObjects`
   produces and returns a bbcode string.
 
 ## Improvements
 
 The format of map bbcode is set in stone. But element parameters, `<words>` nonterminal in BNF,
 may be whatever you want. For now only one parameter type is defined: colour.
-One can implement, for example, line width with "w<number>" parameter, or marker type.
+One can implement, for example, line width with `w<number>` parameter, or a marker type.
 Implementations of map bbcode are not required to support any of parameters, thus parameters
 should not alter behaviour or presentation of features much.
