@@ -21,7 +21,7 @@ var deps = {
 
         LetterIcon: {
 		src: ['LetterIcon.js'],
-		desc: 'Optional LetterIcon, enabled by default',
+		desc: 'Optional LetterIcon',
         },
 
         StringsEnglish: {
