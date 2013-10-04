@@ -9,7 +9,7 @@ L.LetterIcon = L.Icon.extend({
         L.Icon.prototype.initialize(this, options);
     },
 
-    createIcon: function(old) {
+    createIcon: function() {
         var radius = this.options.radius,
             diameter = radius * 2 + 1;
         var div = document.createElement('div');

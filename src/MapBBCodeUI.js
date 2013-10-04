@@ -153,7 +153,7 @@ window.MapBBCode = L.Class.extend({
         this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 
         if( this.options.fullScreenButton && !this.options.fullFromStart ) {
-            var fs = new L.Fullscreen({ height: this.options.fullViewHeight, libPath: this.options.libPath, title: this.strings.fullScreenTitle });
+            var fs = new L.Fullscreen({ height: this.options.fullViewHeight, title: this.strings.fullScreenTitle });
             map.addControl(fs);
             fs.on('clicked', function() {
                 this._zoomToLayer(map, drawn);
@@ -161,7 +161,7 @@ window.MapBBCode = L.Class.extend({
         }
 
         if( this.options.outerLinkTemplate ) {
-            var outer = L.functionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: L.point(52, 0), libPath: this.options.libPath, title: this.strings.outerTitle });
+            var outer = L.functionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: L.point(52, 0), title: this.strings.outerTitle });
             outer.on('clicked', function() {
                 var template = this.options.outerLinkTemplate;
                 template = template.replace('{zoom}', map.getZoom()).replace('{lat}', map.getCenter().lat).replace('{lon}', map.getCenter().lng);

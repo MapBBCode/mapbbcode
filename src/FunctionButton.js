@@ -52,7 +52,7 @@ L.FunctionButton = L.Control.extend({
         this._link.style.backgroundPosition = !this.options.bgPos ? '0px 0px' : (-this.options.bgPos.x) + 'px ' + (-this.options.bgPos.y) + 'px';
     },
 
-    clicked: function( e ) {
+    clicked: function() {
         this.fire('clicked');
     }
 });

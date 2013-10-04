@@ -10,7 +10,7 @@ L.Fullscreen = L.FunctionButton.extend({
         L.FunctionButton.prototype.initialize.call(this, window.MapBBCode.buttonsImage, options);
     },
 
-    clicked: function( e ) {
+    clicked: function() {
         var map = this._map,
             style = map.getContainer().style,
             isFull = this._isFull;
