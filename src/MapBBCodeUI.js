@@ -4,7 +4,7 @@
  */
 window.MapBBCode = L.Class.extend({
     options: {
-        createLayers: function() { return [this.createOpenStreetMapLayer()]; },
+        createLayers: function() { return ['OSM']; },
         maxInitialZoom: 15,
         defaultPosition: [22, 11],
         defaultZoom: 2,
@@ -117,6 +117,9 @@ window.MapBBCode = L.Class.extend({
         var layers = this.options.createLayers ? this.options.createLayers.call(this) : null;
         if( !layers || !layers.length )
             layers = [this.createOpenStreetMapLayer()];
+        for( var i = 0; i < layers.length; i++ )
+            if( layers[i] === 'OSM' )
+                layers[i] = this.createOpenStreetMapLayer();
         map.addLayer(layers[0]);
         
         if( layers.length > 1 ) {
