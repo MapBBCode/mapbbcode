@@ -27,6 +27,4 @@ exports.config = {
 	"indent": 4,
 	"trailing": true,
 	"smarttabs": false,
-
-        "laxbreak": true
 };

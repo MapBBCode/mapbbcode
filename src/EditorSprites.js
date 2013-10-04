@@ -1,3 +1,4 @@
+/* jshint laxbreak: true */
 window.MapBBCode.buttonsImage = 'data:image/png;base64,'
 +'iVBORw0KGgoAAAANSUhEUgAAAE4AAAAaCAYAAAAZtWr8AAAABmJLR0QA/wD/AP+gvaeTAAAF/klE'
 +'QVRYhe2ZX2xcRxWHvzPXf7Zu1o6zDiFxhasWCSIaSljxsE6BqNm9d41x1aitkFopRFRFPCBUOYKm'
