@@ -1,13 +1,11 @@
 window.MapBBCode = L.Class.extend({
     options: {
-        layers: [{
+        layers: [L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             name: 'OpenStreetMap',
-            url: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png',
             attribution: 'Map &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>',
             minZoom: 4,
             maxZoom: 18
-        }],
-        bingKey: false,
+        })],
         maxInitialZoom: 15,
         defaultPosition: [22, 11],
         defaultZoom: 2,
@@ -108,31 +106,17 @@ window.MapBBCode = L.Class.extend({
     },
 
     _addLayers: function( map ) {
-        var LL = this.L || L;
-        var layers = this.options.layers,
-            control = LL.control.layers(),
-            count = 0, layer;
-        for( var i = 0; i < layers.length; i++ ) {
-            layer = LL.tileLayer(layers[i].url, {
-                attribution: layers[i].attribution,
-                minZoom: layers[i].minZoom,
-                maxZoom: layers[i].maxZoom
-            });
-            control.addBaseLayer(layer, layers[i].name);
-            if( !count )
-                layer.addTo(map);
-            count++;
-        }
-        if( this.options.bingKey && (LL.BingLayer || L.BingLayer) ) {
-            var reqL = LL.BingLayer ? LL : L;
-            layer = new reqL.BingLayer(this.options.bingKey);
-            control.addBaseLayer(layer, this.strings.bing);
-            if( !count )
-                layer.addTo(map);
-            count++;
-        }
-        if( count > 1 )
+        var layers = this.options.layers;
+        if( !layers || !layers.length )
+            return;
+        map.addLayer(layers[0]);
+        
+        if( layers.length > 1 ) {
+            var control = (this.L || L).control.layers();
+            for( var i = 0; i < layers.length; i++ )
+                control.addBaseLayer(layers[i], layers[i].options.name);
             map.addControl(control);
+        }
     },
 
     _findLeafletObject: function( element ) {
