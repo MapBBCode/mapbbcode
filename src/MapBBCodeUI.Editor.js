@@ -1,3 +1,7 @@
+/*
+ * Map BBCode Editor, extends bbcode display module.
+ * See editor() and editorWindow() methods.
+ */
 window.MapBBCode.include({
     _layerToObject: function( layer ) {
         var obj = {};
@@ -147,6 +151,7 @@ window.MapBBCode.include({
         }
     },
 
+    // Show editor in element. BBcode can be textarea element. Callback is always called, null parameter means cancel
     editor: function( element, bbcode, callback, context ) {
         var el = typeof element === 'string' ? document.getElementById(element) : element;
         if( !el ) return;
@@ -156,12 +161,11 @@ window.MapBBCode.include({
         mapDiv.style.height = this.options.editorHeight;
         el.appendChild(mapDiv);
 
-        this._findLeafletObject(el);
-        var map = this.L.map(mapDiv, { zoomControl: false });
-        map.addControl(new this.L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
+        var map = L.map(mapDiv, { zoomControl: false });
+        map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
         this._addLayers(map);
 
-        var drawn = new this.L.FeatureGroup();
+        var drawn = new L.FeatureGroup();
         drawn.addTo(map);
 
         var textArea;
@@ -270,6 +274,7 @@ window.MapBBCode.include({
         }
     },
 
+    // Opens editor window. Currently does not work, see Leaflet issue #2054
     editorWindow: function( bbcode, callback, context ) {
         var features = this.options.windowFeatures,
             featSize = 'height=' + (this.options.windowHeight || this.options.viewHeight) + ',width=' + (this.options.windowWidht || this.options.viewWidth);

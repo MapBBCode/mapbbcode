@@ -1,3 +1,7 @@
+/*
+ * Map panel that displays BBCode. See show() method and options.
+ * Localization is in 'strings/*.js' files.
+ */
 window.MapBBCode = L.Class.extend({
     options: {
         createLayers: function() { return [this.createOpenStreetMapLayer()]; },
@@ -101,7 +105,7 @@ window.MapBBCode = L.Class.extend({
     },
 
     createOpenStreetMapLayer: function() {
-        return (this.L || window.L).tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        return L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             name: 'OpenStreetMap',
             attribution: 'Map &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>',
             minZoom: 2,
@@ -116,26 +120,19 @@ window.MapBBCode = L.Class.extend({
         map.addLayer(layers[0]);
         
         if( layers.length > 1 ) {
-            var control = (this.L || L).control.layers();
+            var control = L.control.layers();
             for( var i = 0; i < layers.length; i++ )
                 control.addBaseLayer(layers[i], layers[i].options.name);
             map.addControl(control);
         }
     },
 
-    _findLeafletObject: function( element ) {
-        var doc = element.ownerDocument,
-            win = 'defaultView' in doc ? doc.defaultView : doc.parentWindow;
-        this.L = win.L || window.L;
-    },
-
+    // Create map panel, parse and display bbcode (it can be skipped: so it's an attribute or contents of element)
     show: function( element, bbcode ) {
         var el = typeof element === 'string' ? document.getElementById(element) : element;
         if( !el ) return;
         if( !bbcode )
-            bbcode = el.getAttribute('bbcode');
-        if( !bbcode )
-            bbcode = el.innerHTML.replace(/^\s+|\s+$/g, '');
+            bbcode = el.getAttribute('bbcode') || el.innerHTML.replace(/^\s+|\s+$/g, '');
         if( !bbcode ) return;
         while( el.firstChild )
             el.removeChild(el.firstChild);
@@ -144,12 +141,11 @@ window.MapBBCode = L.Class.extend({
         mapDiv.style.height = this.options.fullFromStart ? this.options.fullViewHeight : this.options.viewHeight;
         el.appendChild(mapDiv);
 
-        this._findLeafletObject(el);
-        var map = this.L.map(mapDiv, { scrollWheelZoom: false, zoomControl: false });
-        map.addControl(new this.L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
+        var map = L.map(mapDiv, { scrollWheelZoom: false, zoomControl: false });
+        map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
         this._addLayers(map);
 
-        var drawn = new this.L.FeatureGroup();
+        var drawn = new L.FeatureGroup();
         drawn.addTo(map);
         var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
         for( var i = 0; i < objs.length; i++ )

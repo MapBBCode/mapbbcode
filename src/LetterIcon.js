@@ -1,6 +1,10 @@
+/*
+ * Round icon with some letters on it.
+ */
 L.LetterIcon = L.Icon.extend({
     options: {
         className: 'leaflet-div-icon',
+        color: 'black',
         radius: 11
     },
 
@@ -28,7 +32,7 @@ L.LetterIcon = L.Icon.extend({
         div.style.textAlign  = 'center';
         div.style.lineHeight = diameter + 'px';
         div.style.color      = 'white';
-        div.style.backgroundColor = 'black';
+        div.style.backgroundColor = this.options.color;
         this._setIconStyles(div, 'icon');
         return div;
     },

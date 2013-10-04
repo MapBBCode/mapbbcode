@@ -1,3 +1,6 @@
+/*
+ * A button to make the map panel bigger (and back again).
+ */
 L.Fullscreen = L.FunctionButton.extend({
     options: {
         position: 'topright',

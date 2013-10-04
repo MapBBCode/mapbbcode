@@ -1,9 +1,13 @@
+/*
+ * Map BBCode parser and producer. See BBCODE.md for description.
+ */
 window.MapBBCodeProcessor = {
     _getRegExp: function() {
         var reCoord = '\\s*(-?\\d+(?:\\.\\d+)?)\\s*,\\s*(-?\\d+(?:\\.\\d+)?)',
             reParams = '\\((?:([a-zA-Z0-9,]*)\\|)?(|[^]*?[^\\\\])\\)',
             reMapElement = reCoord + '(?:' + reCoord + ')*(?:\\s*' + reParams + ')?',
-            reMap = '\\[map(?:=([0-9.,-]+))?\\](' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*\\[/map\\]',
+            reMapOpeningTag = '\\[map(?:=([12]?\\d)(?:,' + reCoord + ')?)?\\]',
+            reMap = reMapOpeningTag + '(' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*\\[/map\\]',
             reMapC = new RegExp(reMap, 'i');
         return {
             coord: reCoord,
@@ -13,29 +17,29 @@ window.MapBBCodeProcessor = {
         };
     },
 
+    // Checks that bbcode string is a valid map bbcode
     isValid: function( bbcode ) {
         return this._getRegExp().mapCompiled.test(bbcode);
     },
 
-    stringToObjects: function( str ) {
+    // Converts bbcode string to an array of features and metadata
+    stringToObjects: function( bbcode ) {
         var regExp = this._getRegExp(),
-            matches = str.match(regExp.mapCompiled),
+            matches = bbcode.match(regExp.mapCompiled),
             result = { objs: [] };
 
-        if( matches && matches[1] && matches[1].length > 0 ) {
-            var p = matches[1].split(/\s*,\s*/);
-            if( (+p[0]) > 0 && (+p[0]) <= 20 ) {
-                result.zoom = +p[0];
-                if( p.length >= 3 ) {
-                    try {
-                        result.pos = L.LatLng ? new L.LatLng(p[1], p[2]) : [+p[1], +p[2]];
-                    } catch(e) {}
-                }
+        if( matches && matches[1] && matches[1].length && (+matches[1]) > 0 ) {
+            result.zoom = +matches[1];
+            if( matches[3] && matches[3].length > 0 ) {
+                try {
+                    result.pos = L.LatLng ? new L.LatLng(matches[2], matches[3]) : [+matches[2], +matches[3]];
+                } catch(e) {}
             }
         }
 
-        if( matches && matches[2] ) {
-            var items = matches[2].replace(/;;/g, '##%##').split(';'),
+        if( matches && matches[4] ) {
+            // todo: parse element by element instead of splitting at semicolons
+            var items = matches[4].replace(/;;/g, '##%##').split(';'),
                 reCoordC = new RegExp('^' + regExp.coord),
                 reParamsC = new RegExp(regExp.params);
             for( var i = 0; i < items.length; i++ ) {
@@ -60,6 +64,7 @@ window.MapBBCodeProcessor = {
         return result;
     },
 
+    // Takes an object like stringToObjects() produces and returns map bbcode
     objectsToString: function( data ) {
         var mapData = '';
         if( data.zoom > 0 ) {

@@ -1,3 +1,6 @@
+/*
+ * A leaflet button with icon or text and click listener.
+ */
 L.FunctionButton = L.Control.extend({
     includes: L.Mixin.Events,
 
@@ -26,10 +29,7 @@ L.FunctionButton = L.Control.extend({
                 link.style.width = '' + (this.options.imageSize || 26) + 'px';
                 link.style.height = '' + (this.options.imageSize || 26) + 'px';
                 link.style.padding = '0';
-                if( isData )
-                    link.style.backgroundImage = 'url(' + this._content + ')';
-                else
-                    link.style.backgroundImage = 'url(' + this.options.libPath + 'images/' + this._content + ')';
+                link.style.backgroundImage = 'url(' + this._content + ')';
                 link.style.backgroundRepeat = 'no-repeat';
                 link.style.backgroundPosition = !this.options.bgPos ? '0px 0px' : (-this.options.bgPos.x) + 'px ' + (-this.options.bgPos.y) + 'px';
             } else
