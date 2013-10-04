@@ -1,0 +1,42 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="../dist/lib/leaflet.css" />
+<link rel="stylesheet" href="../dist/lib/leaflet.draw.css" />
+<script src="../dist/lib/leaflet.js"></script>
+<script src="../dist/lib/leaflet.draw.js"></script>
+
+<script src="../src/MapBBCode.js"></script>
+<script src="../src/MapBBCodeUI.js"></script>
+<script src="../src/FunctionButton.js"></script>
+<script src="../src/FunctionButton.Fullscreen.js"></script>
+<script src="../src/EditorSprites.js"></script>
+<script src="../src/MapBBCodeUI.Editor.js"></script>
+<script src="../src/LetterIcon.js"></script>
+<script src="../src/strings/English.js"></script>
+
+<textarea id="code" style="width: 50%; height: 6em;">[map]60,30(OK); 60.01,30.01 60.02,30.015[/map]</textarea>
+<input type="button" value="Update" onclick="javascript:update();">
+<input type="button" value="Edit" onclick="javascript:edit();">
+<div id="edit"></div>
+<div id="test"></div>
+<script>
+var mapBB = new MapBBCode({
+    defaultPosition: [59.95, 30.3],
+    defaultZoom: 13,
+    layers: [
+        { name: 'OSM', url: 'http://tile.openstreetmap.org/{z}/{x}/{y}.png' },
+        { name: 'CycleMap', url: 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png' },
+        { name: 'MapSurfer', url: 'http://129.206.74.245:8001/tms_r.ashx?x={x}&y={y}&z={z}',
+          attribution: 'Map &copy; <a href="http://openstreetmap.org">OSM</a> | Tiles &copy; <a href="http://giscience.uni-hd.de/">GIScience Heidelberg</a>' }
+    ]
+});
+function update() {
+    mapBB.show('test', document.getElementById('code').value);
+}
+function edit() {
+    mapBB.editor('edit', document.getElementById('code'), function(res) {
+        if( res !== null )
+            update();
+    });
+}
+update();
+</script>
