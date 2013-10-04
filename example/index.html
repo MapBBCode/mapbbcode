@@ -22,13 +22,13 @@
 var mapBB = new MapBBCode({
     defaultPosition: [59.95, 30.3],
     defaultZoom: 13,
-    layers: [
-        L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', { name: 'OSM' }),
+    createLayers: function() { return [
+        MapBBCode.prototype.createOpenStreetMapLayer(),
         L.tileLayer('http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png', { name: 'CycleMap' }),
         L.tileLayer('http://129.206.74.245:8001/tms_r.ashx?x={x}&y={y}&z={z}', { name: 'MapSurfer',
             attribution: 'Map &copy; <a href="http://openstreetmap.org">OSM</a> | Tiles &copy; <a href="http://giscience.uni-hd.de/">GIScience Heidelberg</a>'
         })
-    ]
+    ]}
 });
 function update() {
     mapBB.show('test', document.getElementById('code').value);

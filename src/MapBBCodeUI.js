@@ -1,11 +1,6 @@
 window.MapBBCode = L.Class.extend({
     options: {
-        layers: [L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            name: 'OpenStreetMap',
-            attribution: 'Map &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>',
-            minZoom: 4,
-            maxZoom: 18
-        })],
+        createLayers: function() { return [this.createOpenStreetMapLayer()]; },
         maxInitialZoom: 15,
         defaultPosition: [22, 11],
         defaultZoom: 2,
@@ -105,10 +100,19 @@ window.MapBBCode = L.Class.extend({
         return m;
     },
 
+    createOpenStreetMapLayer: function() {
+        return (this.L || window.L).tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            name: 'OpenStreetMap',
+            attribution: 'Map &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>',
+            minZoom: 2,
+            maxZoom: 18
+        });
+    },
+
     _addLayers: function( map ) {
-        var layers = this.options.layers;
+        var layers = this.options.createLayers ? this.options.createLayers.call(this) : null;
         if( !layers || !layers.length )
-            return;
+            layers = [this.createOpenStreetMapLayer()];
         map.addLayer(layers[0]);
         
         if( layers.length > 1 ) {
