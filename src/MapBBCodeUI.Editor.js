@@ -274,37 +274,43 @@ window.MapBBCode.include({
         }
     },
 
-    // Opens editor window. Currently does not work, see Leaflet issue #2054
+    // Opens editor window. Requires options.labPath to be correct
     editorWindow: function( bbcode, callback, context ) {
         var features = this.options.windowFeatures,
             featSize = 'height=' + (this.options.windowHeight || this.options.viewHeight) + ',width=' + (this.options.windowWidht || this.options.viewWidth);
-        var win = window.open('', 'mapbbcode_editor', features + ',' + featSize);
-        var basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1];
-        var libUrl = basePath + this.options.libPath;
-        var css = document.createElement('link');
-        css.type = 'text/css';
-        css.rel = 'stylesheet';
-        css.href = libUrl + 'leaflet.css';
-        win.document.head.appendChild(css);
+            win = window.open('', 'mapbbcode_editor', features + ',' + featSize);
+            basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1];
+            libUrl = basePath + this.options.libPath;
 
-        var cssDraw = document.createElement('link');
-        cssDraw.type = 'text/css';
-        cssDraw.rel = 'stylesheet';
-        cssDraw.href = libUrl + 'leaflet.draw.css';
-        win.document.head.appendChild(cssDraw);
+        window.storedMapBB = {
+            bbcode: bbcode,
+            callback: callback,
+            context: context,
+            caller: this
+        };
 
-        var script = document.createElement('script');
-        script.type = 'application/javascript';
-        script.src = libUrl + 'leaflet.js';
-        win.document.head.appendChild(script);
+        var content = '<script src="' + libUrl + 'leaflet.js"></script>';
+        content += '<script src="' + libUrl + 'leaflet.draw.js"></script>';
+        content += '<script src="' + libUrl + 'mapbbcode.js"></script>';
+        content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.css" />';
+        content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.draw.css" />';
+        content += '<div id="edit"></div>';
+        content += '<script>opener.storedMapBB.caller.editorWindowCallback.call(opener.storedMapBB.caller, window, opener.storedMapBB);</script>';
+        win.document.open();
+        win.document.write(content);
+        win.document.close();
+    },
 
-        L.DomEvent.on(script, 'load', function() {
-            var body = win.document.body;
-            body.style.margin = '0';
-            this.editor(body, bbcode, function(res) {
-                win.close();
-                callback.call(context, res);
-            });
+    editorWindowCallback: function( w, ctx ) {
+        w.document.body.style.margin = 0;
+        var anotherMapBB = new w.MapBBCode(this.options);
+        anotherMapBB.setStrings(this.strings);
+        anotherMapBB.options.editorHeight = '100%';
+        anotherMapBB.editor('edit', ctx.bbcode, function(res) {
+            w.close();
+            if( ctx.callback )
+                ctx.callback.call(ctx.context, res);
+            this.storedContext = null;
         }, this);
     }
 });

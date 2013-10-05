@@ -114,12 +114,12 @@ window.MapBBCode = L.Class.extend({
     },
 
     _addLayers: function( map ) {
-        var layers = this.options.createLayers ? this.options.createLayers.call(this) : null;
+        var layers = this.options.createLayers ? this.options.createLayers.call(this, L) : null;
         if( !layers || !layers.length )
             layers = [this.createOpenStreetMapLayer()];
-        for( var i = 0; i < layers.length; i++ )
-            if( layers[i] === 'OSM' )
-                layers[i] = this.createOpenStreetMapLayer();
+        for( var j = 0; j < layers.length; j++ )
+            if( layers[j] === 'OSM' )
+                layers[j] = this.createOpenStreetMapLayer();
         map.addLayer(layers[0]);
         
         if( layers.length > 1 ) {
