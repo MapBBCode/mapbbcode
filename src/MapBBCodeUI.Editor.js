@@ -277,9 +277,9 @@ window.MapBBCode.include({
     // Opens editor window. Requires options.labPath to be correct
     editorWindow: function( bbcode, callback, context ) {
         var features = this.options.windowFeatures,
-            featSize = 'height=' + (this.options.windowHeight || this.options.viewHeight) + ',width=' + (this.options.windowWidht || this.options.viewWidth);
-            win = window.open('', 'mapbbcode_editor', features + ',' + featSize);
-            basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1];
+            featSize = 'height=' + (this.options.windowHeight || this.options.viewHeight) + ',width=' + (this.options.windowWidht || this.options.viewWidth),
+            win = window.open('', 'mapbbcode_editor', features + ',' + featSize),
+            basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1],
             libUrl = basePath + this.options.libPath;
 
         window.storedMapBB = {
