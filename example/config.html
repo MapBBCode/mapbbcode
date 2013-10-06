@@ -1,0 +1,92 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="../dist/lib/leaflet.css" />
+<script src="../dist/lib/leaflet.js"></script>
+
+<script src="../src/config/MapBBCodeUI.Config.js"></script>
+<script src="../src/FunctionButton.js"></script>
+<script src="../src/config/LayerList.js"></script>
+<script src="../src/config/StaticLayerSwitcher.js"></script>
+
+<div>
+<select id="layer_select" size="1" onchange="javascript:selectedLayer(this.value);"></select>
+<input type="button" value="Add layer" onclick="javascript:addLayer();" id="addbutton"/>
+<span id="bing_key_row" style="display:none;"><span id="bing_key_title"></span> <input type="text" maxlength="80" size="40" id="bing_key" value=""></span>
+</div>
+
+<table style="border: 1px solid black; width: 99%;"><tr><td id="config">
+</td><td id="result" style="width: 200px; border-left: 1px solid black; font-family: sans-serif; font-size: 12pt;"></td></tr></table>
+
+<script>
+var config = new MapBBCodeConfig({ editorInWindow: false, layers: ['OpenStreetMap', 'CycleMap'] });
+config.on('show change', function(options) {
+    var result = '';
+    result += 'layers: ' + options.layers.join(',') + '<br>';
+    result += 'default zoom: ' + options.defaultZoom + '<br>';
+    result += 'default pos: ' + options.defaultPosition[0] + ', ' + options.defaultPosition[1] + '<br>';
+    if( !options.fullFromStart )
+        result += 'view size: ' + options.viewWidth + 'x' + options.viewHeight + '<br>';
+    else
+        result += 'view pane is full from start<br>';
+    result += 'full view height: ' + options.fullViewHeight + '<br>';
+    if( options.editorInWindow )
+        result += 'editor window size: ' + options.windowWidth + 'x' + options.windowHeight + '<br>';
+    else
+        result += 'editor panel height: ' + options.editorHeight + '<br>';
+    document.getElementById('result').innerHTML = result;
+    populateSelect();
+});
+config.show('config');
+
+// update <select> options
+function populateSelect() {
+    var i, layerKeys = layerList.getSortedKeys(),
+        select = document.getElementById('layer_select'),
+        layers = config.options.layers, layers0 = [];
+    for( i = 0; i < layers.length; i++ )
+        layers0.push(layers[i].indexOf(':') < 0 ? layers[i] : layers[i].substring(0, layers[i].indexOf(':')));
+    while( select.firstChild )
+        select.removeChild(select.firstChild);
+    var opt = document.createElement('option');
+    opt.value = '';
+    opt.innerHTML = 'Select layer...';
+    select.appendChild(opt);
+    for( i = 0; i < layerKeys.length; i++ ) {
+        if( layers0.indexOf(layerKeys[i]) >= 0 )
+            continue;
+        var opt = document.createElement('option');
+        opt.innerHTML = layerKeys[i];
+        opt.value = layerKeys[i];
+        select.appendChild(opt);
+    }
+    selectedLayer(select.value);
+}
+
+// <select>.onchange
+function selectedLayer(layer) {
+    var link = window.layerList.getKeyLink(layer),
+        el = document.getElementById('bing_key_row');
+    if( link ) {
+        document.getElementById('bing_key_title').innerHTML = 'This layer needs a developer key (<a href="%s" target="bing">how to get it</a>)'.replace('%s', link);
+        el.style.display = 'inline';
+    } else {
+        el.style.display = 'none';
+    }
+    document.getElementById('addbutton').disabled = layer ? false : true;
+}
+
+// <input>.onclick
+function addLayer() {
+    var layer = document.getElementById('layer_select').value;
+    if( !layer )
+        return;
+    var needKey = window.layerList.requiresKey(layer),
+        key = document.getElementById('bing_key').value.trim();
+    if( needKey && !key.length ) {
+        alert('This layer needs a key');
+    } else {
+        if( needKey )
+            layer += ':' + key;
+        config.addLayer(layer);
+    }
+}
+</script>

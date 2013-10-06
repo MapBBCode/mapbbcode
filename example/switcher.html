@@ -1,0 +1,10 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="../dist/lib/leaflet.css" />
+<script src="../dist/lib/leaflet.js"></script>
+<script src="../src/config/LayerList.js"></script>
+<script src="../src/config/StaticLayerSwitcher.js"></script>
+<div id="map" style="height: 100%;"></div>
+<script>
+var map = L.map('map').setView([59.9, 30.3], 13);
+map.addControl(L.staticLayerSwitcher(['OpenStreetMap', 'CycleMap', 'MapSurfer']));
+</script>

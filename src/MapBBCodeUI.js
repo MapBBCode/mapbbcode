@@ -4,7 +4,8 @@
  */
 window.MapBBCode = L.Class.extend({
     options: {
-        createLayers: function() { return ['OSM']; },
+        createLayers: null, // function(L) { return ['OSM']; },
+        layers: null, // array of strings, if LayerList.js included
         maxInitialZoom: 15,
         defaultPosition: [22, 11],
         defaultZoom: 2,
@@ -115,6 +116,8 @@ window.MapBBCode = L.Class.extend({
 
     _addLayers: function( map ) {
         var layers = this.options.createLayers ? this.options.createLayers.call(this, L) : null;
+        if( (!layers || !layers.length) && window.layerList && this.options.layers )
+            layers = window.layerList.getLeafletLayers(this.options.layers, L);
         if( !layers || !layers.length )
             layers = [this.createOpenStreetMapLayer()];
         for( var j = 0; j < layers.length; j++ )
@@ -123,10 +126,17 @@ window.MapBBCode = L.Class.extend({
         map.addLayer(layers[0]);
         
         if( layers.length > 1 ) {
-            var control = L.control.layers();
-            for( var i = 0; i < layers.length; i++ )
-                control.addBaseLayer(layers[i], layers[i].options.name);
-            map.addControl(control);
+            if( L.StaticLayerSwitcher ) {
+                var control = L.staticLayerSwitcher();
+                for( var i = 0; i < layers.length; i++ )
+                    control.addLayer(layers[i].options.name, layers[i]);
+                map.addControl(control);
+            } else {
+                var control = L.control.layers();
+                for( var i = 0; i < layers.length; i++ )
+                    control.addBaseLayer(layers[i], layers[i].options.name);
+                map.addControl(control);
+            }
         }
     },
 

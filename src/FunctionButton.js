@@ -79,7 +79,7 @@ L.FunctionButtons = L.Control.extend({
     },
 
     updateBgPos: function() {
-        this._link.style.backgroundPosition = !this.options.bgPos ? '0px 0px' : (-this.options.bgPos.x) + 'px ' + (-this.options.bgPos.y) + 'px';
+        this._links[0].style.backgroundPosition = !this.options.bgPos ? '0px 0px' : (-this.options.bgPos.x) + 'px ' + (-this.options.bgPos.y) + 'px';
     },
 
     clicked: function(e) {

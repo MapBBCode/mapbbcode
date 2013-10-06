@@ -13,6 +13,8 @@
 <script src="../src/LetterIcon.js"></script>
 <script src="../src/strings/English.js"></script>
 
+<script src="../src/config/LayerList.js"></script>
+
 <textarea id="code" style="width: 50%; height: 6em;">[map]60,30(OK); 60.01,30.01 60.02,30.015[/map]</textarea>
 <input type="button" value="Update" onclick="javascript:update();">
 <input type="button" value="Edit" onclick="javascript:edit();">
@@ -22,6 +24,7 @@
 var mapBB = new MapBBCode({
     defaultPosition: [59.95, 30.3],
     defaultZoom: 13,
+//    layers: ['OpenStreetMap', 'CycleMap']
     createLayers: function(L) { return [
         'OSM',
         L.tileLayer('http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png', { name: 'CycleMap' }),
