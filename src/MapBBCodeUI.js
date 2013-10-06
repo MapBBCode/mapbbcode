@@ -126,14 +126,15 @@ window.MapBBCode = L.Class.extend({
         map.addLayer(layers[0]);
         
         if( layers.length > 1 ) {
+            var control, i;
             if( L.StaticLayerSwitcher ) {
-                var control = L.staticLayerSwitcher();
-                for( var i = 0; i < layers.length; i++ )
+                control = L.staticLayerSwitcher();
+                for( i = 0; i < layers.length; i++ )
                     control.addLayer(layers[i].options.name, layers[i]);
                 map.addControl(control);
             } else {
-                var control = L.control.layers();
-                for( var i = 0; i < layers.length; i++ )
+                control = L.control.layers();
+                for( i = 0; i < layers.length; i++ )
                     control.addBaseLayer(layers[i], layers[i].options.name);
                 map.addControl(control);
             }
