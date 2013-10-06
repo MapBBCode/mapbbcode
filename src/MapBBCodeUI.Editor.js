@@ -267,8 +267,10 @@ window.MapBBCode.include({
                 }
                 str += '<div id="close"><input type="button" value="' + this.strings.close + '" onclick="javascript:window.close();"></div>';
                 var css = '<style>body { font-family: sans-serif; font-size: 12pt; } p { line-height: 1.5; } h1 { text-align: center; font-size: 18pt; } h2 { font-size: 14pt; } #close { text-align: center; margin-top: 1em; }</style>';
+                win.document.open();
                 win.document.write(css);
                 win.document.write(str);
+                win.document.close();
             }, this);
             map.addControl(help);
         }
@@ -277,7 +279,7 @@ window.MapBBCode.include({
     // Opens editor window. Requires options.labPath to be correct
     editorWindow: function( bbcode, callback, context ) {
         var features = this.options.windowFeatures,
-            featSize = 'height=' + (this.options.windowHeight || this.options.viewHeight) + ',width=' + (this.options.windowWidht || this.options.viewWidth),
+            featSize = 'height=' + (this.options.windowHeight || this.options.editorHeight) + ',width=' + (this.options.windowWidth || this.options.viewWidth),
             win = window.open('', 'mapbbcode_editor', features + ',' + featSize),
             basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1],
             libUrl = basePath + this.options.libPath;
