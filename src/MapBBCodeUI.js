@@ -33,7 +33,8 @@ window.MapBBCode = L.Class.extend({
         showHelp: true,
         allowedHTML: '[auib]|span|br|em|strong|tt',
         letterIcons: true,
-        enablePolygons: true
+        enablePolygons: true,
+        preferStandardLayerSwitcher: false
     },
 
     strings: {},
@@ -127,7 +128,7 @@ window.MapBBCode = L.Class.extend({
         
         if( layers.length > 1 ) {
             var control, i;
-            if( L.StaticLayerSwitcher ) {
+            if( !this.options.preferStandardLayerSwitcher && L.StaticLayerSwitcher ) {
                 control = L.staticLayerSwitcher();
                 for( i = 0; i < layers.length; i++ )
                     control.addLayer(layers[i].options.name, layers[i]);
