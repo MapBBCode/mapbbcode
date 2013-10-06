@@ -294,6 +294,7 @@ window.MapBBCode.include({
         var content = '<script src="' + libUrl + 'leaflet.js"></script>';
         content += '<script src="' + libUrl + 'leaflet.draw.js"></script>';
         content += '<script src="' + libUrl + 'mapbbcode.js"></script>';
+        content += '<script src="' + libUrl + 'mapbbcode-config.js"></script>'; // yes, this is a stretch
         content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.css" />';
         content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.draw.css" />';
         content += '<div id="edit"></div>';
