@@ -26,12 +26,13 @@ function lintFiles(files) {
 	return errorsFound;
 }
 
-function getFiles(compsBase32, skipNoInclude) {
+function getFiles(options) {
 	var memo = {},
+	    opt = options || {},
 	    comps;
 
-	if (compsBase32) {
-		comps = parseInt(compsBase32, 32).toString(2).split('');
+	if (opt.compsBase32) {
+		comps = parseInt(opt.compsBase32, 32).toString(2).split('');
 		console.log('Managing dependencies...');
 	}
 
@@ -42,8 +43,13 @@ function getFiles(compsBase32, skipNoInclude) {
 	}
 
 	for (var i in deps) {
-                if( skipNoInclude && deps[i].noInclude )
-                        continue;
+                if( !opt.allFiles && !comps ) {
+			if( deps[i].noInclude )
+				continue;
+			if( (opt.configOnly && !deps[i].config) || (!opt.configOnly && deps[i].config) )
+				continue;
+                }
+
 		if (comps) {
                         if (parseInt(comps.pop(), 2) === 1) {
                                 console.log('\t* ' + i);
@@ -69,7 +75,7 @@ exports.getFiles = getFiles;
 
 exports.lint = function () {
 
-	var files = getFiles();
+	var files = getFiles({ allFiles: true });
 
 	console.log('Checking for JS errors...');
 
@@ -113,7 +119,7 @@ function combineFiles(files) {
 
 exports.build = function (compsBase32, buildName) {
 
-	var files = getFiles(compsBase32, true);
+	var files = getFiles({ compsBase32: compsBase32, configOnly: buildName === 'config' });
 
 	console.log('Concatenating ' + files.length + ' files...');
 
@@ -155,4 +161,8 @@ exports.build = function (compsBase32, buildName) {
 		fs.writeFileSync(path, newCompressed);
 		console.log('\tSaved to ' + path);
 	}
+};
+
+exports.cfg = function (compsBase32, buildName) {
+    exports.build(compsBase32, 'config');
 };

@@ -18,7 +18,10 @@ task('lint', build.lint);
 desc('Combine and compress MapBBCode source files');
 task('build', ['lint'], build.build);
 
+desc('Combine and compress MapBBCode configuration tool source files');
+task('cfg', ['lint'], build.cfg);
+
 //desc('Run PhantomJS tests');
 //task('test', ['lint'], build.test);
 
-task('default', ['build']);
+task('default', ['build', 'cfg']);

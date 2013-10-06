@@ -24,6 +24,12 @@ var deps = {
 		desc: 'Optional LetterIcon',
         },
 
+        LayerSwitcher: {
+                src: ['config/StaticLayerSwitcher.js'],
+                desc: 'Layer switcher that is not a single button',
+                config: true
+        },
+
         StringsEnglish: {
                 src: ['strings/English.js'],
                 desc: 'English',
@@ -34,9 +40,21 @@ var deps = {
                 src: ['strings/Russian.js'],
                 desc: 'Russian',
                 noInclude: true
-        }
+        },
 
-        // todo: StringsRussian1251
+        LayerList: {
+                src: ['config/LayerList.js'],
+                desc: 'List of layers to simplify configuration',
+                config: true
+        },
+
+        Configuration: {
+                src: ['config/MapBBCodeUI.Config.js',
+                      'FunctionButton.js'],
+                desc: 'MapBBCode UI configuration module',
+                config: true,
+                deps: ['LayerSwitcher', 'LayerList']
+        }
 };
 
 if (typeof exports !== 'undefined') {
