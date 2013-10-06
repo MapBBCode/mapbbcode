@@ -141,7 +141,9 @@ window.MapBBCode = L.Class.extend({
         showHelp: true,
         allowedHTML: '[auib]|span|br|em|strong|tt',
         letterIcons: true,
-        enablePolygons: true
+        enablePolygons: true,
+        preferStandardLayerSwitcher: false,
+        hideInsideClasses: []
     },
 
     strings: {},
@@ -235,7 +237,7 @@ window.MapBBCode = L.Class.extend({
         
         if( layers.length > 1 ) {
             var control, i;
-            if( L.StaticLayerSwitcher ) {
+            if( !this.options.preferStandardLayerSwitcher && L.StaticLayerSwitcher ) {
                 control = L.staticLayerSwitcher();
                 for( i = 0; i < layers.length; i++ )
                     control.addLayer(layers[i].options.name, layers[i]);
@@ -249,6 +251,20 @@ window.MapBBCode = L.Class.extend({
         }
     },
 
+    _hideClassPresent: function( element ) {
+        if( typeof element.className !== 'string' )
+            return false;
+        var classNames = element.className.split(' '),
+            classHide = this.options.hideInsideClasses, i, j;
+        if( !classHide || !classHide.length )
+            return false;
+        for( i = 0; i < classNames.length; i++ )
+            for( j = 0; j < classHide.length; j++ )
+                if( classNames[i] === classHide[j] )
+                    return true;
+        return element.parentNode && this._hideClassPresent(element.parentNode);
+    },
+
     // Create map panel, parse and display bbcode (it can be skipped: so it's an attribute or contents of element)
     show: function( element, bbcode ) {
         var el = typeof element === 'string' ? document.getElementById(element) : element;
@@ -258,6 +274,8 @@ window.MapBBCode = L.Class.extend({
         if( !bbcode ) return;
         while( el.firstChild )
             el.removeChild(el.firstChild);
+        if( this._hideClassPresent(el) )
+            return;
         var mapDiv = el.ownerDocument.createElement('div');
         mapDiv.style.width = this.options.fullFromStart ? '100%' : this.options.viewWidth;
         mapDiv.style.height = this.options.fullFromStart ? this.options.fullViewHeight : this.options.viewHeight;
@@ -777,6 +795,7 @@ window.MapBBCode.include({
         var content = '<script src="' + libUrl + 'leaflet.js"></script>';
         content += '<script src="' + libUrl + 'leaflet.draw.js"></script>';
         content += '<script src="' + libUrl + 'mapbbcode.js"></script>';
+        content += '<script src="' + libUrl + 'mapbbcode-config.js"></script>'; // yes, this is a stretch
         content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.css" />';
         content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.draw.css" />';
         content += '<div id="edit"></div>';

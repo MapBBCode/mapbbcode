@@ -34,7 +34,8 @@ window.MapBBCode = L.Class.extend({
         allowedHTML: '[auib]|span|br|em|strong|tt',
         letterIcons: true,
         enablePolygons: true,
-        preferStandardLayerSwitcher: false
+        preferStandardLayerSwitcher: false,
+        hideInsideClasses: []
     },
 
     strings: {},
@@ -142,6 +143,20 @@ window.MapBBCode = L.Class.extend({
         }
     },
 
+    _hideClassPresent: function( element ) {
+        if( typeof element.className !== 'string' )
+            return false;
+        var classNames = element.className.split(' '),
+            classHide = this.options.hideInsideClasses, i, j;
+        if( !classHide || !classHide.length )
+            return false;
+        for( i = 0; i < classNames.length; i++ )
+            for( j = 0; j < classHide.length; j++ )
+                if( classNames[i] === classHide[j] )
+                    return true;
+        return element.parentNode && this._hideClassPresent(element.parentNode);
+    },
+
     // Create map panel, parse and display bbcode (it can be skipped: so it's an attribute or contents of element)
     show: function( element, bbcode ) {
         var el = typeof element === 'string' ? document.getElementById(element) : element;
@@ -151,6 +166,8 @@ window.MapBBCode = L.Class.extend({
         if( !bbcode ) return;
         while( el.firstChild )
             el.removeChild(el.firstChild);
+        if( this._hideClassPresent(el) )
+            return;
         var mapDiv = el.ownerDocument.createElement('div');
         mapDiv.style.width = this.options.fullFromStart ? '100%' : this.options.viewWidth;
         mapDiv.style.height = this.options.fullFromStart ? this.options.fullViewHeight : this.options.viewHeight;
