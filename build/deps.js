@@ -7,7 +7,6 @@ var deps = {
 	UI: {
 		src: ['MapBBCodeUI.js',
 		      'FunctionButton.js',
-		      'FunctionButton.Fullscreen.js',
 		      'EditorSprites.js'],
 		desc: 'User Interface: displaying and editing map bbcode',
                 deps: ['Core']
@@ -22,24 +21,13 @@ var deps = {
         LetterIcon: {
 		src: ['LetterIcon.js'],
 		desc: 'Optional LetterIcon',
+                heading: 'Plugins'
         },
 
         LayerSwitcher: {
                 src: ['config/StaticLayerSwitcher.js'],
                 desc: 'Layer switcher that is not a single button',
                 config: true
-        },
-
-        StringsEnglish: {
-                src: ['strings/English.js'],
-                desc: 'English',
-                heading: 'Strings'
-        },
-
-        StringsRussian: {
-                src: ['strings/Russian.js'],
-                desc: 'Russian',
-                noInclude: true
         },
 
         LayerList: {
@@ -52,8 +40,23 @@ var deps = {
                 src: ['config/MapBBCodeUI.Config.js',
                       'FunctionButton.js'],
                 desc: 'MapBBCode UI configuration module',
+                heading: 'Configuration',
                 config: true,
                 deps: ['LayerSwitcher', 'LayerList']
+        },
+
+        StringsEnglish: {
+                src: ['strings/English.js'],
+                desc: 'English',
+                heading: 'Translations',
+                deps: ['UI']
+        },
+
+        StringsRussian: {
+                src: ['strings/Russian.js'],
+                desc: 'Russian',
+                deps: ['UI'],
+                noInclude: true
         }
 };
 

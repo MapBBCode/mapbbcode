@@ -188,9 +188,19 @@ window.MapBBCode = L.Class.extend({
         this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 
         if( this.options.fullScreenButton && !this.options.fullFromStart ) {
-            var fs = new L.Fullscreen({ height: this.options.fullViewHeight, title: this.strings.fullScreenTitle });
+            var fs = new L.FunctionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: L.point(0, 0), title: this.strings.fullScreenTitle }),
+                isFull = false, oldSize;
             map.addControl(fs);
             fs.on('clicked', function() {
+                var style = map.getContainer().style;
+                if( !isFull && !oldSize )
+                    oldSize = [style.width, style.height];
+                isFull = !isFull;
+                style.width = isFull ? '100%' : oldSize[0];
+                style.height = isFull ? this.options.fullViewHeight : oldSize[1];
+                map.invalidateSize();
+                fs.options.bgPos.x = isFull ? 26 : 0;
+                fs.updateBgPos();
                 this._zoomToLayer(map, drawn);
             }, this);
         }
