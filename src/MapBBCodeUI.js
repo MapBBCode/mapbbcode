@@ -14,6 +14,8 @@ window.MapBBCode = L.Class.extend({
             blue: '#0022dd',
             red: '#bb0000',
             green: '#007700',
+            brown: '#964b00',
+            purple: '#800080',
             black: '#000000'
         },
         polygonOpacity: 0.1,
