@@ -47,12 +47,14 @@ window.layerList = {
                 if( m[2] && m[2].length > 0 )
                     layer = layer.replace(reKeyC, m[2]);
                 if( !reKeyC.test(layer) ) {
-                    var done = eval(layer);
-                    if( done ) {
-                        if( done.options )
-                            done.options.name = m[1];
-                        result.push(done);
-                    }
+                    try {
+                        var done = eval(layer);
+                        if( done ) {
+                            if( done.options )
+                                done.options.name = m[1];
+                            result.push(done);
+                        }
+                    } catch(e) {}
                 }
             }
         }

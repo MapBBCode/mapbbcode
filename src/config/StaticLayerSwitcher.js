@@ -120,6 +120,12 @@ L.StaticLayerSwitcher = L.Control.extend({
 
     onAdd: function( map ) {
         var container = L.DomUtil.create('div', 'leaflet-bar');
+        if (!L.Browser.touch) {
+            L.DomEvent.disableClickPropagation(container);
+            L.DomEvent.on(container, 'mousewheel', L.DomEvent.stopPropagation);
+        } else {
+            L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
+        }
         this._map = map;
         this._container = container;
         this._update();
