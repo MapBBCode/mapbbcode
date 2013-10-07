@@ -126,6 +126,12 @@ L.StaticLayerSwitcher = L.Control.extend({
 
     onAdd: function( map ) {
         var container = L.DomUtil.create('div', 'leaflet-bar');
+        if (!L.Browser.touch) {
+            L.DomEvent.disableClickPropagation(container);
+            L.DomEvent.on(container, 'mousewheel', L.DomEvent.stopPropagation);
+        } else {
+            L.DomEvent.on(container, 'click', L.DomEvent.stopPropagation);
+        }
         this._map = map;
         this._container = container;
         this._update();
@@ -306,12 +312,14 @@ window.layerList = {
                 if( m[2] && m[2].length > 0 )
                     layer = layer.replace(reKeyC, m[2]);
                 if( !reKeyC.test(layer) ) {
-                    var done = eval(layer);
-                    if( done ) {
-                        if( done.options )
-                            done.options.name = m[1];
-                        result.push(done);
-                    }
+                    try {
+                        var done = eval(layer);
+                        if( done ) {
+                            if( done.options )
+                                done.options.name = m[1];
+                            result.push(done);
+                        }
+                    } catch(e) {}
                 }
             }
         }

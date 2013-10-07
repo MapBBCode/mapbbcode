@@ -122,6 +122,8 @@ window.MapBBCode = L.Class.extend({
             blue: '#0022dd',
             red: '#bb0000',
             green: '#007700',
+            brown: '#964b00',
+            purple: '#800080',
             black: '#000000'
         },
         polygonOpacity: 0.1,
@@ -136,6 +138,7 @@ window.MapBBCode = L.Class.extend({
         windowHeight: 0,
 
         windowFeatures: 'resizable,status,dialog',
+        usePreparedWindow: true,
         libPath: 'lib/',
         outerLinkTemplate: false, // 'http://openstreetmap.org/#map={zoom}/{lat}/{lon}',
         showHelp: true,
@@ -583,6 +586,8 @@ window.MapBBCode.include({
         } else { // polyline or polygon
             var colorDiv = document.createElement('div');
             var colors = Object.getOwnPropertyNames(this.options.lineColors).sort();
+            colorDiv.style.width = 10 + 20 * colors.length + 'px';
+            colorDiv.textAlign = 'center';
             var colOnclick = function(e) {
                 var targetStyle = e.target.style;
                 if( targetStyle.borderColor == 'white' ) {
@@ -779,12 +784,6 @@ window.MapBBCode.include({
 
     // Opens editor window. Requires options.labPath to be correct
     editorWindow: function( bbcode, callback, context ) {
-        var features = this.options.windowFeatures,
-            featSize = 'height=' + (this.options.windowHeight || this.options.editorHeight) + ',width=' + (this.options.windowWidth || this.options.viewWidth),
-            win = window.open('', 'mapbbcode_editor', features + ',' + featSize),
-            basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1],
-            libUrl = basePath + this.options.libPath;
-
         window.storedMapBB = {
             bbcode: bbcode,
             callback: callback,
@@ -792,17 +791,25 @@ window.MapBBCode.include({
             caller: this
         };
 
-        var content = '<script src="' + libUrl + 'leaflet.js"></script>';
-        content += '<script src="' + libUrl + 'leaflet.draw.js"></script>';
-        content += '<script src="' + libUrl + 'mapbbcode.js"></script>';
-        content += '<script src="' + libUrl + 'mapbbcode-config.js"></script>'; // yes, this is a stretch
-        content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.css" />';
-        content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.draw.css" />';
-        content += '<div id="edit"></div>';
-        content += '<script>opener.storedMapBB.caller.editorWindowCallback.call(opener.storedMapBB.caller, window, opener.storedMapBB);</script>';
-        win.document.open();
-        win.document.write(content);
-        win.document.close();
+        var features = this.options.windowFeatures,
+            featSize = 'height=' + (this.options.windowHeight || this.options.editorHeight) + ',width=' + (this.options.windowWidth || this.options.viewWidth),
+            basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1],
+            libUrl = basePath + this.options.libPath,
+            win = window.open(this.options.usePreparedWindow ? libUrl + 'mapbbcode-window.html' : '', 'mapbbcode_editor', features + ',' + featSize);
+
+        if( !this.options.usePreparedWindow ) {
+            var content = '<script src="' + libUrl + 'leaflet.js"></script>';
+            content += '<script src="' + libUrl + 'leaflet.draw.js"></script>';
+            content += '<script src="' + libUrl + 'mapbbcode.js"></script>';
+            content += '<script src="' + libUrl + 'mapbbcode-config.js"></script>'; // yes, this is a stretch
+            content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.css" />';
+            content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.draw.css" />';
+            content += '<div id="edit"></div>';
+            content += '<script>opener.storedMapBB.caller.editorWindowCallback.call(opener.storedMapBB.caller, window, opener.storedMapBB);</script>';
+            win.document.open();
+            win.document.write(content);
+            win.document.close();
+        }
     },
 
     editorWindowCallback: function( w, ctx ) {
@@ -814,7 +821,7 @@ window.MapBBCode.include({
             w.close();
             if( ctx.callback )
                 ctx.callback.call(ctx.context, res);
-            this.storedContext = null;
+            this.storedMapBB = null;
         }, this);
     }
 });
@@ -897,15 +904,15 @@ window.MapBBCode.include({strings: {
         'Map BBCode Editor',
         'You have opened this help window from inside the map editor. It is activated with "Map" button. When the cursor in the textarea is inside [map] sequence, the editor will edit that bbcode, otherwise it will create new bbcode and insert it at cursor position after clicking "Apply".',
         '# BBCode',
-        'Map BBCode is placed inside <tt>[map]...[/map]</tt> tags. Opening tag may contain zoom and optional position in latitude,longitude format: <tt>[map=10]</tt> or <tt>[map=15,60.1,30.05]</tt>. Decimal separator is always a full stop.',
-        'The tag contains a semicolon-separated list of features: markers and paths. They differ only by a number of space-separated coordinates: markers have one, and paths have more. There can be optional title in brackets after the list: <tt>12.3,-5.1(Popup)</tt> (paths don\'t support titles though). Title is HTML and can contain any characters, but "(" should be replaced with "\\(", and only a limited set of HTML tags is allowed.',
+        'Map BBCode is placed inside <tt>[map]...[/map]</tt> tags. Opening tag may contain zoom with optional position in latitude,longitude format: <tt>[map=10]</tt> or <tt>[map=15,60.1,30.05]</tt>. Decimal separator is always a full stop.',
+        'The tag contains a semicolon-separated list of features: markers and paths. They differ only by a number of space-separated coordinates: markers have one, and paths have more. There can be optional title in brackets after the list: <tt>12.3,-5.1(Popup)</tt> (only for markers in the editor). Title is HTML and can contain any characters, but "(" should be replaced with "\\(", and only a limited set of HTML tags is allowed.',
         'Paths can have different colours, which are stated in <i>parameters</i>: part of a title followed by "|" character. For example, <tt>12.3,-5.1 12.5,-5 12,0 (red|)</tt> will produce a red path.',
         '# Map Viewer',
         'Plus and minus buttons on the map change its zoom. Other buttons are optional. A button with four arrows ("fullscreen") expands map view to maximum width and around twice the height. If a map has many layers, there is a layer switcher in the top right corner. There also might be a button with a curved arrow, that opens an external site (usually www.openstreetmap.org) at a position shown on the map.',
         'You can drag the map to pan around, press zoom buttons while holding Shift key to change zoom quickly, or drag the map with Shift pressed to zoom to an area. Scroll-wheel zoom is disabled in viewer to not interfere with page scrolling, but in works in map editor.',
         '# Editor Buttons',
         '"Apply" saves map features (or map state if there are none) to a post body, "Cancel" just closes the editor panel. And you have already figured out what the button with a question mark does. Two buttons underneath zoom controls add features on the map.',
-        'To draw a path, press the "/" button and click somewhere on the map. Then click again, and again, until you\'ve got a nice polyline. Do not worry if you got some points wrong: you can fix it later. Click on the final point to finish drawing. Then you may fix points and add intermediate nodes by dragging small square or circular handlers. To delete a path (or a marker), click on it, and in the popup window press "Delete" button.',
+        'To draw a path, press the button with a diagonal line and click somewhere on the map. Then click again, and again, until you\'ve got a nice polyline. Do not worry if you got some points wrong: you can fix it later. Click on the final point to finish drawing. Then you may fix points and add intermediate nodes by dragging small square or circular handlers. To delete a path (or a marker), click on it, and in the popup window press "Delete" button.',
         'Markers are easier to place: click on the marker button, then click on the map. In a popup window for a marker you can type a title: if it is 1 or 2 characters long, the text would appear right on the marker. Otherwise map viewers would have to click on a marker to read the title. A title may contain URLs and line feeds.',
         '# Plugin',
         'Map BBCode Editor is an open source product, available at <a href="https://github.com/MapBBCode/mapbbcode">github</a>. You will also find there plugins for some of popular forum engines. All issues and suggestions can be placed in the github issue tracker.'
