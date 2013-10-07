@@ -1,5 +1,7 @@
+<!DOCTYPE html>
 <html>
 <head>
+<title>MapBBCode Editor</title>
 <script src="leaflet.js"></script>
 <script src="leaflet.draw.js"></script>
 <script src="Bing.js"></script>
@@ -11,12 +13,24 @@
         <link rel="stylesheet" href="templates/subSilver/mapbbcode/leaflet.ie.css" />
         <link rel="stylesheet" href="templates/subSilver/mapbbcode/leaflet.draw.ie.css" />
 <![endif]-->
+<style>html, body, #edit { margin: 0; height: 100%; }</style>
 </head>
-<body style="margin: 0px;" onload="javascript: edit();">
+<body onload="javascript: edit();">
 <div id="edit"></div>
 <script>
 <!--
-function edit() { opener.storedMapBB.caller.editorWindowCallback.call(opener.storedMapBB.caller, window, opener.storedMapBB); }
+function edit() {
+    var stored = opener.storedMapBB;
+    var mapBB = new MapBBCode(stored.caller.options);
+    mapBB.setStrings(stored.caller.strings);
+    mapBB.options.editorHeight = '100%';
+    mapBB.editor('edit', stored.bbcode, function(res) {
+        window.close();
+        if( stored.callback )
+            stored.callback.call(stored.context, res);
+        opener.storedMapBB = null;
+    }, this);
+}
 // -->
 </script>
 </body>
