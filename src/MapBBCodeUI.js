@@ -28,6 +28,7 @@ window.MapBBCode = L.Class.extend({
         windowHeight: 0,
 
         windowFeatures: 'resizable,status,dialog',
+        usePreparedWindow: false,
         libPath: 'lib/',
         outerLinkTemplate: false, // 'http://openstreetmap.org/#map={zoom}/{lat}/{lon}',
         showHelp: true,

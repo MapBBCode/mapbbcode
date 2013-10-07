@@ -278,12 +278,6 @@ window.MapBBCode.include({
 
     // Opens editor window. Requires options.labPath to be correct
     editorWindow: function( bbcode, callback, context ) {
-        var features = this.options.windowFeatures,
-            featSize = 'height=' + (this.options.windowHeight || this.options.editorHeight) + ',width=' + (this.options.windowWidth || this.options.viewWidth),
-            win = window.open('', 'mapbbcode_editor', features + ',' + featSize),
-            basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1],
-            libUrl = basePath + this.options.libPath;
-
         window.storedMapBB = {
             bbcode: bbcode,
             callback: callback,
@@ -291,17 +285,25 @@ window.MapBBCode.include({
             caller: this
         };
 
-        var content = '<script src="' + libUrl + 'leaflet.js"></script>';
-        content += '<script src="' + libUrl + 'leaflet.draw.js"></script>';
-        content += '<script src="' + libUrl + 'mapbbcode.js"></script>';
-        content += '<script src="' + libUrl + 'mapbbcode-config.js"></script>'; // yes, this is a stretch
-        content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.css" />';
-        content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.draw.css" />';
-        content += '<div id="edit"></div>';
-        content += '<script>opener.storedMapBB.caller.editorWindowCallback.call(opener.storedMapBB.caller, window, opener.storedMapBB);</script>';
-        win.document.open();
-        win.document.write(content);
-        win.document.close();
+        var features = this.options.windowFeatures,
+            featSize = 'height=' + (this.options.windowHeight || this.options.editorHeight) + ',width=' + (this.options.windowWidth || this.options.viewWidth),
+            basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1],
+            libUrl = basePath + this.options.libPath,
+            win = window.open(this.options.usePreparedWindow ? libUrl + 'mapbbcode-window.html' : '', 'mapbbcode_editor', features + ',' + featSize);
+
+        if( !this.options.usePreparedWindow ) {
+            var content = '<script src="' + libUrl + 'leaflet.js"></script>';
+            content += '<script src="' + libUrl + 'leaflet.draw.js"></script>';
+            content += '<script src="' + libUrl + 'mapbbcode.js"></script>';
+            content += '<script src="' + libUrl + 'mapbbcode-config.js"></script>'; // yes, this is a stretch
+            content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.css" />';
+            content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.draw.css" />';
+            content += '<div id="edit"></div>';
+            content += '<script>opener.storedMapBB.caller.editorWindowCallback.call(opener.storedMapBB.caller, window, opener.storedMapBB);</script>';
+            win.document.open();
+            win.document.write(content);
+            win.document.close();
+        }
     },
 
     editorWindowCallback: function( w, ctx ) {
@@ -313,7 +315,7 @@ window.MapBBCode.include({
             w.close();
             if( ctx.callback )
                 ctx.callback.call(ctx.context, res);
-            this.storedContext = null;
+            this.storedMapBB = null;
         }, this);
     }
 });
