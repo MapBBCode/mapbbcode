@@ -81,7 +81,11 @@ window.MapBBCode.include({
             }, this);
         } else { // polyline or polygon
             var colorDiv = document.createElement('div');
-            var colors = Object.getOwnPropertyNames(this.options.lineColors).sort();
+            var colors = [], c, lineColors = this.options.lineColors;
+            for( c in lineColors )
+                if( typeof lineColors[c] === 'string' && lineColors[c].substring(0, 1) === '#' )
+                    colors.push(c);
+            colors = colors.sort();
             colorDiv.style.width = 10 + 20 * colors.length + 'px';
             colorDiv.textAlign = 'center';
             var colOnclick = function(e) {

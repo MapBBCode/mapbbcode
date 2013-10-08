@@ -45,9 +45,9 @@ window.MapBBCode = L.Class.extend({
     strings: {},
 
     initialize: function( options ) {
-        if( L.Browser.ie && options && options.defaultPosition && 'splice' in options.defaultPosition )
-            options.defaultPosition = options.defaultPosition.splice(); // in IE arrays can be [object Object] and break L.latLon()
         L.setOptions(this, options);
+        if( L.Browser.ie && options && options.defaultPosition && 'splice' in options.defaultPosition && options.defaultPosition.length == 2 )
+            this.options.defaultPosition = [options.defaultPosition[0], options.defaultPosition[1]]; // in IE arrays can be [object Object] and break L.latLon()
     },
 
     setStrings: function( strings ) {
@@ -104,7 +104,7 @@ window.MapBBCode = L.Class.extend({
                 m.setIcon(new L.LetterIcon(obj.text));
                 m.options.clickable = false;
             } else {
-                m.bindPopup(obj.text.replace(new RegExp('<(?!/?(' + this.options.allowedHTML + ')[ >])', 'g')), '&lt;');
+                m.bindPopup(obj.text.replace(new RegExp('<(?!/?(' + this.options.allowedHTML + ')[ >])', 'g'), '&lt;'));
             }
         } else
             m.options.clickable = false;
