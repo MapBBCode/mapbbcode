@@ -9,6 +9,7 @@ window.MapBBCode = L.Class.extend({
         maxInitialZoom: 15,
         defaultPosition: [22, 11],
         defaultZoom: 2,
+        leafletOptions: {},
         lineColors: {
             def: '#0022dd',
             blue: '#0022dd',
@@ -176,7 +177,7 @@ window.MapBBCode = L.Class.extend({
         mapDiv.style.height = this.options.fullFromStart ? this.options.fullViewHeight : this.options.viewHeight;
         el.appendChild(mapDiv);
 
-        var map = L.map(mapDiv, { scrollWheelZoom: false, zoomControl: false });
+        var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
         this._addLayers(map);
 

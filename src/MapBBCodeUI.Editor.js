@@ -163,7 +163,7 @@ window.MapBBCode.include({
         mapDiv.style.height = this.options.editorHeight;
         el.appendChild(mapDiv);
 
-        var map = L.map(mapDiv, { zoomControl: false });
+        var map = L.map(mapDiv, L.extend({}, { zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
         this._addLayers(map);
 
