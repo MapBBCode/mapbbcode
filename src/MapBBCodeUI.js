@@ -45,6 +45,8 @@ window.MapBBCode = L.Class.extend({
     strings: {},
 
     initialize: function( options ) {
+        if( L.Browser.ie && options && options.defaultPosition && 'splice' in options.defaultPosition )
+            options.defaultPosition = options.defaultPosition.splice(); // in IE arrays can be [object Object] and break L.latLon()
         L.setOptions(this, options);
     },
 

@@ -18,7 +18,7 @@ L.StaticLayerSwitcher = L.Control.extend({
         this._layers = [];
         this._selected = 0;
         if( layers ) {
-            if( Object.prototype.toString.call(layers) === '[object Array]' ) {
+            if( 'push' in layers && 'splice' in layers ) { // in IE arrays can be [object Object]
                 for( var i = 0; i < layers.length; i++ )
                     this.addLayer(layers[i]);
             } else {
