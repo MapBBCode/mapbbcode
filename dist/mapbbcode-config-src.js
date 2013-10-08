@@ -271,7 +271,7 @@ window.layerList = {
         "OpenStreetMap": "L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a>', minZoom: 0, maxZoom: 19 })",
         "OpenStreetMap DE": "L.tileLayer('http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a>', minZoom: 0, maxZoom: 18 })",
         "CycleMap": "L.tileLayer('http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OSM</a> | Tiles &copy; Andy Allan', minZoom: 0, maxZoom: 18 })",
-        "MapSurfer": "L.tileLayer('http://129.206.74.245:8001/tms_r.ashx?x={x}&y={y}&z={z}', { name: 'MapSurfer', attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OSM</a> | Tiles &copy; <a href=\"http://giscience.uni-hd.de/\">GIScience Heidelberg</a>', minZoom: 0, maxZoom: 19 })",
+        "OpenMapSurfer": "L.tileLayer('http://129.206.74.245:8001/tms_r.ashx?x={x}&y={y}&z={z}', { name: 'MapSurfer', attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OSM</a> | Tiles &copy; <a href=\"http://giscience.uni-hd.de/\">GIScience Heidelberg</a>', minZoom: 0, maxZoom: 19 })",
         "Humanitarian": "L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a> | Tiles &copy; <a href=\"http://hot.openstreetmap.org\">Humanitarian OSM Team</a>', minZoom: 0, maxZoom: 19 })",
         "Bing Satellite": "new L.BingLayer('{key:http://msdn.microsoft.com/en-us/library/ff428642.aspx}')"
     },
@@ -351,24 +351,7 @@ window.MapBBCodeConfig = L.Class.extend({
         maxLayers: 5
     },
 
-    strings: {
-        view: 'View',
-        editor: 'Editor',
-        editInWindow: 'Window',
-        editInPanel: 'Panel',
-        viewNormal: 'Normal',
-        viewFull: 'Full width only',
-        viewTitle: 'Adjusting browsing panel',
-        editorTitle: 'Adjusting editor panel or window',
-        editInWindowTitle: 'Editor will be opened in a popup window',
-        editInPanelTitle: 'Editor will appear inside a page',
-        viewNormalTitle: 'Map panel will have "fullscreen" button',
-        viewFullTitle: 'Map panel will always have maximum size',
-        growTitle: 'Click to grow the panel',
-        shrinkTitle: 'Click to shrink the panel',
-        zoomInTitle: 'Zoom in',
-        zoomOutTitle: 'Zoom out'
-    },
+    strings: {},
 
     initialize: function( options ) {
         L.setOptions(this, options);
@@ -672,6 +655,26 @@ L.FunctionButton = L.FunctionButtons.extend({
 L.functionButton = function( content, options ) {
     return new L.FunctionButton(content, options);
 };
+
+
+window.MapBBCodeConfig.include({strings: {
+    view: 'View',
+    editor: 'Editor',
+    editInWindow: 'Window',
+    editInPanel: 'Panel',
+    viewNormal: 'Normal',
+    viewFull: 'Full width only',
+    viewTitle: 'Adjusting browsing panel',
+    editorTitle: 'Adjusting editor panel or window',
+    editInWindowTitle: 'Editor will be opened in a popup window',
+    editInPanelTitle: 'Editor will appear inside a page',
+    viewNormalTitle: 'Map panel will have "fullscreen" button',
+    viewFullTitle: 'Map panel will always have maximum size',
+    growTitle: 'Click to grow the panel',
+    shrinkTitle: 'Click to shrink the panel',
+    zoomInTitle: 'Zoom in',
+    zoomOutTitle: 'Zoom out'
+}});
 
 
 }(window, document));

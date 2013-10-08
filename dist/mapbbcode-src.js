@@ -117,6 +117,7 @@ window.MapBBCode = L.Class.extend({
         maxInitialZoom: 15,
         defaultPosition: [22, 11],
         defaultZoom: 2,
+        leafletOptions: {},
         lineColors: {
             def: '#0022dd',
             blue: '#0022dd',
@@ -284,7 +285,7 @@ window.MapBBCode = L.Class.extend({
         mapDiv.style.height = this.options.fullFromStart ? this.options.fullViewHeight : this.options.viewHeight;
         el.appendChild(mapDiv);
 
-        var map = L.map(mapDiv, { scrollWheelZoom: false, zoomControl: false });
+        var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
         this._addLayers(map);
 
@@ -296,9 +297,19 @@ window.MapBBCode = L.Class.extend({
         this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 
         if( this.options.fullScreenButton && !this.options.fullFromStart ) {
-            var fs = new L.Fullscreen({ height: this.options.fullViewHeight, title: this.strings.fullScreenTitle });
+            var fs = new L.FunctionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: L.point(0, 0), title: this.strings.fullScreenTitle }),
+                isFull = false, oldSize;
             map.addControl(fs);
             fs.on('clicked', function() {
+                var style = map.getContainer().style;
+                if( !isFull && !oldSize )
+                    oldSize = [style.width, style.height];
+                isFull = !isFull;
+                style.width = isFull ? '100%' : oldSize[0];
+                style.height = isFull ? this.options.fullViewHeight : oldSize[1];
+                map.invalidateSize();
+                fs.options.bgPos.x = isFull ? 26 : 0;
+                fs.updateBgPos();
                 this._zoomToLayer(map, drawn);
             }, this);
         }
@@ -432,40 +443,6 @@ L.FunctionButton = L.FunctionButtons.extend({
 L.functionButton = function( content, options ) {
     return new L.FunctionButton(content, options);
 };
-
-
-/*
- * A button to make the map panel bigger (and back again).
- */
-L.Fullscreen = L.FunctionButton.extend({
-    options: {
-        position: 'topright',
-        height: '100%',
-        bgPos: L.point(0, 0)
-    },
-
-    initialize: function( options ) {
-        this._isFull = false;
-        L.FunctionButton.prototype.initialize.call(this, window.MapBBCode.buttonsImage, options);
-    },
-
-    clicked: function() {
-        var map = this._map,
-            style = map.getContainer().style,
-            isFull = this._isFull;
-        if( !isFull && !this._oldWidth ) {
-            this._oldWidth = style.width;
-            this._oldHeight = style.height;
-        }
-        this._map.getContainer().style.width = isFull ? this._oldWidth : '100%';
-        this._map.getContainer().style.height = isFull ? this._oldHeight: this.options.height;
-        this._map.invalidateSize();
-        this.options.bgPos.x = isFull ? 0 : 26;
-        this.updateBgPos();
-        this._isFull = !isFull;
-        this.fire('clicked');
-    }
-});
 
 
 /* jshint laxbreak: true */
@@ -667,7 +644,7 @@ window.MapBBCode.include({
         mapDiv.style.height = this.options.editorHeight;
         el.appendChild(mapDiv);
 
-        var map = L.map(mapDiv, { zoomControl: false });
+        var map = L.map(mapDiv, L.extend({}, { zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
         this._addLayers(map);
 
