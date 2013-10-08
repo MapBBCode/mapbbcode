@@ -184,6 +184,7 @@ window.MapBBCode.include({
         L.drawLocal.draw.toolbar.actions.text = this.strings.cancel;
         L.drawLocal.draw.toolbar.actions.title = this.strings.drawCancelTitle;
         L.drawLocal.draw.toolbar.buttons.polyline = this.strings.polylineTitle;
+        L.drawLocal.draw.toolbar.buttons.polygon = this.strings.polygonTitle;
         L.drawLocal.draw.toolbar.buttons.marker = this.strings.markerTitle;
         L.drawLocal.draw.handlers.marker.tooltip.start = this.strings.markerTooltip;
         L.drawLocal.draw.handlers.polyline.tooltip.start = this.strings.polylineStartTooltip;
