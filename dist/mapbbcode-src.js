@@ -10,7 +10,7 @@
 window.MapBBCodeProcessor = {
     _getRegExp: function() {
         var reCoord = '\\s*(-?\\d+(?:\\.\\d+)?)\\s*,\\s*(-?\\d+(?:\\.\\d+)?)',
-            reParams = '\\((?:([a-zA-Z0-9,]*)\\|)?(|[^]*?[^\\\\])\\)',
+            reParams = '\\((?:([a-zA-Z0-9,]*)\\|)?(|[\\s\\S]*?[^\\\\])\\)',
             reMapElement = reCoord + '(?:' + reCoord + ')*(?:\\s*' + reParams + ')?',
             reMapOpeningTag = '\\[map(?:=([12]?\\d)(?:,' + reCoord + ')?)?\\]',
             reMap = reMapOpeningTag + '(' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*\\[/map\\]',
@@ -154,6 +154,8 @@ window.MapBBCode = L.Class.extend({
 
     initialize: function( options ) {
         L.setOptions(this, options);
+        if( L.Browser.ie && options && options.defaultPosition && 'splice' in options.defaultPosition && options.defaultPosition.length == 2 )
+            this.options.defaultPosition = [options.defaultPosition[0], options.defaultPosition[1]]; // in IE arrays can be [object Object] and break L.latLon()
     },
 
     setStrings: function( strings ) {
@@ -210,7 +212,7 @@ window.MapBBCode = L.Class.extend({
                 m.setIcon(new L.LetterIcon(obj.text));
                 m.options.clickable = false;
             } else {
-                m.bindPopup(obj.text.replace(new RegExp('<(?!/?(' + this.options.allowedHTML + ')[ >])', 'g')), '&lt;');
+                m.bindPopup(obj.text.replace(new RegExp('<(?!/?(' + this.options.allowedHTML + ')[ >])', 'g'), '&lt;'));
             }
         } else
             m.options.clickable = false;
@@ -562,7 +564,11 @@ window.MapBBCode.include({
             }, this);
         } else { // polyline or polygon
             var colorDiv = document.createElement('div');
-            var colors = Object.getOwnPropertyNames(this.options.lineColors).sort();
+            var colors = [], c, lineColors = this.options.lineColors;
+            for( c in lineColors )
+                if( typeof lineColors[c] === 'string' && lineColors[c].substring(0, 1) === '#' )
+                    colors.push(c);
+            colors = colors.sort();
             colorDiv.style.width = 10 + 20 * colors.length + 'px';
             colorDiv.textAlign = 'center';
             var colOnclick = function(e) {
@@ -665,6 +671,7 @@ window.MapBBCode.include({
         L.drawLocal.draw.toolbar.actions.text = this.strings.cancel;
         L.drawLocal.draw.toolbar.actions.title = this.strings.drawCancelTitle;
         L.drawLocal.draw.toolbar.buttons.polyline = this.strings.polylineTitle;
+        L.drawLocal.draw.toolbar.buttons.polygon = this.strings.polygonTitle;
         L.drawLocal.draw.toolbar.buttons.marker = this.strings.markerTitle;
         L.drawLocal.draw.handlers.marker.tooltip.start = this.strings.markerTooltip;
         L.drawLocal.draw.handlers.polyline.tooltip.start = this.strings.polylineStartTooltip;
