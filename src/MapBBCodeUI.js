@@ -38,7 +38,7 @@ window.MapBBCode = L.Class.extend({
         allowedHTML: '[auib]|span|br|em|strong|tt',
         letterIcons: true,
         enablePolygons: true,
-        preferStandardLayerSwitcher: false,
+        preferStandardLayerSwitcher: true,
         hideInsideClasses: []
     },
 
