@@ -39,3 +39,7 @@ L.LetterIcon = L.Icon.extend({
 
     createShadow: function() { return null; }
 });
+
+L.letterIcon = function(letter, options) {
+    return new L.LetterIcon(letter, options);
+}
