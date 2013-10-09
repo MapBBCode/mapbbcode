@@ -293,7 +293,7 @@ window.MapBBCode.include({
         };
 
         var features = this.options.windowFeatures,
-            featSize = 'height=' + (this.options.windowHeight || this.options.editorHeight) + ',width=' + (this.options.windowWidth || this.options.viewWidth),
+            featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth,
             basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1],
             libUrl = basePath + this.options.libPath,
             win = window.open(this.options.usePreparedWindow ? libUrl + 'mapbbcode-window.html' : '', 'mapbbcode_editor', features + ',' + featSize);

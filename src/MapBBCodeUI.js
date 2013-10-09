@@ -27,8 +27,8 @@ window.MapBBCode = L.Class.extend({
         fullViewHeight: '600px',
         fullScreenButton: true,
         fullFromStart: false,
-        windowWidth: 0,
-        windowHeight: 0,
+        windowWidth: 800,
+        windowHeight: 500,
 
         windowFeatures: 'resizable,status,dialog',
         usePreparedWindow: true,
