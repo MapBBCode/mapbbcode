@@ -2,9 +2,9 @@
 
 ## Quick start
 
-Writing forum modifications is hard, especially if you haven't before, so we'll start with minimum action that would display [map] bbcode in threads.
+Writing forum modifications is hard, especially if you haven't done it before, so we'll start with minimum number of steps to display [map] bbcode in threads.
 
-### Include libraries in page header
+### Include libraries in a page header
 
 First of all, find a place in the forum engine directory tree where you can put all MapBBCode libraries. It shouldn't be a theme directory, so if a forum administrator has a lot of themes, libraries don't get copied into all of them. Preferably it's `scripts` or `includes` directory in the root. Modify paths in javascript code according to your directory structure.
 
@@ -14,8 +14,8 @@ Usually there is a main theme, like `subSilver` or `proSilver` in phpBB. Find a 
 <link rel="stylesheet" href="includes/mapbbcode/leaflet.css" />
 <link rel="stylesheet" href="includes/mapbbcode/leaflet.draw.css" />
 <!--[if lte IE 8]>
-	<link rel="stylesheet" href="includes/mapbbcode/leaflet.ie.css" />
-	<link rel="stylesheet" href="includes/mapbbcode/leaflet.draw.ie.css" />
+    <link rel="stylesheet" href="includes/mapbbcode/leaflet.ie.css" />
+    <link rel="stylesheet" href="includes/mapbbcode/leaflet.draw.ie.css" />
 <![endif]-->
 <script src="includes/mapbbcode/leaflet.js"></script>
 <script src="includes/mapbbcode/leaflet.draw.js"></script>
@@ -25,18 +25,18 @@ Usually there is a main theme, like `subSilver` or `proSilver` in phpBB. Find a 
 <script language="Javascript" type="text/javascript">
 <!--
 var mapBBcode = new MapBBCode({
-	libPath: 'includes/mapbbcode/',
-	layers: 'OpenMapSurfer,OpenStreetMap',
-	defaultZoom: 2,
-	defaultPosition: [22, 11],
-	viewWidth: 600,
-	viewHeight: 300,
-	fullViewHeight: 600,
-	editorHeight: 400,
-	windowWidth: 800,
-	windowHeight: 500,
-        fullFromStart: false,
-	preferStandardLayerSwitcher: true
+    libPath: 'includes/mapbbcode/',
+    layers: 'OpenStreetMap',
+    defaultZoom: 2,
+    defaultPosition: [22, 11],
+    viewWidth: 600,
+    viewHeight: 300,
+    fullViewHeight: 600,
+    editorHeight: 400,
+    windowWidth: 800,
+    windowHeight: 500,
+    fullFromStart: false,
+    preferStandardLayerSwitcher: true
 });
 //-->
 </script>
@@ -46,7 +46,7 @@ Later this whole block will be conditional, depending on a presence of bbcode ta
 
 ### Process [map] bbcode
 
-`[map]...[/map]` sequence should be replace with the following template code:
+`[map]...[/map]` sequence should be replaced with the following template code:
 
     <div id="map{DIVID}">{MAPBBCODE}</div>
     <script language="javascript">mapBBcode.show('map{DIVID}');</script>
@@ -60,7 +60,7 @@ How this template is included depends on a forum engine. For example, in phpBB 2
 
 And then grouping quotes are parsed into `{DIVID}` (#2) and `{MAPBBCODE}` (#1+#3).
 
-## Add button to a posting page
+### Add button to a posting page
 
 On a posting page there is usually a row of buttons for inserting bbcode. Add a "Map" button there, with the following code in `onclick` parameter:
 
@@ -75,11 +75,11 @@ These three steps are enough to enable [map] bbcode on a forum. Test it by writi
 
 ## Improvements
 
-For a production-grade forum modification, changes above are not enough. There is no locatization, no configuration panel, and several hundred of javascript are included in every page, even in the forum index.
+For a production-grade forum modification, changes above are not enough. There is no locatization, no configuration panel, and several hundred kilobytes of javascript and css are included in every page, even in the forum index.
 
 ### Localization
 
-If possible, it would be best to keep MapBBCode translation strings in a separate file. Those are included in header templates (remember there can be more than one), right after `mapBBcode` object initialization:
+If possible, it would be best to keep MapBBCode translation strings in a separate file. Those are used in header templates (remember there can be more than one), right after `mapBBcode` object initialization:
 
 ```javascript
 mapBBcode.setStrings({
@@ -92,15 +92,15 @@ mapBBcode.setStrings({
 });
 ```
 
-Dere `{L_WHATEVER}` are template variables that contain translated strings. Some engines would require to initialize these variables somewhere in code. Don't forget to screen `'` and `\`.
+Here `{L_WHATEVER}` are template variables that contain translated strings. Some engines would require to initialize these variables somewhere in code. Don't forget to screen `'` and `\` characters.
 
 The last property, `helpContents`, is an array of strings. It looks like `['line1', 'line2', ..., 'final line']`. It's up to you how this property is defined in a language file (preferably also as an array) and assigned to a template variable.
 
 ### Configuration
 
-Administrators should be able to configure a look of the library. There is 11 constructor options plus `editorWindow` mentioned above. They are better put into a main configuration table (e.g. `phpbb_config` for phpBB), since their names and number is constant, and all values are strings. Also this way you won't have to alter the database structure. All options should be prefixed with `mapbb_` to not clash with other parameters.
+Administrators should be able to configure the look of the map. There is 11 constructor options plus `editorWindow` mentioned above. They are better put into a main configuration table (e.g. `phpbb_config` for phpBB), since their names and number is constant, and all values are strings. Also this way you won't have to alter the database structure. All options should be prefixed with `mapbb_` to not clash with other parameters.
 
-All constructor options should be read in a page header. Most likely they already are, if you decided to keep them in the main configuration table. The library constructor would be changed to:
+All constructor options should be read in a page header. Most likely they already are, if you decided to keep them in the main configuration table. The library constructor options would be changed to:
 
     layers: '{LAYERS}'.split(','),
     defaultZoom: {DEFAULT_ZOOM}+0,
@@ -120,9 +120,11 @@ The last two properties are boolean, so you should either cast them to `true`/`f
 
 Finally, `editorWindow` parameter goes into a page with a posting form, replacing the `true` constant. It is also boolean, so you may want to use the expression above.
 
-To initialize those options, you will need to execute a number of `INSERT` statements. Consult with developer's guide for your forum engine on where to put them. Good default values are included at the top of this document.
+To initialize those options, you will need to execute a number of `INSERT` statements. Consult with the developer's guide for your forum engine on where to put them. Good default values are included at the top of this document.
 
 ### Administration panel
+
+*text below is todo*
 
 ### Libraries only when needed
 
