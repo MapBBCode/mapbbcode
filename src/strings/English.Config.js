@@ -14,5 +14,9 @@ window.MapBBCodeConfig.include({strings: {
     growTitle: 'Click to grow the panel',
     shrinkTitle: 'Click to shrink the panel',
     zoomInTitle: 'Zoom in',
-    zoomOutTitle: 'Zoom out'
+    zoomOutTitle: 'Zoom out',
+    selectLayer: 'Select layer',
+    addLayer: 'Add layer',
+    keyNeeded: 'This layer needs a developer key (<a href="%s" target="devkey">how to get it</a>)',
+    keyNeededAlert: 'This layer needs a developer key'
 }});
