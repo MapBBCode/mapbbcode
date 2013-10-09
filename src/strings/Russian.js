@@ -4,7 +4,6 @@ window.MapBBCode.include({strings: {
     apply: 'Применить', // button on an editing map to apply changes
     cancel: 'Отменить', // button on an editing map to discard changes
     title: 'Надпись', // prompt for marker title text
-    bing: 'Спутник', // name of Bing imagery layer
 
     // button titles
     zoomInTitle: 'Приблизить',
