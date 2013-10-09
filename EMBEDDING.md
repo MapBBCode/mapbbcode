@@ -236,13 +236,6 @@ config.bindLayerAdder({
 config.show('panel_config');
 ```
 
-This javascript code uses the following strings, besides map configuration UI translations:
-
-* `{L_ADD_LAYER}`: used in HTML for the "add layer" button caption.
-* `{L_SELECT_LAYER}`: the first option in layer list, so the developer key form would not show up by default.
-* `{L_KEY_NEEDED}`: a string explaining that a layer need a developer key. It should be HTML with a link to an explanation page, URL replaced with `%s` (it's different for every layer, obviously).
-* `{L_KEY_NEEDED_ALERT}`: if a user tries to add a layer requiring developer key without entering the key, this is the alert text they see.
-
 On the server side, this page should receive its values from the database and update them afterwards. Again, you should use another key-value page as a template. When finished, check that changes made in the configuration panel are reflected on forum pages.
 
 ### Libraries only when needed
