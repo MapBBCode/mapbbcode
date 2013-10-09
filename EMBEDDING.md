@@ -329,5 +329,45 @@ When finished, check that pages that don't feature posts and topics without maps
 
 ## Checklist
 
-After the modification is complete, install a clean forum instance and apply your modification to it. After it install without errors, check the following use cases.
+After the modification is complete, install a clean forum instance and apply your modification to it. Once it has been installed without errors, log in as a moderator and check the following use cases.
 
+### Forum posts
+
+1. The front page, topic list page and default topic page sources do not contain any mapbbcode mention.
+2. Create new post, click a "Map" button. Map editor opens in a new window.
+3. Draw a line and a polygon, place two markers: one with a two-letter title.
+4. Check help window under the "?" button.
+5. Click "Apply", so the code is inserted into the text area.
+6. Click inside the code, then "Map" again. Check that the features are loaded, then click "Cancel".
+7. Post the message and check that it is displayed properly.
+8. Click "quote" button on the map message, then "Preview". A map should be displayed in a quote box.
+9. If there are forum messages displayed on the posting page, check that the map is displayed there.
+10. Add a map without features and post the message. Both maps in the message should be displayed properly.
+11. Open a list of topics and check again for absence of any mapbbcode scripts.
+12. Create a new topic with a map and check it out afterwards.
+13. Log out and check maps in topics.
+
+### Private messages
+
+1. Create another user.
+2. Open private messages panel and start writing a PM to that user.
+3. Add a map to the private message, check its preview, and then send it.
+4. There should be no mapbbcode scripts in the private messages page now.
+5. Log in as another user and open the received message. The map should be displayed properly.
+6. Click reply, add a map, click preview to check that it's working.
+
+### Administration
+
+1. Log in as administrator and open MapBBCode configuration panel.
+2. Change dimensions of a view panel, then click "View" to switch mode and change dimensions of an editing window.
+3. If enabled, click "Window" button in editor mode, so the editor is opened in a panel.
+4. Toggle layer switcher.
+5. Add some layers, including a Bing layer (you'll see the link to get the developer key).
+6. Save settings. Open configuration panel again to check that they are loaded correctly.
+7. Open a forum topic with maps. Check that panel sizes have been changed and layer switcher is different.
+8. Switch layers, check that each of them displays properly, including Bing Satellite layer.
+9. Reply to a post with a map. Open map editor.
+10. Check that layers in the editor are the same as in topic posts.
+11. If it's a window, check that its dimensions were changed. Otherwise check that editing works and after clicking "Apply" button changes are saved to the text area.
+
+Now is the time to let someone in to your forum and check out the maps. If they find a bug, either fix it (if it is in your modification) or file an issue to [MapBBCode github](https://github.com/MapBBCode/mapbbcode/issues). Write some installation notes for you modification and contact Ilya Zverev (zverik@textual.ru) to get access to the github project and publish your modification there, along with other modifications. And of course, publish your modification on a forum engine's website. Be prepared to fix bugs in the following months.
