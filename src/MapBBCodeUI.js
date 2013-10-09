@@ -21,10 +21,10 @@ window.MapBBCode = L.Class.extend({
         },
         polygonOpacity: 0.1,
 
-        editorHeight: '400px',
-        viewWidth: '600px',
-        viewHeight: '300px',
-        fullViewHeight: '600px',
+        editorHeight: 400, // here and below 0 for 100%
+        viewWidth: 600,
+        viewHeight: 300,
+        fullViewHeight: 600,
         fullScreenButton: true,
         fullFromStart: false,
         windowWidth: 800,
@@ -163,6 +163,10 @@ window.MapBBCode = L.Class.extend({
                     return true;
         return element.parentNode && this._hideClassPresent(element.parentNode);
     },
+    
+    _px: function( size ) {
+        return size ? size + 'px' : '100%';
+    },
 
     // Create map panel, parse and display bbcode (it can be skipped: so it's an attribute or contents of element)
     show: function( element, bbcode ) {
@@ -176,8 +180,8 @@ window.MapBBCode = L.Class.extend({
         if( this._hideClassPresent(el) )
             return;
         var mapDiv = el.ownerDocument.createElement('div');
-        mapDiv.style.width = this.options.fullFromStart ? '100%' : this.options.viewWidth;
-        mapDiv.style.height = this.options.fullFromStart ? this.options.fullViewHeight : this.options.viewHeight;
+        mapDiv.style.width = this.options.fullFromStart ? '100%' : this._px(this.options.viewWidth);
+        mapDiv.style.height = this.options.fullFromStart ? this._px(this.options.fullViewHeight) : this._px(this.options.viewHeight);
         el.appendChild(mapDiv);
 
         var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
@@ -201,7 +205,7 @@ window.MapBBCode = L.Class.extend({
                     oldSize = [style.width, style.height];
                 isFull = !isFull;
                 style.width = isFull ? '100%' : oldSize[0];
-                style.height = isFull ? this.options.fullViewHeight : oldSize[1];
+                style.height = isFull ? this._px(this.options.fullViewHeight) : oldSize[1];
                 map.invalidateSize();
                 fs.options.bgPos.x = isFull ? 26 : 0;
                 fs.updateBgPos();

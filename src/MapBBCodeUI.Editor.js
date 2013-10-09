@@ -164,7 +164,7 @@ window.MapBBCode.include({
         while( el.firstChild )
             el.removeChild(el.firstChild);
         var mapDiv = el.ownerDocument.createElement('div');
-        mapDiv.style.height = this.options.editorHeight;
+        mapDiv.style.height = this._px(this.options.editorHeight);
         el.appendChild(mapDiv);
 
         var map = L.map(mapDiv, L.extend({}, { zoomControl: false }, this.options.leafletOptions));
