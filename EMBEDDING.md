@@ -156,11 +156,11 @@ First in the page goes the map with controls to edit all these properties. It is
 
 ```html
 <div>
-    <select id="layer_select" size="1" onchange="javascript:selectedLayer(this.value);"></select>
-    <input type="button" value="{L_ADD_LAYER}" onclick="javascript:addLayer();" id="layer_add"/>
-    <span style="display: none;" id="key_form">
+    <select id="layer_select" size="1"></select>
+    <input type="button" value="{L_ADD_LAYER}" id="layer_add"/>
+    <span id="key_form">
         <span id="key_title"></span>
-        <input type="text" maxlength="80" size="40" value="" id="key_value" />
+        <input type="text" maxlength="80" size="40" id="key_value" />
     </span>
 </div>
 <div id="panel_config"></div>
@@ -205,8 +205,7 @@ config.setStrings({
     view: '{L_VIEW}',
     editor: '{L_EDITOR}',
     // ... See src/strings/English.Config.js in MapBBCode repository for the full list
-    zoomInTitle: '{L_ZOOMINTITLE}',
-    zoomOutTitle: '{L_ZOOMOUTTITLE}'
+    keyNeededAlert: 'This layer needs a developer key'
 });
 
 // update hidden input fields and available layers list
@@ -224,67 +223,17 @@ config.on('show change', function(options) {
     f.elements['layers'].value = options.layers.join(',');
     f.elements['always_full'].value = options.fullFromStart ? '1' : '';
     f.elements['editor_window'].value = options.editorInWindow ? '1' : '';
-    populateSelect();
     updateTableValues();
 });
+config.bindLayerAdder({
+    select: 'layer_select',
+    button: 'layer_add',
+    keyBlock: 'key_form',
+    keyBlockDisplay: 'inline', // you'll probably need to change this to 'block' or 'table-row'
+    keyTitle: 'key_title',
+    keyValue: 'key_value'
+});
 config.show('panel_config');
-
-// called when a layer in a drop-down list is selected
-function selectedLayer(layer) {
-    var link = window.layerList.getKeyLink(layer),
-        el = document.getElementById('key_form');
-    if( link ) {
-        document.getElementById('key_title').innerHTML = '{L_KEY_NEEDED}'.replace('%s', link);
-        el.style.display = 'inline'; // FIX: this depends on a tag: can be 'block' or table-row'
-    } else {
-        el.style.display = 'none';
-    }
-    document.getElementById('layer_add').disabled = layer ? false : true;
-}
-
-// updates the list of available layers, omitting those already added to the map
-function populateSelect() {
-    var i, layerKeys = layerList.getSortedKeys(),
-        select = document.getElementById('layer_select'),
-        layers = config.options.layers, layers0 = [];
-    for( i = 0; i < layers.length; i++ ) {
-        layers0.push(layers[i].indexOf(':') < 0 ? layers[i] :
-            layers[i].substring(0, layers[i].indexOf(':')));
-    }
-    while( select.firstChild ) {
-        select.removeChild(select.firstChild);
-    }
-    var opt = document.createElement('option');
-    opt.value = '';
-    opt.selected = true;
-    opt.innerHTML = '{L_SELECT_LAYER}...';
-    select.appendChild(opt);
-    for( i = 0; i < layerKeys.length; i++ ) {
-        if( layers0.indexOf(layerKeys[i]) >= 0 ) {
-            continue;
-        }
-        var opt = document.createElement('option');
-        opt.innerHTML = layerKeys[i];
-        opt.value = layerKeys[i];
-        select.appendChild(opt);
-    }
-    selectedLayer(select.value);
-}
-
-// called on the "Add layer" button click
-function addLayer() {
-    var layer = document.getElementById('layer_select').value;
-    if( !layer ) {
-        return;
-    }
-    var needKey = window.layerList.requiresKey(layer),
-        key = document.getElementById('key_value').value.trim();
-    if( needKey && !key.length ) {
-        alert('{L_KEY_NEEDED_ALERT}');
-    } else {
-        config.addLayer(needKey ? layer + ':' + key : layer);
-    }
-}
 ```
 
 This javascript code uses the following strings, besides map configuration UI translations:
