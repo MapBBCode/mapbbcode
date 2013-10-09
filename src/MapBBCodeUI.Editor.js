@@ -239,28 +239,30 @@ window.MapBBCode.include({
                 layer.openPopup();
         }, this);
 
-        var apply = L.functionButton('<b>'+this.strings.apply+'</b>', { position: 'topleft', title: this.strings.applyTitle });
-        apply.on('clicked', function() {
-            var objs = [];
-            drawn.eachLayer(function(layer) {
-                objs.push(this._layerToObject(layer));
+        if( this.options.editorCloseButtons ) {
+            var apply = L.functionButton('<b>'+this.strings.apply+'</b>', { position: 'topleft', title: this.strings.applyTitle });
+            apply.on('clicked', function() {
+                var objs = [];
+                drawn.eachLayer(function(layer) {
+                    objs.push(this._layerToObject(layer));
+                }, this);
+                el.removeChild(el.firstChild);
+                var newCode = window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
+                if( textArea )
+                    this._updateMapInTextArea(textArea, bbcode, newCode);
+                if( callback )
+                    callback.call(context, newCode);
             }, this);
-            el.removeChild(el.firstChild);
-            var newCode = window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
-            if( textArea )
-                this._updateMapInTextArea(textArea, bbcode, newCode);
-            if( callback )
-                callback.call(context, newCode);
-        }, this);
-        map.addControl(apply);
+            map.addControl(apply);
 
-        var cancel = L.functionButton(this.strings.cancel, { position: 'topright', title: this.strings.cancelTitle });
-        cancel.on('clicked', function() {
-            el.removeChild(el.firstChild);
-            if( callback )
-                callback.call(context, null);
-        }, this);
-        map.addControl(cancel);
+            var cancel = L.functionButton(this.strings.cancel, { position: 'topright', title: this.strings.cancelTitle });
+            cancel.on('clicked', function() {
+                el.removeChild(el.firstChild);
+                if( callback )
+                    callback.call(context, null);
+            }, this);
+            map.addControl(cancel);
+        }
 
         if( this.options.showHelp ) {
             var help = L.functionButton('<span style="font-size: 18px; font-weight: bold;">?</span>', { position: 'topright', title: this.strings.helpTitle });
@@ -281,6 +283,25 @@ window.MapBBCode.include({
             }, this);
             map.addControl(help);
         }
+        
+        return {
+            _ui: this,
+            map: map,
+            close: function() {
+                var finalCode = this.getBBCode();
+                this.map = null;
+                this._ui = null;
+                this.getBBCode = function() { return finalCode; };
+                el.removeChild(el.firstChild);
+            },
+            getBBCode: function() {
+                var objs = [];
+                drawn.eachLayer(function(layer) {
+                    objs.push(this._layerToObject(layer));
+                }, this._ui);
+                return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
+            }
+        };
     },
 
     // Opens editor window. Requires options.labPath to be correct
