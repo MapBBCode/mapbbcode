@@ -92,7 +92,7 @@ mapBBcode.setStrings({
 });
 ```
 
-Here `{L_WHATEVER}` are template variables that contain translated strings. Some engines would require to initialize these variables somewhere in code. Don't forget to screen `'` and `\` characters.
+See src/strings/English.js in MapBBCode repository for the full list of properties. Here `{L_WHATEVER}` are template variables that contain translated strings. Some engines would require to initialize these variables somewhere in code. Don't forget to screen `'` and `\` characters.
 
 The last property, `helpContents`, is an array of strings. It looks like `['line1', 'line2', ..., 'final line']`. It's up to you how this property is defined in a language file (preferably also as an array) and assigned to a template variable.
 
@@ -118,28 +118,214 @@ The last two properties are boolean, so you should either cast them to `true`/`f
 
     property: '{PROPERTY)' === 'true' || '{PROPERTY}' === '1'
 
-Finally, `editorWindow` parameter goes into a page with a posting form, replacing the `true` constant. It is also boolean, so you may want to use the expression above.
+Finally, `{EDITOR_WINDOW}` parameter goes into a page with a posting form, replacing the `true` constant. It is also boolean, so you may want to use the expression above.
 
 To initialize those options, you will need to execute a number of `INSERT` statements. Consult with the developer's guide for your forum engine on where to put them. Good default values are included at the top of this document.
 
 ### Administration panel
 
-*text below is todo*
+Configuration panels are usually separate files. Just use a regular key-value panel as a template for this one. In the template you need a restricted set of scripts:
+
+```html
+<link rel="stylesheet" href="../includes/mapbbcode/leaflet.css" />
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="../includes/mapbbcode/leaflet.ie.css" />
+<![endif]-->
+<script src="../includes/mapbbcode/leaflet.js"></script>
+<script src="../includes/mapbbcode/Bing.js"></script>
+<script src="../includes/mapbbcode/mapbbcode-config.js"></script>
+```
+
+Eleven properties are edited with a javascript user interface, and in a form these are represented with hidden fields (your field names may be different, depending on a forum engine's coding style):
+
+```html
+<input type="hidden" name="default_zoom" value="{DEFAULT_ZOOM}" />
+<input type="hidden" name="default_pos" value="{DEFAULT_POS}" />
+<input type="hidden" name="view_width" value="{VIEW_WIDTH}" />
+<input type="hidden" name="view_height" value="{VIEW_HEIGHT}" />
+<input type="hidden" name="full_height" value="{FULL_HEIGHT}" />
+<input type="hidden" name="editor_height" value="{EDITOR_HEIGHT}" />
+<input type="hidden" name="window_width" value="{WINDOW_WIDTH}" />
+<input type="hidden" name="window_height" value="{WINDOW_HEIGHT}" />
+<input type="hidden" name="always_full" value="{ALWAYS_FULL}" />
+<input type="hidden" name="editor_window" value="{EDITOR_WINDOW}" />
+<input type="hidden" name="layers" value="{LAYERS}" />
+```
+
+First in the page goes the map with controls to edit all these properties. It is a drop-down list of available layers, a button to add them to the map, an initially hidden field to enter a developer key for a layer, and a placeholder for the map.
+
+```html
+<div>
+    <select id="layer_select" size="1" onchange="javascript:selectedLayer(this.value);"></select>
+    <input type="button" value="{L_ADD_LAYER}" onclick="javascript:addLayer();" id="layer_add"/>
+    <span style="display: none;" id="key_form">
+        <span id="key_title"></span>
+        <input type="text" maxlength="80" size="40" value="" id="key_value" />
+    </span>
+</div>
+<div id="panel_config"></div>
+```
+
+Then there should be regular key-value configuration fields for other properties. In phpBB modifications they include:
+
+* `{STANDARD_SWITCHER}`: whether the layer switcher is a button or an always visible list.
+* `{OUTER_LINK}`: a link template for an optional "outer link" button.
+* `{ALLOWED_TAGS}`: a regular expression for HTML tags allowed in feature popup panels.
+
+And finally there is a large block of javascript code linking the form and the map UI. Alter form field names and template variables if needed.
+
+```javascript
+// converting PHP "boolean" to javascript boolean
+function isTrue(val) {
+    return val && val !== '0' && val !== 'false';
+}
+
+// if you want to have read-only values in the key-value table for map dimensions, update them here
+function updateTableValues() {
+}
+
+// creating the map panel configuration user interface
+var config = new MapBBCodeConfig({
+    layers: '{LAYERS}'.split(','),
+    defaultZoom: {DEFAULT_ZOOM}+0,
+    defaultPosition: [{DEFAULT_POS}],
+    viewWidth: {VIEW_WIDTH}+0,
+    viewHeight: {VIEW_HEIGHT}+0,
+    fullViewHeight: {FULL_HEIGHT}+0,
+    editorHeight: {EDITOR_HEIGHT}+0,
+    windowWidth: {WINDOW_WIDTH}+0,
+    windowHeight: {WINDOW_HEIGHT}+0,
+    fullFromStart: isTrue('{ALWAYS_FULL}'),
+//        editorTypeFixed: true, // uncomment if needed
+    editorInWindow: isTrue('{EDITOR_WINDOW}') // set to true or false is needed
+});
+
+// translation strings.
+config.setStrings({
+    view: '{L_VIEW}',
+    editor: '{L_EDITOR}',
+    // ... See src/strings/English.Config.js in MapBBCode repository for the full list
+    zoomInTitle: '{L_ZOOMINTITLE}',
+    zoomOutTitle: '{L_ZOOMOUTTITLE}'
+});
+
+// update hidden input fields and available layers list
+config.on('show change', function(options) {
+    var f = document.forms['mapfm'];
+    f.elements['default_zoom'].value = options.defaultZoom;
+    f.elements['default_pos'].value = '' + options.defaultPosition[0] + ',' +
+        options.defaultPosition[1];
+    f.elements['view_width'].value = options.viewWidth;
+    f.elements['view_height'].value = options.viewHeight;
+    f.elements['full_height'].value = options.fullViewHeight;
+    f.elements['editor_height'].value = options.editorHeight;
+    f.elements['window_width'].value = options.windowWidth;
+    f.elements['window_height'].value = options.windowHeight;
+    f.elements['layers'].value = options.layers.join(',');
+    f.elements['always_full'].value = options.fullFromStart ? '1' : '';
+    f.elements['editor_window'].value = options.editorInWindow ? '1' : '';
+    populateSelect();
+    updateTableValues();
+});
+config.show('panel_config');
+
+// called when a layer in a drop-down list is selected
+function selectedLayer(layer) {
+    var link = window.layerList.getKeyLink(layer),
+        el = document.getElementById('key_form');
+    if( link ) {
+        document.getElementById('key_title').innerHTML = '{L_KEY_NEEDED}'.replace('%s', link);
+        el.style.display = 'inline'; // FIX: this depends on a tag: can be 'block' or table-row'
+    } else {
+        el.style.display = 'none';
+    }
+    document.getElementById('layer_add').disabled = layer ? false : true;
+}
+
+// updates the list of available layers, omitting those already added to the map
+function populateSelect() {
+    var i, layerKeys = layerList.getSortedKeys(),
+        select = document.getElementById('layer_select'),
+        layers = config.options.layers, layers0 = [];
+    for( i = 0; i < layers.length; i++ ) {
+        layers0.push(layers[i].indexOf(':') < 0 ? layers[i] :
+            layers[i].substring(0, layers[i].indexOf(':')));
+    }
+    while( select.firstChild ) {
+        select.removeChild(select.firstChild);
+    }
+    var opt = document.createElement('option');
+    opt.value = '';
+    opt.selected = true;
+    opt.innerHTML = '{L_SELECT_LAYER}...';
+    select.appendChild(opt);
+    for( i = 0; i < layerKeys.length; i++ ) {
+        if( layers0.indexOf(layerKeys[i]) >= 0 ) {
+            continue;
+        }
+        var opt = document.createElement('option');
+        opt.innerHTML = layerKeys[i];
+        opt.value = layerKeys[i];
+        select.appendChild(opt);
+    }
+    selectedLayer(select.value);
+}
+
+// called on the "Add layer" button click
+function addLayer() {
+    var layer = document.getElementById('layer_select').value;
+    if( !layer ) {
+        return;
+    }
+    var needKey = window.layerList.requiresKey(layer),
+        key = document.getElementById('key_value').value.trim();
+    if( needKey && !key.length ) {
+        alert('{L_KEY_NEEDED_ALERT}');
+    } else {
+        config.addLayer(needKey ? layer + ':' + key : layer);
+    }
+}
+```
+
+This javascript code uses the following strings, besides map configuration UI translations:
+
+* `{L_ADD_LAYER}`: used in HTML for the "add layer" button caption.
+* `{L_SELECT_LAYER}`: the first option in layer list, so the developer key form would not show up by default.
+* `{L_KEY_NEEDED}`: a string explaining that a layer need a developer key. It should be HTML with a link to an explanation page, URL replaced with `%s` (it's different for every layer, obviously).
+* `{L_KEY_NEEDED_ALERT}`: if a user tries to add a layer requiring developer key without entering the key, this is the alert text they see.
+
+On the server side, this page should receive its values from the database and update them afterwards. Again, you should use another key-value page as a template. When finished, check that changes made in the configuration panel are reflected on forum pages.
 
 ### Libraries only when needed
 
+Total size of all libraries and stylesheets is over 230 kilobytes. If they are included on every page of a forum, this would put a strain both on servers and users' bandwidth. So those should only be included in pages that actually use them. This is probably the most complex task in writing the modification.
+
+The additional HTML code in page header templates should be wrapped in conditional template directives, so it is displayed only when a certain variable is set to `true`. It may require a modification of a script producing the header. This variable should also control adding localization string variables and pulling configuration properties from the database.
+
+Then in every template that may produce messages with bbcode in them, this variable must be set depending on whether [map] bbcode is present on a page. In some cases is would be always `true` (a posting page), in other it would require parsing all messages:
+
 ```php
-$mapbbcode_present = FALSE;
+$mapbbcode_present = false;
 for($i = 0; $i < $total_posts; $i++)
 {
     if (preg_match('/\[map(?:=[0-9.,-]+)?\].*?\[\/map\]/', $postrow[$i]['post_text'])) {
-        $mapbbcode_present = TRUE;
+        $mapbbcode_present = true;
         break;
     }
 }
 ```
 
-### Private messages
+The variable must always be set before page header template is processed (for some forum engines that could mean anywhere at all), and at least the following pages should be modified:
+
+* creating or editing a post
+* post preview
+* creating a new private message
+* displaying a private message
+* displaying a topic
+* displaying recent messages (including a window in a posting page)
+* displaying a content panel for forums that are also CMS
+
+When finished, check that pages that don't feature posts and topics without maps don't have MapBBCode scripts in them.
 
 ## Checklist
 
