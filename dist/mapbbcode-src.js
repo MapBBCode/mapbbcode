@@ -4,7 +4,9 @@
  (c) 2013, Ilya Zverev
  Licensed WTFPL.
 */
-(function (window, document, undefined) {/*
+(function (window, document, undefined) {
+L = window.L;
+/*
  * Map BBCode parser and producer. See BBCODE.md for description.
  */
 window.MapBBCodeProcessor = {
@@ -79,24 +81,28 @@ window.MapBBCodeProcessor = {
                 mapData += ',' + this._latLngToString(data.pos);
         }
 
-        var result = '', objs = data.objs || [];
+        var markers = [], paths = [], objs = data.objs || [];
         for( var i = 0; i < objs.length; i++ ) {
-            if( i > 0 )
-                result = result + '; ';
-            var coords = objs[i].coords;
+            var coords = objs[i].coords, str = '';
             for( var j = 0; j < coords.length; j++ ) {
                 if( j > 0 )
-                    result = result + ' ';
-                result = result + this._latLngToString(coords[j]);
+                    str = str + ' ';
+                str = str + this._latLngToString(coords[j]);
             }
             var text = objs[i].text || '', params = objs[i].params || [];
             if( text.indexOf('|') >= 0 && params.length === 0 )
                 text = '|' + text;
             if( text.length > 0 || params.length > 0 )
-                result = result + '(' + (params.length > 0 ? params.join(',') + '|' : '') + text.replace(/\)/g, '\\)').replace(/;/g, ';;') + ')';
+                str = str + '(' + (params.length > 0 ? params.join(',') + '|' : '') + text.replace(/\)/g, '\\)').replace(/;/g, ';;') + ')';
+            if( coords.length ) {
+                if( coords.length == 1 )
+                    markers.push(str);
+                else
+                    paths.push(str);
+            }
         }
 
-        return result.length || mapData.length ? '[map' + mapData + ']'+result+'[/map]' : '';
+        return markers.length || paths.length || mapData.length ? '[map' + mapData + ']' + markers.concat(paths).join('; ') + '[/map]' : '';
     },
 
     _latLngToString: function( latlng ) {
@@ -129,24 +135,25 @@ window.MapBBCode = L.Class.extend({
         },
         polygonOpacity: 0.1,
 
-        editorHeight: '400px',
-        viewWidth: '600px',
-        viewHeight: '300px',
-        fullViewHeight: '600px',
+        editorHeight: 400, // here and below 0 for 100%
+        viewWidth: 600,
+        viewHeight: 300,
+        fullViewHeight: 600,
         fullScreenButton: true,
         fullFromStart: false,
-        windowWidth: 0,
-        windowHeight: 0,
+        windowWidth: 800,
+        windowHeight: 500,
 
         windowFeatures: 'resizable,status,dialog',
         usePreparedWindow: true,
+        editorCloseButtons: true,
         libPath: 'lib/',
         outerLinkTemplate: false, // 'http://openstreetmap.org/#map={zoom}/{lat}/{lon}',
         showHelp: true,
         allowedHTML: '[auib]|span|br|em|strong|tt',
         letterIcons: true,
         enablePolygons: true,
-        preferStandardLayerSwitcher: false,
+        preferStandardLayerSwitcher: true,
         hideInsideClasses: []
     },
 
@@ -270,6 +277,10 @@ window.MapBBCode = L.Class.extend({
                     return true;
         return element.parentNode && this._hideClassPresent(element.parentNode);
     },
+    
+    _px: function( size ) {
+        return size ? size + 'px' : '100%';
+    },
 
     // Create map panel, parse and display bbcode (it can be skipped: so it's an attribute or contents of element)
     show: function( element, bbcode ) {
@@ -283,8 +294,8 @@ window.MapBBCode = L.Class.extend({
         if( this._hideClassPresent(el) )
             return;
         var mapDiv = el.ownerDocument.createElement('div');
-        mapDiv.style.width = this.options.fullFromStart ? '100%' : this.options.viewWidth;
-        mapDiv.style.height = this.options.fullFromStart ? this.options.fullViewHeight : this.options.viewHeight;
+        mapDiv.style.width = this.options.fullFromStart ? '100%' : this._px(this.options.viewWidth);
+        mapDiv.style.height = this.options.fullFromStart ? this._px(this.options.fullViewHeight) : this._px(this.options.viewHeight);
         el.appendChild(mapDiv);
 
         var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
@@ -308,7 +319,7 @@ window.MapBBCode = L.Class.extend({
                     oldSize = [style.width, style.height];
                 isFull = !isFull;
                 style.width = isFull ? '100%' : oldSize[0];
-                style.height = isFull ? this.options.fullViewHeight : oldSize[1];
+                style.height = isFull ? this._px(this.options.fullViewHeight) : oldSize[1];
                 map.invalidateSize();
                 fs.options.bgPos.x = isFull ? 26 : 0;
                 fs.updateBgPos();
@@ -647,7 +658,7 @@ window.MapBBCode.include({
         while( el.firstChild )
             el.removeChild(el.firstChild);
         var mapDiv = el.ownerDocument.createElement('div');
-        mapDiv.style.height = this.options.editorHeight;
+        mapDiv.style.height = this._px(this.options.editorHeight);
         el.appendChild(mapDiv);
 
         var map = L.map(mapDiv, L.extend({}, { zoomControl: false }, this.options.leafletOptions));
@@ -722,35 +733,37 @@ window.MapBBCode.include({
                 layer.openPopup();
         }, this);
 
-        var apply = L.functionButton('<b>'+this.strings.apply+'</b>', { position: 'topleft', title: this.strings.applyTitle });
-        apply.on('clicked', function() {
-            var objs = [];
-            drawn.eachLayer(function(layer) {
-                objs.push(this._layerToObject(layer));
+        if( this.options.editorCloseButtons ) {
+            var apply = L.functionButton('<b>'+this.strings.apply+'</b>', { position: 'topleft', title: this.strings.applyTitle });
+            apply.on('clicked', function() {
+                var objs = [];
+                drawn.eachLayer(function(layer) {
+                    objs.push(this._layerToObject(layer));
+                }, this);
+                el.removeChild(el.firstChild);
+                var newCode = window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
+                if( textArea )
+                    this._updateMapInTextArea(textArea, bbcode, newCode);
+                if( callback )
+                    callback.call(context, newCode);
             }, this);
-            el.removeChild(el.firstChild);
-            var newCode = window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
-            if( textArea )
-                this._updateMapInTextArea(textArea, bbcode, newCode);
-            if( callback )
-                callback.call(context, newCode);
-        }, this);
-        map.addControl(apply);
+            map.addControl(apply);
 
-        var cancel = L.functionButton(this.strings.cancel, { position: 'topright', title: this.strings.cancelTitle });
-        cancel.on('clicked', function() {
-            el.removeChild(el.firstChild);
-            if( callback )
-                callback.call(context, null);
-        }, this);
-        map.addControl(cancel);
+            var cancel = L.functionButton(this.strings.cancel, { position: 'topright', title: this.strings.cancelTitle });
+            cancel.on('clicked', function() {
+                el.removeChild(el.firstChild);
+                if( callback )
+                    callback.call(context, null);
+            }, this);
+            map.addControl(cancel);
+        }
 
         if( this.options.showHelp ) {
             var help = L.functionButton('<span style="font-size: 18px; font-weight: bold;">?</span>', { position: 'topright', title: this.strings.helpTitle });
             help.on('clicked', function() {
                 var str = '',
                     help = this.strings.helpContents,
-                    features = 'resizable,status,dialog,scrollbars,height=' + (this.options.windowHeight || this.options.fullViewHeight) + ',width=' + (this.options.windowWidht || this.options.viewWidth);
+                    features = 'resizable,dialog,scrollbars,height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
                 var win = window.open('', 'mapbbcode_help', features);
                 for( var i = 0; i < help.length; i++ ) {
                     str += !i ? '<h1>'+help[0]+'</h1>' : help[i].substr(0, 1) === '#' ? '<h2>'+help[i].replace(/^#\s*/, '')+'</h2>' : '<p>'+help[i]+'</p>';
@@ -764,6 +777,25 @@ window.MapBBCode.include({
             }, this);
             map.addControl(help);
         }
+        
+        return {
+            _ui: this,
+            map: map,
+            close: function() {
+                var finalCode = this.getBBCode();
+                this.map = null;
+                this._ui = null;
+                this.getBBCode = function() { return finalCode; };
+                el.removeChild(el.firstChild);
+            },
+            getBBCode: function() {
+                var objs = [];
+                drawn.eachLayer(function(layer) {
+                    objs.push(this._layerToObject(layer));
+                }, this._ui);
+                return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
+            }
+        };
     },
 
     // Opens editor window. Requires options.labPath to be correct
@@ -776,7 +808,7 @@ window.MapBBCode.include({
         };
 
         var features = this.options.windowFeatures,
-            featSize = 'height=' + (this.options.windowHeight || this.options.editorHeight) + ',width=' + (this.options.windowWidth || this.options.viewWidth),
+            featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth,
             basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1],
             libUrl = basePath + this.options.libPath,
             win = window.open(this.options.usePreparedWindow ? libUrl + 'mapbbcode-window.html' : '', 'mapbbcode_editor', features + ',' + featSize);
@@ -853,6 +885,10 @@ L.LetterIcon = L.Icon.extend({
     createShadow: function() { return null; }
 });
 
+L.letterIcon = function(letter, options) {
+    return new L.LetterIcon(letter, options);
+};
+
 
 window.MapBBCode.include({strings: {
     close: 'Close', // close feature editing popup
@@ -860,7 +896,6 @@ window.MapBBCode.include({strings: {
     apply: 'Apply', // button on an editing map to apply changes
     cancel: 'Cancel', // button on an editing map to discard changes
     title: 'Title', // prompt for marker title text
-    bing: 'Bing', // name of Bing imagery layer
 
     // button titles
     zoomInTitle: 'Zoom in',

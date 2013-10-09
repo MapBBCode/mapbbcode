@@ -4,7 +4,9 @@
  (c) 2013, Ilya Zverev
  Licensed WTFPL.
 */
-(function (window, document, undefined) {/*
+(function (window, document, undefined) {
+L = window.L;
+/*
  * Layer switcher control that isn't a popup button.
  * Does not support overlay layers.
  */
@@ -408,6 +410,83 @@ window.MapBBCodeConfig = L.Class.extend({
             fs.setTitle(this.options.editorInWindow ? this.strings.editInWindowTitle : this.strings.editInPanelTitle);
         }
     },
+    
+    // options is an object with a lot of properties
+    bindLayerAdder: function( options ) {
+        function getElement(id) {
+            return typeof id === 'string' ? document.getElementById(id) : id;
+        }
+        
+        var select = getElement(options.select),
+            addButton = getElement(options.button),
+            keyBlock = getElement(options.keyBlock),
+            keyTitle = getElement(options.keyTitle),
+            keyValue = getElement(options.keyValue);
+            
+        keyBlock.style.display = 'none';
+        keyValue.value = '';
+        if( !addButton.value )
+            addButton.value = this.strings.addLayer;
+            
+        var onSelectChange = function(e) {
+            var layer = e.target.value;
+            var link = layer ? window.layerList.getKeyLink(layer) : '';
+            if( link ) {
+                keyTitle.innerHTML = this.strings.keyNeeded.replace('%s', link);
+                keyValue.value = '';
+                keyBlock.style.display = options.keyBlockDisplay || 'inline';
+            } else {
+                keyBlock.style.display = 'none';
+            }
+            addButton.disabled = layer ? false : true;
+        };
+        
+        L.DomEvent.on(select, 'change', onSelectChange, this);
+
+        var populateSelect = function() {
+            var i, layerKeys = window.layerList.getSortedKeys(),
+                layers = this.options.layers, layers0 = [];
+            for( i = 0; i < layers.length; i++ ) {
+                layers0.push(layers[i].indexOf(':') < 0 ? layers[i] :
+                    layers[i].substring(0, layers[i].indexOf(':')));
+            }
+            while( select.firstChild ) {
+                select.removeChild(select.firstChild);
+            }
+            var opt = document.createElement('option');
+            opt.value = '';
+            opt.selected = true;
+            opt.innerHTML = this.strings.selectLayer + '...';
+            select.appendChild(opt);
+            for( i = 0; i < layerKeys.length; i++ ) {
+                if( layers0.indexOf(layerKeys[i]) >= 0 ) {
+                    continue;
+                }
+                opt = document.createElement('option');
+                opt.innerHTML = layerKeys[i];
+                opt.value = layerKeys[i];
+                select.appendChild(opt);
+            }
+            onSelectChange.call(this, {target: select});
+        };
+
+        L.DomEvent.on(addButton, 'click', function() {
+            var layer = select.value;
+            if( !layer )
+                return;
+            var needKey = window.layerList.requiresKey(layer),
+                key = keyValue.value.trim();
+            if( needKey && !key.length ) {
+                window.alert(this.strings.keyNeededAlert);
+            } else {
+                this.addLayer(needKey ? layer + ':' + key : layer);
+            }
+        }, this);
+        
+        this.on('show change', function() {
+            populateSelect.call(this);
+        }, this);
+    },
 
     show: function( element ) {
         var el = typeof element === 'string' ? document.getElementById(element) : element;
@@ -673,7 +752,11 @@ window.MapBBCodeConfig.include({strings: {
     growTitle: 'Click to grow the panel',
     shrinkTitle: 'Click to shrink the panel',
     zoomInTitle: 'Zoom in',
-    zoomOutTitle: 'Zoom out'
+    zoomOutTitle: 'Zoom out',
+    selectLayer: 'Select layer',
+    addLayer: 'Add layer',
+    keyNeeded: 'This layer needs a developer key (<a href="%s" target="devkey">how to get it</a>)',
+    keyNeededAlert: 'This layer needs a developer key'
 }});
 
 

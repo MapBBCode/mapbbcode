@@ -42,4 +42,4 @@ L.LetterIcon = L.Icon.extend({
 
 L.letterIcon = function(letter, options) {
     return new L.LetterIcon(letter, options);
-}
+};

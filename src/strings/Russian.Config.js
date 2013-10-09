@@ -14,7 +14,7 @@ window.MapBBCodeConfig.include({strings: {
     growTitle: 'Увеличить размер панели',
     shrinkTitle: 'Уменьшить размер панели',
     zoomInTitle: 'Приблизить',
-    zoomOutTitle: 'Отдалить'
+    zoomOutTitle: 'Отдалить',
     selectLayer: 'Выберите слой',
     addLayer: 'Добавить слой',
     keyNeeded: 'Для этого слоя нужен ключ разработчика (<a href="%s" target="devkey">инструкция по получению</a>)',

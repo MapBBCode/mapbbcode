@@ -96,22 +96,9 @@ window.MapBBCodeConfig = L.Class.extend({
         if( !addButton.value )
             addButton.value = this.strings.addLayer;
             
-        onSelectChange = function(e) {
+        var onSelectChange = function(e) {
             var layer = e.target.value;
             var link = layer ? window.layerList.getKeyLink(layer) : '';
-            if( link ) {
-                keyTitle.innerHTML = this.strings.keyNeeded.replace('%s', link);
-                keyValue.value = '';
-                keyBlock.style.display = options.keyBlockDisplay || 'inline';
-            } else {
-                keyBlock.style.display = 'none';
-            }
-            addButton.disabled = layer ? false : true;
-        };
-        
-        var onSelectChange = function(e) {
-            var layer = e.target.value,
-                link = layer ? window.layerList.getKeyLink(layer) : '';
             if( link ) {
                 keyTitle.innerHTML = this.strings.keyNeeded.replace('%s', link);
                 keyValue.value = '';
@@ -125,7 +112,7 @@ window.MapBBCodeConfig = L.Class.extend({
         L.DomEvent.on(select, 'change', onSelectChange, this);
 
         var populateSelect = function() {
-            var i, layerKeys = layerList.getSortedKeys(),
+            var i, layerKeys = window.layerList.getSortedKeys(),
                 layers = this.options.layers, layers0 = [];
             for( i = 0; i < layers.length; i++ ) {
                 layers0.push(layers[i].indexOf(':') < 0 ? layers[i] :
@@ -143,13 +130,13 @@ window.MapBBCodeConfig = L.Class.extend({
                 if( layers0.indexOf(layerKeys[i]) >= 0 ) {
                     continue;
                 }
-                var opt = document.createElement('option');
+                opt = document.createElement('option');
                 opt.innerHTML = layerKeys[i];
                 opt.value = layerKeys[i];
                 select.appendChild(opt);
             }
             onSelectChange.call(this, {target: select});
-        }
+        };
 
         L.DomEvent.on(addButton, 'click', function() {
             var layer = select.value;
@@ -158,7 +145,7 @@ window.MapBBCodeConfig = L.Class.extend({
             var needKey = window.layerList.requiresKey(layer),
                 key = keyValue.value.trim();
             if( needKey && !key.length ) {
-                alert(this.strings.keyNeededAlert);
+                window.alert(this.strings.keyNeededAlert);
             } else {
                 this.addLayer(needKey ? layer + ':' + key : layer);
             }
