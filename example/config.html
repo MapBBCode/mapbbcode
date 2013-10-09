@@ -11,7 +11,8 @@
 <div>
 <select id="layer_select" size="1" onchange="javascript:selectedLayer(this.value);"></select>
 <input type="button" value="Add layer" onclick="javascript:addLayer();" id="addbutton"/>
-<span id="bing_key_row" style="display:none;"><span id="bing_key_title"></span> <input type="text" maxlength="80" size="40" id="bing_key" value=""></span>
+<span id="key_row" style="display:none;"><span id="key_title"></span>
+<input type="text" maxlength="80" size="40" id="key_value" value=""></span>
 </div>
 
 <table style="border: 1px solid black; width: 99%;"><tr><td id="config">
@@ -65,9 +66,9 @@ function populateSelect() {
 // <select>.onchange
 function selectedLayer(layer) {
     var link = window.layerList.getKeyLink(layer),
-        el = document.getElementById('bing_key_row');
+        el = document.getElementById('key_row');
     if( link ) {
-        document.getElementById('bing_key_title').innerHTML = 'This layer needs a developer key (<a href="%s" target="bing">how to get it</a>)'.replace('%s', link);
+        document.getElementById('key_title').innerHTML = 'This layer needs a developer key (<a href="%s" target="devkey">how to get it</a>)'.replace('%s', link);
         el.style.display = 'inline';
     } else {
         el.style.display = 'none';
@@ -81,7 +82,7 @@ function addLayer() {
     if( !layer )
         return;
     var needKey = window.layerList.requiresKey(layer),
-        key = document.getElementById('bing_key').value.trim();
+        key = document.getElementById('key_value').value.trim();
     if( needKey && !key.length ) {
         alert('This layer needs a key');
     } else {
