@@ -73,24 +73,28 @@ window.MapBBCodeProcessor = {
                 mapData += ',' + this._latLngToString(data.pos);
         }
 
-        var result = '', objs = data.objs || [];
+        var markers = [], paths = [], objs = data.objs || [];
         for( var i = 0; i < objs.length; i++ ) {
-            if( i > 0 )
-                result = result + '; ';
-            var coords = objs[i].coords;
+            var coords = objs[i].coords, str = '';
             for( var j = 0; j < coords.length; j++ ) {
                 if( j > 0 )
-                    result = result + ' ';
-                result = result + this._latLngToString(coords[j]);
+                    str = str + ' ';
+                str = str + this._latLngToString(coords[j]);
             }
             var text = objs[i].text || '', params = objs[i].params || [];
             if( text.indexOf('|') >= 0 && params.length === 0 )
                 text = '|' + text;
             if( text.length > 0 || params.length > 0 )
-                result = result + '(' + (params.length > 0 ? params.join(',') + '|' : '') + text.replace(/\)/g, '\\)').replace(/;/g, ';;') + ')';
+                str = str + '(' + (params.length > 0 ? params.join(',') + '|' : '') + text.replace(/\)/g, '\\)').replace(/;/g, ';;') + ')';
+            if( coords.length ) {
+                if( coords.length == 1 )
+                    markers.push(str);
+                else
+                    paths.push(str);
+            }
         }
 
-        return result.length || mapData.length ? '[map' + mapData + ']'+result+'[/map]' : '';
+        return markers.length || paths.length || mapData.length ? '[map' + mapData + ']' + markers.concat(paths).join('; ') + '[/map]' : '';
     },
 
     _latLngToString: function( latlng ) {
