@@ -41,14 +41,15 @@ window.MapBBCode.objectParams.push({
         colorDiv.style.width = 10 + 24 * this.widths.length + 'px';
         colorDiv.textAlign = 'center';
         var colOnclick = function(e) {
-            var width = e.target._width;
-            if( e.target.style.borderColor == 'white' ) {
+            var target = e.target._width ? e.target : e.target.parentNode,
+                width = target._width;
+            if( target.style.borderColor == 'white' ) {
                 layer.setStyle({ weight: width });
                 layer._width = width;
                 var nodes = colorDiv.childNodes;
                 for( var j = 0; j < nodes.length; j++ )
                     nodes[j].style.borderColor = 'white';
-                e.target.style.borderColor = '#aaa';
+                target.style.borderColor = '#aaa';
             }
         };
         for( var i = 0; i < this.widths.length; i++ ) {
@@ -73,7 +74,7 @@ window.MapBBCode.objectParams.push({
             col2.style.height = w + 'px';
             col2.style.marginTop = (8 - w / 2) + 'px';
             col2.style.backgroundColor = 'black';
-            col2.onclick = function(e) { colOnclick({ target: e.target.parentNode }); };
+            col2.onclick = colOnclick;
             col.appendChild(col2);
         }
         return colorDiv;

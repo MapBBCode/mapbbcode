@@ -124,15 +124,6 @@ window.MapBBCode = L.Class.extend({
         defaultPosition: [22, 11],
         defaultZoom: 2,
         leafletOptions: {},
-        lineColors: {
-            def: '#0022dd',
-            blue: '#0022dd',
-            red: '#bb0000',
-            green: '#007700',
-            brown: '#964b00',
-            purple: '#800080',
-            black: '#000000'
-        },
         polygonOpacity: 0.1,
 
         editorHeight: 400, // here and below 0 for 100%
@@ -158,7 +149,7 @@ window.MapBBCode = L.Class.extend({
     },
 
     strings: {},
-
+    
     initialize: function( options ) {
         L.setOptions(this, options);
         if( L.Browser.ie && options && options.defaultPosition && 'splice' in options.defaultPosition && options.defaultPosition.length == 2 )
@@ -200,17 +191,15 @@ window.MapBBCode = L.Class.extend({
     },
 
     _objectToLayer: function( obj ) {
-        var colors = this.options.lineColors,
-            color = obj.params.length > 0 && obj.params[0] in colors ? colors[obj.params[0]] : colors.def,
-            m;
+        var m;
             
         if( obj.coords.length == 1 ) {
             m = L.marker(obj.coords[0]);
         } else if( obj.coords.length > 2 && obj.coords[0].equals(obj.coords[obj.coords.length-1]) ) {
             obj.coords.splice(obj.coords.length - 1, 1);
-            m = L.polygon(obj.coords, { color: color, weight: 3, opacity: 0.7, fill: true, fillColor: color, fillOpacity: this.options.polygonOpacity });
+            m = L.polygon(obj.coords, { weight: 3, opacity: 0.7, fill: true, fillOpacity: this.options.polygonOpacity });
         } else {
-            m = L.polyline(obj.coords, { color: color, weight: 5, opacity: 0.7 });
+            m = L.polyline(obj.coords, { weight: 5, opacity: 0.7 });
         }
         
         if( obj.text ) {
@@ -223,6 +212,17 @@ window.MapBBCode = L.Class.extend({
             }
         } else
             m.options.clickable = false;
+            
+        var paramHandlers = window.MapBBCode.objectParams;
+        if( paramHandlers ) {
+            for( var i = 0; i < paramHandlers.length; i++ ) {
+                var p = [];
+                for( var j = 0; j < obj.params.length; j++ )
+                    if( paramHandlers[i].reKeys.test(obj.params[j]) )
+                        p.push(obj.params[j]);
+                paramHandlers[i].objectToLayer(m, p);
+            }
+        }
             
         m._objParams = obj.params;
         return m;
@@ -508,10 +508,24 @@ window.MapBBCode.include({
         }
         if( layer.inputField )
             obj.text = layer.inputField.value.replace(/\\n/g, '\n').replace(/\\\n/g, '\\n');
+
         obj.params = layer._objParams || [];
-        if( layer._colorName ) {
-            // todo: remove all colors from params instead of resetting the array
-            obj.params = this.options.lineColors[layer._colorName] !== this.options.lineColors.def ? [layer._colorName] : [];
+        var paramHandlers = window.MapBBCode.objectParams;
+        if( paramHandlers ) {
+            for( var i = 0; i < paramHandlers.length; i++ ) {
+                if( paramHandlers[i].applicableTo(layer) ) {
+                    // remove relevant params
+                    var lastParams = [], j;
+                    for( j = obj.params.length - 1; j >= 0; j-- )
+                        if( paramHandlers[i].reKeys.test(obj.params[j]) )
+                            lastParams.unshift(obj.params.splice(j, 1));
+                    var p = paramHandlers[i].layerToObject(layer, lastParams);
+                    if( p && p.length > 0 ) {
+                        for( j = 0; j < p.length; j++ )
+                            obj.params.push(p[j]);
+                    }
+                }
+            }
         }
         return obj;
     },
@@ -574,48 +588,19 @@ window.MapBBCode.include({
                     layer.setIcon(layer.defaultIcon);
             }, this);
         } else { // polyline or polygon
-            var colorDiv = document.createElement('div');
-            var colors = [], c, lineColors = this.options.lineColors;
-            for( c in lineColors )
-                if( typeof lineColors[c] === 'string' && lineColors[c].substring(0, 1) === '#' )
-                    colors.push(c);
-            colors = colors.sort();
-            colorDiv.style.width = 10 + 20 * colors.length + 'px';
-            colorDiv.textAlign = 'center';
-            var colOnclick = function(e) {
-                var targetStyle = e.target.style;
-                if( targetStyle.borderColor == 'white' ) {
-                    layer.setStyle({ color: targetStyle.backgroundColor, fillColor: targetStyle.backgroundColor });
-                    layer._colorName = e.target._colorName;
-                    var nodes = colorDiv.childNodes;
-                    for( var j = 0; j < nodes.length; j++ )
-                        nodes[j].style.borderColor = 'white';
-                    targetStyle.borderColor = '#aaa';
-                }
-            };
-            for( var i = 0; i < colors.length; i++ ) {
-                if( colors[i] === 'def' )
-                    continue;
-                var col = document.createElement('div');
-                col._colorName = colors[i];
-                col.style.width = '16px';
-                col.style.height = '16px';
-                col.style.cssFloat = 'left';
-                col.style.styleFloat = 'left';
-                col.style.marginRight = '3px';
-                col.style.marginBottom = '5px';
-                col.style.cursor = 'pointer';
-                var color = this.options.lineColors[colors[i]];
-                col.style.backgroundColor = color;
-                col.style.borderWidth = '3px';
-                col.style.borderStyle = 'solid';
-                col.style.borderColor = color == layer.options.color ? '#aaa' : 'white';
-                col.onclick = colOnclick;
-                colorDiv.appendChild(col);
-            }
-            parentDiv.appendChild(colorDiv);
             layer.editing.enable();
         }
+
+        var paramHandlers = window.MapBBCode.objectParams;
+        if( paramHandlers ) {
+            for( var i = 0; i < paramHandlers.length; i++ ) {
+                if( paramHandlers[i].createEditorPanel && paramHandlers[i].applicableTo(layer) ) {
+                    var div = paramHandlers[i].createEditorPanel(layer);
+                    parentDiv.appendChild(div);
+                }
+            }
+        }
+
         parentDiv.appendChild(buttonDiv);
         layer.bindPopup(parentDiv);
         return layer;
@@ -700,7 +685,7 @@ window.MapBBCode.include({
                     showLength: false,
                     guidelineDistance: 10,
                     shapeOptions: {
-                        color: this.options.lineColors.def,
+                        color: '#000000',
                         weight: 5,
                         opacity: 0.7
                     }
@@ -709,7 +694,7 @@ window.MapBBCode.include({
                     showArea: false,
                     guidelineDistance: 10,
                     shapeOptions: {
-                        color: this.options.lineColors.def,
+                        color: '#000000',
                         weight: 3,
                         opacity: 0.7,
                         fillOpacity: this.options.polygonOpacity
@@ -724,9 +709,23 @@ window.MapBBCode.include({
                 remove: false
             }
         });
+        var paramHandlers = window.MapBBCode.objectParams;
+        if( paramHandlers ) {
+            for( i = 0; i < paramHandlers.length; i++ ) {
+                if( paramHandlers[i].initDrawControl )
+                    paramHandlers[i].initDrawControl(drawControl);
+            }
+        }
         map.addControl(drawControl);
         map.on('draw:created', function(e) {
             var layer = e.layer;
+            var paramHandlers = window.MapBBCode.objectParams;
+            if( paramHandlers ) {
+                for( var i = 0; i < paramHandlers.length; i++ ) {
+                    if( paramHandlers.initLayer )
+                        paramHandlers.initLayer(layer);
+                }
+            }
             this._makeEditable(layer, drawn);
             drawn.addLayer(layer);
             if( e.layerType === 'marker' )
@@ -839,6 +838,98 @@ window.MapBBCode.include({
                 ctx.callback.call(ctx.context, res);
             this.storedMapBB = null;
         }, this);
+    }
+});
+
+
+/*
+ * Support for color params.
+ */
+
+if( !('objectParams' in window.MapBBCode) )
+    window.MapBBCode.objectParams = [];
+
+window.MapBBCode.objectParams.push({
+    lineColors: {
+        def: '#0022dd',
+        blue: '#0022dd',
+        red: '#bb0000',
+        green: '#007700',
+        brown: '#964b00',
+        purple: '#800080',
+        black: '#000000'
+    },
+
+    // regular expression for supported keys
+    reKeys: new RegExp('^(blue|red|green|brown|purple|black)$'),
+    
+    applicableTo: function( layer ) {
+        return layer instanceof L.Polygon || layer instanceof L.Polyline;
+    },
+
+    // applies relevant params to the layer object
+    objectToLayer: function( layer, params ) {
+        var colors = this.lineColors,
+            color = params.length > 0 && params[0] in colors ? colors[params[0]] : colors.def;
+        layer.options.color = color;
+        if( layer instanceof L.Polygon )
+            layer.options.fillColor = color;
+    },
+    
+    // returns array with layer properties
+    layerToObject: function( layer, lastParams ) {
+        return layer._colorName ? (this.lineColors[layer._colorName] !== this.lineColors.def ? [layer._colorName] : []) : lastParams;
+    },
+    
+    initLayer: function( layer ) {
+    },
+    
+    initDrawControl: function(draw) {
+        draw.options.draw.polyline.shapeOptions.color = this.lineColors.def;
+        draw.options.draw.polygon.shapeOptions.color = this.lineColors.def;
+    },
+    
+    createEditorPanel: function( layer ) {
+        var colorDiv = document.createElement('div');
+        var colors = [], c, lineColors = this.lineColors;
+        for( c in lineColors )
+            if( typeof lineColors[c] === 'string' && lineColors[c].substring(0, 1) === '#' )
+                colors.push(c);
+        colors = colors.sort();
+        colorDiv.style.width = 10 + 20 * colors.length + 'px';
+        colorDiv.textAlign = 'center';
+        var colOnclick = function(e) {
+            var targetStyle = e.target.style;
+            if( targetStyle.borderColor == 'white' ) {
+                layer.setStyle({ color: targetStyle.backgroundColor, fillColor: targetStyle.backgroundColor });
+                layer._colorName = e.target._colorName;
+                var nodes = colorDiv.childNodes;
+                for( var j = 0; j < nodes.length; j++ )
+                    nodes[j].style.borderColor = 'white';
+                targetStyle.borderColor = '#aaa';
+            }
+        };
+        for( var i = 0; i < colors.length; i++ ) {
+            if( colors[i] === 'def' )
+                continue;
+            var col = document.createElement('div');
+            col._colorName = colors[i];
+            col.style.width = '16px';
+            col.style.height = '16px';
+            col.style.cssFloat = 'left';
+            col.style.styleFloat = 'left';
+            col.style.marginRight = '3px';
+            col.style.marginBottom = '5px';
+            col.style.cursor = 'pointer';
+            var color = lineColors[colors[i]];
+            col.style.backgroundColor = color;
+            col.style.borderWidth = '3px';
+            col.style.borderStyle = 'solid';
+            col.style.borderColor = color == layer.options.color ? '#aaa' : 'white';
+            col.onclick = colOnclick;
+            colorDiv.appendChild(col);
+        }
+        return colorDiv;
     }
 });
 

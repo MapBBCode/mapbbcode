@@ -217,7 +217,7 @@ window.MapBBCode.include({
         });
         var paramHandlers = window.MapBBCode.objectParams;
         if( paramHandlers ) {
-            for( var i = 0; i < paramHandlers.length; i++ ) {
+            for( i = 0; i < paramHandlers.length; i++ ) {
                 if( paramHandlers[i].initDrawControl )
                     paramHandlers[i].initDrawControl(drawControl);
             }

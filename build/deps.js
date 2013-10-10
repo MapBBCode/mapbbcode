@@ -9,7 +9,7 @@ var deps = {
 		      'FunctionButton.js',
 		      'EditorSprites.js'],
 		desc: 'User Interface: displaying and editing map bbcode',
-                deps: ['Core']
+                deps: ['Core', 'ParamColor']
 	},
 
         Editor: {
@@ -21,15 +21,13 @@ var deps = {
         ParamColor: {
                 src: ['param/Param.Color.js'],
                 desc: 'Color',
-                heading: 'Object Parameter Handlers',
-                deps: ['UI']
+                heading: 'Object Parameter Handlers'
         },
 
         ParamWidth: {
-                src: ['param/Param.Color.js'],
+                src: ['param/Param.Width.js'],
                 desc: 'Width',
-                noInclude: true,
-                deps: ['UI']
+                noInclude: true
         },
 
         LetterIcon: {
