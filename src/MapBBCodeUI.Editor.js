@@ -14,10 +14,24 @@ window.MapBBCode.include({
         }
         if( layer.inputField )
             obj.text = layer.inputField.value.replace(/\\n/g, '\n').replace(/\\\n/g, '\\n');
+
         obj.params = layer._objParams || [];
-        if( layer._colorName ) {
-            // todo: remove all colors from params instead of resetting the array
-            obj.params = this.options.lineColors[layer._colorName] !== this.options.lineColors.def ? [layer._colorName] : [];
+        var paramHandlers = window.MapBBCode.objectParams;
+        if( paramHandlers ) {
+            for( var i = 0; i < paramHandlers.length; i++ ) {
+                if( paramHandlers[i].applicableTo(layer) ) {
+                    // remove relevant params
+                    var lastParams = [], j;
+                    for( j = obj.params.length - 1; j >= 0; j-- )
+                        if( paramHandlers[i].reKeys.test(obj.params[j]) )
+                            lastParams.unshift(obj.params.splice(j, 1));
+                    var p = paramHandlers[i].layerToObject(layer, lastParams);
+                    if( p && p.length > 0 ) {
+                        for( j = 0; j < p.length; j++ )
+                            obj.params.push(p[j]);
+                    }
+                }
+            }
         }
         return obj;
     },
@@ -80,48 +94,19 @@ window.MapBBCode.include({
                     layer.setIcon(layer.defaultIcon);
             }, this);
         } else { // polyline or polygon
-            var colorDiv = document.createElement('div');
-            var colors = [], c, lineColors = this.options.lineColors;
-            for( c in lineColors )
-                if( typeof lineColors[c] === 'string' && lineColors[c].substring(0, 1) === '#' )
-                    colors.push(c);
-            colors = colors.sort();
-            colorDiv.style.width = 10 + 20 * colors.length + 'px';
-            colorDiv.textAlign = 'center';
-            var colOnclick = function(e) {
-                var targetStyle = e.target.style;
-                if( targetStyle.borderColor == 'white' ) {
-                    layer.setStyle({ color: targetStyle.backgroundColor, fillColor: targetStyle.backgroundColor });
-                    layer._colorName = e.target._colorName;
-                    var nodes = colorDiv.childNodes;
-                    for( var j = 0; j < nodes.length; j++ )
-                        nodes[j].style.borderColor = 'white';
-                    targetStyle.borderColor = '#aaa';
-                }
-            };
-            for( var i = 0; i < colors.length; i++ ) {
-                if( colors[i] === 'def' )
-                    continue;
-                var col = document.createElement('div');
-                col._colorName = colors[i];
-                col.style.width = '16px';
-                col.style.height = '16px';
-                col.style.cssFloat = 'left';
-                col.style.styleFloat = 'left';
-                col.style.marginRight = '3px';
-                col.style.marginBottom = '5px';
-                col.style.cursor = 'pointer';
-                var color = this.options.lineColors[colors[i]];
-                col.style.backgroundColor = color;
-                col.style.borderWidth = '3px';
-                col.style.borderStyle = 'solid';
-                col.style.borderColor = color == layer.options.color ? '#aaa' : 'white';
-                col.onclick = colOnclick;
-                colorDiv.appendChild(col);
-            }
-            parentDiv.appendChild(colorDiv);
             layer.editing.enable();
         }
+
+        var paramHandlers = window.MapBBCode.objectParams;
+        if( paramHandlers ) {
+            for( var i = 0; i < paramHandlers.length; i++ ) {
+                if( paramHandlers[i].createEditorPanel && paramHandlers[i].applicableTo(layer) ) {
+                    var div = paramHandlers[i].createEditorPanel(layer);
+                    parentDiv.appendChild(div);
+                }
+            }
+        }
+
         parentDiv.appendChild(buttonDiv);
         layer.bindPopup(parentDiv);
         return layer;
@@ -206,7 +191,7 @@ window.MapBBCode.include({
                     showLength: false,
                     guidelineDistance: 10,
                     shapeOptions: {
-                        color: this.options.lineColors.def,
+                        color: '#000000',
                         weight: 5,
                         opacity: 0.7
                     }
@@ -215,7 +200,7 @@ window.MapBBCode.include({
                     showArea: false,
                     guidelineDistance: 10,
                     shapeOptions: {
-                        color: this.options.lineColors.def,
+                        color: '#000000',
                         weight: 3,
                         opacity: 0.7,
                         fillOpacity: this.options.polygonOpacity
@@ -230,9 +215,23 @@ window.MapBBCode.include({
                 remove: false
             }
         });
+        var paramHandlers = window.MapBBCode.objectParams;
+        if( paramHandlers ) {
+            for( var i = 0; i < paramHandlers.length; i++ ) {
+                if( paramHandlers[i].initDrawControl )
+                    paramHandlers[i].initDrawControl(drawControl);
+            }
+        }
         map.addControl(drawControl);
         map.on('draw:created', function(e) {
             var layer = e.layer;
+            var paramHandlers = window.MapBBCode.objectParams;
+            if( paramHandlers ) {
+                for( var i = 0; i < paramHandlers.length; i++ ) {
+                    if( paramHandlers.initLayer )
+                        paramHandlers.initLayer(layer);
+                }
+            }
             this._makeEditable(layer, drawn);
             drawn.addLayer(layer);
             if( e.layerType === 'marker' )

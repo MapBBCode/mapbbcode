@@ -10,15 +10,6 @@ window.MapBBCode = L.Class.extend({
         defaultPosition: [22, 11],
         defaultZoom: 2,
         leafletOptions: {},
-        lineColors: {
-            def: '#0022dd',
-            blue: '#0022dd',
-            red: '#bb0000',
-            green: '#007700',
-            brown: '#964b00',
-            purple: '#800080',
-            black: '#000000'
-        },
         polygonOpacity: 0.1,
 
         editorHeight: 400, // here and below 0 for 100%
@@ -44,7 +35,7 @@ window.MapBBCode = L.Class.extend({
     },
 
     strings: {},
-
+    
     initialize: function( options ) {
         L.setOptions(this, options);
         if( L.Browser.ie && options && options.defaultPosition && 'splice' in options.defaultPosition && options.defaultPosition.length == 2 )
@@ -86,17 +77,15 @@ window.MapBBCode = L.Class.extend({
     },
 
     _objectToLayer: function( obj ) {
-        var colors = this.options.lineColors,
-            color = obj.params.length > 0 && obj.params[0] in colors ? colors[obj.params[0]] : colors.def,
-            m;
+        var m;
             
         if( obj.coords.length == 1 ) {
             m = L.marker(obj.coords[0]);
         } else if( obj.coords.length > 2 && obj.coords[0].equals(obj.coords[obj.coords.length-1]) ) {
             obj.coords.splice(obj.coords.length - 1, 1);
-            m = L.polygon(obj.coords, { color: color, weight: 3, opacity: 0.7, fill: true, fillColor: color, fillOpacity: this.options.polygonOpacity });
+            m = L.polygon(obj.coords, { weight: 3, opacity: 0.7, fill: true, fillOpacity: this.options.polygonOpacity });
         } else {
-            m = L.polyline(obj.coords, { color: color, weight: 5, opacity: 0.7 });
+            m = L.polyline(obj.coords, { weight: 5, opacity: 0.7 });
         }
         
         if( obj.text ) {
@@ -109,6 +98,17 @@ window.MapBBCode = L.Class.extend({
             }
         } else
             m.options.clickable = false;
+            
+        var paramHandlers = window.MapBBCode.objectParams;
+        if( paramHandlers ) {
+            for( var i = 0; i < paramHandlers.length; i++ ) {
+                var p = [];
+                for( var j = 0; j < obj.params.length; j++ )
+                    if( paramHandlers[i].reKeys.test(obj.params[j]) )
+                        p.push(obj.params[j]);
+                paramHandlers[i].objectToLayer(m, p);
+            }
+        }
             
         m._objParams = obj.params;
         return m;

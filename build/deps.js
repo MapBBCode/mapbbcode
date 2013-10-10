@@ -18,6 +18,20 @@ var deps = {
                 deps: ['UI']
         },
 
+        ParamColor: {
+                src: ['param/Param.Color.js'],
+                desc: 'Color',
+                heading: 'Object Parameter Handlers',
+                deps: ['UI']
+        },
+
+        ParamWidth: {
+                src: ['param/Param.Color.js'],
+                desc: 'Width',
+                noInclude: true,
+                deps: ['UI']
+        },
+
         LetterIcon: {
 		src: ['LetterIcon.js'],
 		desc: 'Optional LetterIcon',
