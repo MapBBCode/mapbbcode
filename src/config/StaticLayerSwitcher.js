@@ -66,7 +66,7 @@ L.StaticLayerSwitcher = L.Control.extend({
     },
 
     addLayer: function( id, layer ) {
-        if( this._layers.length >= this.options.maxLayer )
+        if( this._layers.length >= this.options.maxLayers )
             return;
         var l = layer || (window.layerList && window.layerList.getLeafletLayers([id])[0]);
         if( l ) {
