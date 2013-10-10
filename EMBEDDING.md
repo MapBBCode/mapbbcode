@@ -60,6 +60,12 @@ How this template is included depends on a forum engine. For example, in phpBB 2
 
 And then grouping quotes are parsed into `{DIVID}` (#2) and `{MAPBBCODE}` (#1+#3).
 
+In phpBB3 adding a bbcode didn't require any code modifications, only a database entry in table `phpbb_bbcode`. It essentially transforms to a function call:
+
+    preg_replace('!\[map:($uid)(=[0-9,.]+)?\](.*?)\[/map:$uid\]!se',
+    '<div id="map${1}'.$i.'">[map${2}]${3}[/map]</div><script language="javascript">mapBBcode.show(\'map${1}'.
+        ($i++).'\');</script>', $message);
+
 ### Add button to a posting page
 
 On a posting page there is usually a row of buttons for inserting bbcode. Add a "Map" button there, with the following code in `onclick` parameter:
@@ -268,6 +274,10 @@ The variable must always be set before page header template is processed (for so
 * displaying a content panel for forums that are also CMS
 
 When finished, check that pages that don't feature posts and topics without maps don't have MapBBCode scripts in them.
+
+### Global on/off switch
+
+Since with some forum engines it is possible to disable parsing [url] or other tags, why not add the same configuration for [map]? When adding this feature, check how this is done for other tags. You will need to add a configuration parameter to the database and to the administation page. Then add a check to a page header, in addition to `$mapbbcode_present`. On a posting page, the "Map" button should be hidden in case maps are disabled, and there should be a notification in line with other similar notifications.
 
 ## Checklist
 
