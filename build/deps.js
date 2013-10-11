@@ -7,9 +7,10 @@ var deps = {
 	UI: {
 		src: ['MapBBCodeUI.js',
 		      'FunctionButton.js',
-		      'EditorSprites.js'],
+		      'EditorSprites.js',
+		      'param/Param.Text.js'],
 		desc: 'User Interface: displaying and editing map bbcode',
-                deps: ['Core', 'ParamColor']
+                deps: ['Core']
 	},
 
         Editor: {

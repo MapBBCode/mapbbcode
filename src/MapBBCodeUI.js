@@ -99,23 +99,12 @@ window.MapBBCode = L.Class.extend({
             m = L.polyline(obj.coords, { weight: 5, opacity: 0.7 });
         }
         
-        if( obj.text ) {
-            m._text = obj.text;
-            if( L.LetterIcon && m instanceof L.Marker && this.options.letterIcons && obj.text.length >= 1 && obj.text.length <= 2 ) {
-                m.setIcon(new L.LetterIcon(obj.text));
-                m.options.clickable = false;
-            } else {
-                m.bindPopup(obj.text.replace(new RegExp('<(?!/?(' + this.options.allowedHTML + ')[ >])', 'g'), '&lt;'));
-            }
-        } else
-            m.options.clickable = false;
-            
         this._eachParamHandler(function(handler) {
             var p = [];
             for( var j = 0; j < obj.params.length; j++ )
                 if( handler.reKeys.test(obj.params[j]) )
                     p.push(obj.params[j]);
-            handler.objectToLayer(m, p, this);
+            handler.objectToLayer(m, handler.text ? obj.text : p, this);
         }, this);
             
         m._objParams = obj.params;
