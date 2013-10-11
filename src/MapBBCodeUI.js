@@ -46,36 +46,6 @@ window.MapBBCode = L.Class.extend({
         this.strings = L.extend({}, this.strings, strings);
     },
 
-    _zoomToLayer: function( map, layer, stored, initial ) {
-        var bounds = layer.getBounds();
-        if( !bounds || !bounds.isValid() ) {
-            if( stored && stored.zoom )
-                map.setView(stored.pos || this.options.defaultPosition, stored.zoom);
-            else if( initial )
-                map.setView(this.options.defaultPosition, this.options.defaultZoom);
-            return;
-        }
-
-        var applyZoom = function() {
-            if( stored && stored.pos ) {
-                map.setView(stored.pos, stored.zoom || this.options.maxInitialZoom);
-            } else {
-                var maxZoom = this.options.maxInitialZoom;
-                map.fitBounds(bounds, { animate: false });
-                if( stored && stored.zoom )
-                    map.setZoom(stored.zoom, { animate: false });
-                else if( initial && map.getZoom() > maxZoom )
-                    map.setZoom(maxZoom, { animate: false });
-            }
-        };
-
-        var boundsZoom = map.getBoundsZoom(bounds, false);
-        if( boundsZoom )
-            applyZoom.call(this);
-        else
-            map.on('load', applyZoom, this);
-    },
-    
     _eachParamHandler: function( callback, context, layer ) {
         var paramHandlers = window.MapBBCode.objectParams;
         if( paramHandlers ) {
@@ -109,6 +79,36 @@ window.MapBBCode = L.Class.extend({
             
         m._objParams = obj.params;
         return m;
+    },
+
+    _zoomToLayer: function( map, layer, stored, initial ) {
+        var bounds = layer.getBounds();
+        if( !bounds || !bounds.isValid() ) {
+            if( stored && stored.zoom )
+                map.setView(stored.pos || this.options.defaultPosition, stored.zoom);
+            else if( initial )
+                map.setView(this.options.defaultPosition, this.options.defaultZoom);
+            return;
+        }
+
+        var applyZoom = function() {
+            if( stored && stored.pos ) {
+                map.setView(stored.pos, stored.zoom || this.options.maxInitialZoom);
+            } else {
+                var maxZoom = this.options.maxInitialZoom;
+                map.fitBounds(bounds, { animate: false });
+                if( stored && stored.zoom )
+                    map.setZoom(stored.zoom, { animate: false });
+                else if( initial && map.getZoom() > maxZoom )
+                    map.setZoom(maxZoom, { animate: false });
+            }
+        };
+
+        var boundsZoom = map.getBoundsZoom(bounds, false);
+        if( boundsZoom )
+            applyZoom.call(this);
+        else
+            map.on('load', applyZoom, this);
     },
 
     createOpenStreetMapLayer: function() {
