@@ -10,7 +10,7 @@ L.LetterIcon = L.Icon.extend({
 
     initialize: function(letter, options) {
         this._letter = letter;
-        L.Icon.prototype.initialize(this, options);
+        L.setOptions(this, options);
     },
 
     createIcon: function() {
@@ -19,8 +19,8 @@ L.LetterIcon = L.Icon.extend({
         var div = document.createElement('div');
         div.innerHTML = this._letter;
         div.className = 'leaflet-marker-icon';
-        div.style.marginLeft = (-radius) + 'px';
-        div.style.marginTop  = (-radius) + 'px';
+        div.style.marginLeft = (-radius-2) + 'px';
+        div.style.marginTop  = (-radius-2) + 'px';
         div.style.width      = diameter + 'px';
         div.style.height     = diameter + 'px';
         div.style.borderRadius = (radius + 2) + 'px';
