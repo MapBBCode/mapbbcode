@@ -16,23 +16,18 @@ window.MapBBCode.include({
             obj.text = layer.inputField.value.replace(/\\n/g, '\n').replace(/\\\n/g, '\\n');
 
         obj.params = layer._objParams || [];
-        var paramHandlers = window.MapBBCode.objectParams;
-        if( paramHandlers ) {
-            for( var i = 0; i < paramHandlers.length; i++ ) {
-                if( paramHandlers[i].applicableTo(layer) ) {
-                    // remove relevant params
-                    var lastParams = [], j;
-                    for( j = obj.params.length - 1; j >= 0; j-- )
-                        if( paramHandlers[i].reKeys.test(obj.params[j]) )
-                            lastParams.unshift(obj.params.splice(j, 1));
-                    var p = paramHandlers[i].layerToObject(layer, lastParams);
-                    if( p && p.length > 0 ) {
-                        for( j = 0; j < p.length; j++ )
-                            obj.params.push(p[j]);
-                    }
-                }
+        this._eachParamHandler(function(handler) {
+            // remove relevant params
+            var lastParams = [], j;
+            for( j = obj.params.length - 1; j >= 0; j-- )
+                if( handler.reKeys.test(obj.params[j]) )
+                    lastParams.unshift(obj.params.splice(j, 1));
+            var p = handler.layerToObject(layer, lastParams, this);
+            if( p && p.length > 0 ) {
+                for( j = 0; j < p.length; j++ )
+                    obj.params.push(p[j]);
             }
-        }
+        }, this, layer);
         return obj;
     },
 
@@ -97,15 +92,11 @@ window.MapBBCode.include({
             layer.editing.enable();
         }
 
-        var paramHandlers = window.MapBBCode.objectParams;
-        if( paramHandlers ) {
-            for( var i = 0; i < paramHandlers.length; i++ ) {
-                if( paramHandlers[i].createEditorPanel && paramHandlers[i].applicableTo(layer) ) {
-                    var div = paramHandlers[i].createEditorPanel(layer);
-                    parentDiv.appendChild(div);
-                }
-            }
-        }
+        this._eachParamHandler(function(handler) {
+            var div = handler.createEditorPanel ? handler.createEditorPanel(layer, this) : null;
+            if( div )
+                parentDiv.appendChild(div);
+        }, this, layer);
 
         parentDiv.appendChild(buttonDiv);
         layer.bindPopup(parentDiv);
@@ -215,23 +206,17 @@ window.MapBBCode.include({
                 remove: false
             }
         });
-        var paramHandlers = window.MapBBCode.objectParams;
-        if( paramHandlers ) {
-            for( i = 0; i < paramHandlers.length; i++ ) {
-                if( paramHandlers[i].initDrawControl )
-                    paramHandlers[i].initDrawControl(drawControl);
-            }
-        }
+        this._eachParamHandler(function(handler) {
+            if( handler.initDrawControl )
+                handler.initDrawControl(drawControl);
+        });
         map.addControl(drawControl);
         map.on('draw:created', function(e) {
             var layer = e.layer;
-            var paramHandlers = window.MapBBCode.objectParams;
-            if( paramHandlers ) {
-                for( var i = 0; i < paramHandlers.length; i++ ) {
-                    if( paramHandlers.initLayer )
-                        paramHandlers.initLayer(layer);
-                }
-            }
+            this._eachParamHandler(function(handler) {
+                if( handler.initLayer )
+                    handler.initLayer(layer);
+            }, this, layer);
             this._makeEditable(layer, drawn);
             drawn.addLayer(layer);
             if( e.layerType === 'marker' )

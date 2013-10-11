@@ -75,6 +75,17 @@ window.MapBBCode = L.Class.extend({
         else
             map.on('load', applyZoom, this);
     },
+    
+    _eachParamHandler: function( callback, context, layer ) {
+        var paramHandlers = window.MapBBCode.objectParams;
+        if( paramHandlers ) {
+            for( var i = 0; i < paramHandlers.length; i++ ) {
+                if( !layer || paramHandlers[i].applicableTo(layer) ) {
+                    callback.call(context || this, paramHandlers[i]);
+                }
+            }
+        }
+    },
 
     _objectToLayer: function( obj ) {
         var m;
@@ -99,16 +110,13 @@ window.MapBBCode = L.Class.extend({
         } else
             m.options.clickable = false;
             
-        var paramHandlers = window.MapBBCode.objectParams;
-        if( paramHandlers ) {
-            for( var i = 0; i < paramHandlers.length; i++ ) {
-                var p = [];
-                for( var j = 0; j < obj.params.length; j++ )
-                    if( paramHandlers[i].reKeys.test(obj.params[j]) )
-                        p.push(obj.params[j]);
-                paramHandlers[i].objectToLayer(m, p);
-            }
-        }
+        this._eachParamHandler(function(handler) {
+            var p = [];
+            for( var j = 0; j < obj.params.length; j++ )
+                if( handler.reKeys.test(obj.params[j]) )
+                    p.push(obj.params[j]);
+            handler.objectToLayer(m, p, this);
+        }, this);
             
         m._objParams = obj.params;
         return m;
