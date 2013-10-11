@@ -160,6 +160,41 @@ window.MapBBCode = L.Class.extend({
         this.strings = L.extend({}, this.strings, strings);
     },
 
+    _eachParamHandler: function( callback, context, layer ) {
+        var paramHandlers = window.MapBBCode.objectParams;
+        if( paramHandlers ) {
+            for( var i = 0; i < paramHandlers.length; i++ ) {
+                if( !layer || paramHandlers[i].applicableTo(layer) ) {
+                    callback.call(context || this, paramHandlers[i]);
+                }
+            }
+        }
+    },
+
+    _objectToLayer: function( obj ) {
+        var m;
+            
+        if( obj.coords.length == 1 ) {
+            m = L.marker(obj.coords[0]);
+        } else if( obj.coords.length > 2 && obj.coords[0].equals(obj.coords[obj.coords.length-1]) ) {
+            obj.coords.splice(obj.coords.length - 1, 1);
+            m = L.polygon(obj.coords, { weight: 3, opacity: 0.7, fill: true, fillOpacity: this.options.polygonOpacity });
+        } else {
+            m = L.polyline(obj.coords, { weight: 5, opacity: 0.7 });
+        }
+        
+        this._eachParamHandler(function(handler) {
+            var p = [];
+            for( var j = 0; j < obj.params.length; j++ )
+                if( handler.reKeys.test(obj.params[j]) )
+                    p.push(obj.params[j]);
+            handler.objectToLayer(m, handler.text ? obj.text : p, this);
+        }, this);
+            
+        m._objParams = obj.params;
+        return m;
+    },
+
     _zoomToLayer: function( map, layer, stored, initial ) {
         var bounds = layer.getBounds();
         if( !bounds || !bounds.isValid() ) {
@@ -188,44 +223,6 @@ window.MapBBCode = L.Class.extend({
             applyZoom.call(this);
         else
             map.on('load', applyZoom, this);
-    },
-
-    _objectToLayer: function( obj ) {
-        var m;
-            
-        if( obj.coords.length == 1 ) {
-            m = L.marker(obj.coords[0]);
-        } else if( obj.coords.length > 2 && obj.coords[0].equals(obj.coords[obj.coords.length-1]) ) {
-            obj.coords.splice(obj.coords.length - 1, 1);
-            m = L.polygon(obj.coords, { weight: 3, opacity: 0.7, fill: true, fillOpacity: this.options.polygonOpacity });
-        } else {
-            m = L.polyline(obj.coords, { weight: 5, opacity: 0.7 });
-        }
-        
-        if( obj.text ) {
-            m._text = obj.text;
-            if( L.LetterIcon && m instanceof L.Marker && this.options.letterIcons && obj.text.length >= 1 && obj.text.length <= 2 ) {
-                m.setIcon(new L.LetterIcon(obj.text));
-                m.options.clickable = false;
-            } else {
-                m.bindPopup(obj.text.replace(new RegExp('<(?!/?(' + this.options.allowedHTML + ')[ >])', 'g'), '&lt;'));
-            }
-        } else
-            m.options.clickable = false;
-            
-        var paramHandlers = window.MapBBCode.objectParams;
-        if( paramHandlers ) {
-            for( var i = 0; i < paramHandlers.length; i++ ) {
-                var p = [];
-                for( var j = 0; j < obj.params.length; j++ )
-                    if( paramHandlers[i].reKeys.test(obj.params[j]) )
-                        p.push(obj.params[j]);
-                paramHandlers[i].objectToLayer(m, p);
-            }
-        }
-            
-        m._objParams = obj.params;
-        return m;
     },
 
     createOpenStreetMapLayer: function() {
@@ -493,6 +490,82 @@ window.MapBBCode.buttonsImage = 'data:image/png;base64,'
 
 
 /*
+ * Text labels. Editing only for markers.
+ */
+
+if( !('objectParams' in window.MapBBCode) )
+    window.MapBBCode.objectParams = [];
+
+window.MapBBCode.objectParams.unshift({
+    text: true,
+
+    // this regex always fails
+    reKeys: new RegExp('a^'),
+    
+    applicableTo: function( layer ) {
+        return true;
+    },
+
+    // creates marker from text
+    objectToLayer: function( layer, text, ui ) {
+        if( text ) {
+            layer._text = text;
+            if( L.LetterIcon && layer instanceof L.Marker && ui.options.letterIcons && text.length >= 1 && text.length <= 2 ) {
+                layer.setIcon(new L.LetterIcon(text));
+                layer.options.clickable = false;
+            } else {
+                layer.bindPopup(text.replace(new RegExp('<(?!/?(' + ui.options.allowedHTML + ')[ >])', 'g'), '&lt;'));
+            }
+        } else
+            layer.options.clickable = false;
+    },
+    
+    // returns new text
+    layerToObject: function( layer ) {
+        return layer.inputField ? layer.inputField.value.replace(/\\n/g, '\n').replace(/\\\n/g, '\\n') : (layer._text || '');
+    },
+    
+    createEditorPanel: function( layer, ui ) {
+        if( !(layer instanceof L.Marker ) )
+            return;
+        var commentDiv = document.createElement('div');
+        var commentSpan = document.createTextNode(ui.strings.title + ': ');
+        var inputField = document.createElement('input');
+        inputField.type = 'text';
+        inputField.size = 20;
+        if( layer._text )
+            inputField.value = layer._text.replace(/\\n/g, '\\\\n').replace(/[\r\n]+/g, '\\n');
+        commentDiv.appendChild(commentSpan);
+        commentDiv.appendChild(inputField);
+        commentDiv.style.marginBottom = '8px';
+
+        layer.inputField = inputField;
+        layer.options.draggable = true;
+        layer.defaultIcon = new L.Icon.Default();
+        inputField.onkeypress = function(e) {
+            var keyCode = (window.event) ? (e || window.event).which : e.keyCode;
+            if( keyCode == 27 || keyCode == 13 ) { // escape actually does not work
+                layer.closePopup();
+                e.preventDefault();
+                return false;
+            }
+        };
+        layer.on('popupopen', function() {
+            inputField.focus();
+        });
+        layer.on('popupclose', function() {
+            var title = layer.inputField.value;
+            if( L.LetterIcon && ui.options.letterIcons && title.length > 0 && title.length <= 2 )
+                layer.setIcon(new L.LetterIcon(title));
+            else
+                layer.setIcon(layer.defaultIcon);
+        }, this);
+        return commentDiv;
+    }
+});
+
+
+/*
  * Map BBCode Editor, extends bbcode display module.
  * See editor() and editorWindow() methods.
  */
@@ -506,27 +579,26 @@ window.MapBBCode.include({
             if( layer instanceof L.Polygon )
                 obj.coords.push(obj.coords[0]);
         }
-        if( layer.inputField )
-            obj.text = layer.inputField.value.replace(/\\n/g, '\n').replace(/\\\n/g, '\\n');
 
         obj.params = layer._objParams || [];
-        var paramHandlers = window.MapBBCode.objectParams;
-        if( paramHandlers ) {
-            for( var i = 0; i < paramHandlers.length; i++ ) {
-                if( paramHandlers[i].applicableTo(layer) ) {
-                    // remove relevant params
-                    var lastParams = [], j;
-                    for( j = obj.params.length - 1; j >= 0; j-- )
-                        if( paramHandlers[i].reKeys.test(obj.params[j]) )
-                            lastParams.unshift(obj.params.splice(j, 1));
-                    var p = paramHandlers[i].layerToObject(layer, lastParams);
-                    if( p && p.length > 0 ) {
-                        for( j = 0; j < p.length; j++ )
-                            obj.params.push(p[j]);
-                    }
+        this._eachParamHandler(function(handler) {
+            if( handler.text ) {
+                var text = handler.layerToObject(layer, '', this);
+                if( text )
+                    obj.text = text;
+            } else {
+                // remove relevant params
+                var lastParams = [], j;
+                for( j = obj.params.length - 1; j >= 0; j-- )
+                    if( handler.reKeys.test(obj.params[j]) )
+                        lastParams.unshift(obj.params.splice(j, 1));
+                var p = handler.layerToObject(layer, lastParams, this);
+                if( p && p.length > 0 ) {
+                    for( j = 0; j < p.length; j++ )
+                        obj.params.push(p[j]);
                 }
             }
-        }
+        }, this, layer);
         return obj;
     },
 
@@ -553,53 +625,14 @@ window.MapBBCode.include({
         }
         var parentDiv = document.createElement('div');
         layer.options.clickable = true;
-        if( layer instanceof L.Marker ) {
-            var commentDiv = document.createElement('div');
-            var commentSpan = document.createTextNode(this.strings.title + ': ');
-            var inputField = document.createElement('input');
-            inputField.type = 'text';
-            inputField.size = 20;
-            if( layer._text )
-                inputField.value = layer._text.replace(/\\n/g, '\\\\n').replace(/[\r\n]+/g, '\\n');
-            commentDiv.appendChild(commentSpan);
-            commentDiv.appendChild(inputField);
-            commentDiv.style.marginBottom = '8px';
-            parentDiv.appendChild(commentDiv);
-
-            layer.inputField = inputField;
-            layer.options.draggable = true;
-            layer.defaultIcon = new L.Icon.Default();
-            inputField.onkeypress = function(e) {
-                var keyCode = (window.event) ? (e || window.event).which : e.keyCode;
-                if( keyCode == 27 || keyCode == 13 ) { // escape actually does not work
-                    layer.closePopup();
-                    e.preventDefault();
-                    return false;
-                }
-            };
-            layer.on('popupopen', function() {
-                inputField.focus();
-            });
-            layer.on('popupclose', function() {
-                var title = layer.inputField.value;
-                if( L.LetterIcon && this.options.letterIcons && title.length > 0 && title.length <= 2 )
-                    layer.setIcon(new L.LetterIcon(title));
-                else
-                    layer.setIcon(layer.defaultIcon);
-            }, this);
-        } else { // polyline or polygon
+        if( layer instanceof L.Polyline || layer instanceof L.Polygon )
             layer.editing.enable();
-        }
 
-        var paramHandlers = window.MapBBCode.objectParams;
-        if( paramHandlers ) {
-            for( var i = 0; i < paramHandlers.length; i++ ) {
-                if( paramHandlers[i].createEditorPanel && paramHandlers[i].applicableTo(layer) ) {
-                    var div = paramHandlers[i].createEditorPanel(layer);
-                    parentDiv.appendChild(div);
-                }
-            }
-        }
+        this._eachParamHandler(function(handler) {
+            var div = handler.createEditorPanel ? handler.createEditorPanel(layer, this) : null;
+            if( div )
+                parentDiv.appendChild(div);
+        }, this, layer);
 
         parentDiv.appendChild(buttonDiv);
         layer.bindPopup(parentDiv);
@@ -709,23 +742,17 @@ window.MapBBCode.include({
                 remove: false
             }
         });
-        var paramHandlers = window.MapBBCode.objectParams;
-        if( paramHandlers ) {
-            for( i = 0; i < paramHandlers.length; i++ ) {
-                if( paramHandlers[i].initDrawControl )
-                    paramHandlers[i].initDrawControl(drawControl);
-            }
-        }
+        this._eachParamHandler(function(handler) {
+            if( handler.initDrawControl )
+                handler.initDrawControl(drawControl);
+        });
         map.addControl(drawControl);
         map.on('draw:created', function(e) {
             var layer = e.layer;
-            var paramHandlers = window.MapBBCode.objectParams;
-            if( paramHandlers ) {
-                for( var i = 0; i < paramHandlers.length; i++ ) {
-                    if( paramHandlers.initLayer )
-                        paramHandlers.initLayer(layer);
-                }
-            }
+            this._eachParamHandler(function(handler) {
+                if( handler.initLayer )
+                    handler.initLayer(layer);
+            }, this, layer);
             this._makeEditable(layer, drawn);
             drawn.addLayer(layer);
             if( e.layerType === 'marker' )
@@ -946,7 +973,7 @@ L.LetterIcon = L.Icon.extend({
 
     initialize: function(letter, options) {
         this._letter = letter;
-        L.Icon.prototype.initialize(this, options);
+        L.setOptions(this, options);
     },
 
     createIcon: function() {
@@ -955,8 +982,8 @@ L.LetterIcon = L.Icon.extend({
         var div = document.createElement('div');
         div.innerHTML = this._letter;
         div.className = 'leaflet-marker-icon';
-        div.style.marginLeft = (-radius) + 'px';
-        div.style.marginTop  = (-radius) + 'px';
+        div.style.marginLeft = (-radius-2) + 'px';
+        div.style.marginTop  = (-radius-2) + 'px';
         div.style.width      = diameter + 'px';
         div.style.height     = diameter + 'px';
         div.style.borderRadius = (radius + 2) + 'px';
