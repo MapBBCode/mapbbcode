@@ -6,7 +6,7 @@ L.StaticLayerSwitcher = L.Control.extend({
     includes: L.Mixin.Events,
 
     options: {
-        postition: 'topright',
+        position: 'topright',
         editable: false,
         bgColor: 'white',
         selectedColor: '#ddd',
@@ -26,6 +26,13 @@ L.StaticLayerSwitcher = L.Control.extend({
                     this.addLayer(id, layers[id]);
             }
         }
+    },
+
+    getLayers: function() {
+        var result = [];
+        for( var i = 0; i < this._layers.length; i++ )
+            result.push(this._layers[i].layer);
+        return result;
     },
 
     getLayerIds: function() {
@@ -62,7 +69,9 @@ L.StaticLayerSwitcher = L.Control.extend({
                 }
             }
             this._update();
+            return layer;
         }
+        return null;
     },
 
     addLayer: function( id, layer ) {
@@ -74,9 +83,10 @@ L.StaticLayerSwitcher = L.Control.extend({
             this._update();
             this.fire('layerschanged', { layers: this.getLayerIds() });
             if( this._layers.length == 1 )
-                this.fire('selectionchanged', { selected: this.getSelectedLayer() });
+                this.fire('selectionchanged', { selected: this.getSelectedLayer(), selectedId: this.getSelectedLayerId() });
+            return layer;
         }
-        return this;
+        return null;
     },
 
     removeLayer: function( layer ) {
@@ -91,8 +101,10 @@ L.StaticLayerSwitcher = L.Control.extend({
             this._update();
             this.fire('layerschanged', { layers: this.getLayerIds() });
             if( removingSelected )
-                this.fire('selectionchanged', { selected: this.getSelectedLayer() });
+                this.fire('selectionchanged', { selected: this.getSelectedLayer(), selectedId: this.getSelectedLayerId() });
+            return layer;
         }
+        return null;
     },
 
     moveLayer: function( layer, moveDown ) {
@@ -149,7 +161,7 @@ L.StaticLayerSwitcher = L.Control.extend({
             if( this._selected != index ) {
                 this._selected = index;
                 this._update();
-                this.fire('selectionchanged', { selected: this.getSelectedLayer() });
+                this.fire('selectionchanged', { selected: this.getSelectedLayer(), selectedId: this.getSelectedLayerId() });
             }
         }, this);
         return div;

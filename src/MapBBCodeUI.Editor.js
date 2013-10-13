@@ -270,7 +270,7 @@ window.MapBBCode.include({
             featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth,
             basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1],
             libUrl = basePath + this.options.libPath,
-            win = window.open(this.options.usePreparedWindow ? libUrl + 'mapbbcode-window.html' : '', 'mapbbcode_editor', features + ',' + featSize);
+            win = window.open(this.options.usePreparedWindow ? (typeof this.options.usePreparedWindow === 'string' ? this.options.usePreparedWindow : libUrl + 'mapbbcode-window.html') : '', 'mapbbcode_editor', features + ',' + featSize);
 
         if( !this.options.usePreparedWindow ) {
             var content = '<script src="' + libUrl + 'leaflet.js"></script>';

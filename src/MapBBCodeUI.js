@@ -170,7 +170,7 @@ window.MapBBCode = L.Class.extend({
         var el = typeof element === 'string' ? document.getElementById(element) : element;
         if( !el ) return;
         if( !bbcode )
-            bbcode = el.getAttribute('bbcode') || el.innerHTML.replace(/^\s+|\s+$/g, '');
+            bbcode = el.getAttribute('bbcode') || el.getAttribute('value') || el.innerHTML.replace(/^\s+|\s+$/g, '');
         if( !bbcode ) return;
         while( el.firstChild )
             el.removeChild(el.firstChild);
@@ -193,7 +193,7 @@ window.MapBBCode = L.Class.extend({
         this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 
         if( this.options.fullScreenButton && !this.options.fullFromStart ) {
-            var fs = new L.FunctionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: L.point(0, 0), title: this.strings.fullScreenTitle }),
+            var fs = new L.FunctionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [0, 0], title: this.strings.fullScreenTitle }),
                 isFull = false, oldSize;
             map.addControl(fs);
             fs.on('clicked', function() {
@@ -204,14 +204,13 @@ window.MapBBCode = L.Class.extend({
                 style.width = isFull ? '100%' : oldSize[0];
                 style.height = isFull ? this._px(this.options.fullViewHeight) : oldSize[1];
                 map.invalidateSize();
-                fs.options.bgPos.x = isFull ? 26 : 0;
-                fs.updateBgPos();
+                fs.setBgPos([isFull ? 26 : 0, 0]);
                 this._zoomToLayer(map, drawn);
             }, this);
         }
 
         if( this.options.outerLinkTemplate ) {
-            var outer = L.functionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: L.point(52, 0), title: this.strings.outerTitle });
+            var outer = L.functionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle });
             outer.on('clicked', function() {
                 var template = this.options.outerLinkTemplate;
                 template = template.replace('{zoom}', map.getZoom()).replace('{lat}', map.getCenter().lat).replace('{lon}', map.getCenter().lng);
