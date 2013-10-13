@@ -6,11 +6,11 @@
 
 All methods return nothing.
 
-* `setStrings( <Object> strings )`: Replaces strings with provided translations. See `strings/English.js` for default values.
-* `show( <HTMLElement/String> div, <String/HTMLElement> bbcode )`: Creates a map inside a given element (can be referenced by id) for given bbcode. can be extracted from an HTML element: it can be in `bbcode` or `value` attributes, or inside it.
-* `editor( <HTMLElement/String> div, <String/HTMLTextArea> bbcode, <Function> callback, context )`: Creates an editor in the given panel, possibly pre-initialized with bbcode. The latter is either a string or a textarea, in latter case caret position is taken into account, and the code is replaced after applying changes.
+* `setStrings( <Object> strings )`: replaces strings with provided translations. See `strings/English.js` for default values.
+* `show( <HTMLElement/String> div, <String/HTMLElement> bbcode )`: creates a map inside a given element (can be referenced by id) for given bbcode. can be extracted from an HTML element: it can be in `bbcode` or `value` attributes, or inside it.
+* `editor( <HTMLElement/String> div, <String/HTMLTextArea> bbcode, callback, context )`: creates an editor in the given panel, possibly pre-initialized with bbcode. The latter is either a string or a textarea, in latter case caret position is taken into account, and the code is replaced after applying changes.
     Returns an object `{ <L.Map> map, close(), getBBCode(), updateBBCode( <String/HTMLTextArea bbcode ) }` which can be used to control the editor when it is opened. Calls `callback` when "Apply" or "Cancel" buttons are clicked, with a single parameter of new bbcode.
-* `editorWindow( <String/HTMLTextArea> bbcode, <Function> callback, context )`: Opens a new window with an editor for given bbcode (see `editor()`). Does not return anything.
+* `editorWindow( <String/HTMLTextArea> bbcode, callback, context )`: opens a new window with an editor for given bbcode (see `editor()`). Does not return anything.
 
 ## Options
 
@@ -29,7 +29,7 @@ Usually configurable by a forum administrator:
 | `windowWidth` | Number | `800` | Width of an editor window, if `editorWindow()` method is used.
 | `windowHeight` | Number | `500` | Height of an editor window, if `editorWindow()` method is used.
 | `preferStandardLayerSwitcher` | Boolean | `true` | If this option is `false` and `L.StaticLayerSwitcher` class is present, it will be used instead of a standard Leaflet layers control.
-| `allowedHTML` | String | `'[auib]|span|br|em|strong|tt'` | Regular expression that matches all HTML tags allowed in object titles.
+| `allowedHTML` | String | *see sorce code* | Regular expression that matches all HTML tags allowed in object titles.
 | `outerLinkTemplate` | String | `''` | Template for outer link for displayed map center and zoom. Example: `'http://openstreetmap.org/#map={zoom}/{lat}/{lon}'`. If not specified, outer link button is not shown.
 
 Map layers are specified by any of those options. If none are included, an OpenStreetMap default layer is used.
@@ -51,7 +51,7 @@ Other options:
 | `enablePolygons` | Boolean | `true` | Whether to show polygon drawing button in the editing toolbar.
 | `showHelp` | Boolean | `true` | Whether to show help button in the editor.
 | `editorCloseButtons` | Boolean | `true` | Whether to show "Apply" and "Cancel" buttons in the editor.
-| `windowFeatures` | String | `'resizable,status,dialog'` | Parameters for `window.open()` used for opening an editor window.
+| `windowFeatures` | String | 'resizable,status,dialog' | Parameters for `window.open()` used for opening an editor window.
 | `usePreparedWindow` | Boolean or String | `true` | Whether to use `mapbbcode-window.html` (recommended) or create an editor window from scratch (may fail). If it is a string, it specifies an URL of opened page.
 | `libPath` | String | `'lib/'` | Path to `mapbbcode-window.html`, MapBBCode and Leaflet libraries. Should end with a slash. Is used only in `editorWindow()`, if `usePreparedWindow` is not a string.
 
@@ -59,15 +59,15 @@ Other options:
 
 Since the [BBCode specification](BBCODE.md) states that the only customizable part of [map] bbcode is object parameter set, parameter processing and editing panels in the editor have been made pluggable. There are two mandatory modules (text and color) and several example modules.
 
-To create a new parameter module, you have to push to `window.MapBBCode.objectParams` array an object with the following properties and methods:
+To create a new parameter module, you have to push to `window.MapBBCode.objectParams` array an object with the following properties and methods (only the first four are mandatory):
 
-* `<RegExp>   reKeys`: regular expression that matches parameters that are processed by this module.
+* `<RegExp>   reKeys`: regular expression that matches parameters processed by this module.
 * `<Boolean>  applicableTo( <ILayer> layer )`: tests that given layer can contain module's properties.
 * `           objectToLayer( <ILayer> layer, <String[]> params )`: modifies the layer according to the properties, which are filtered by `reKeys`, so there usually is no more than one.
 * `<String[]> layerToObject( <ILayer> layer, <String[]> lastParams )`: reads properties off the layer and returns them in a string array. `lastParams` array contains properties that the object had before it was edited.
-* `           initLayer( <ILayer> layer )`: initialized newly created layer with default property values.
+* `           initLayer( <ILayer> layer )`: initializes newly created layer with default property values.
 * `           initDrawControl( <Control.Draw> draw )`: modifies [Leaflet.draw](https://github.com/leaflet/leaflet.draw) control according to default property values.
-* `<HTMLElement> createEditorPanel( <ILayer>layer )`: created a panel that will be included in an object popup. It should read and allow editing the property that's processed by the module.
+* `<HTMLElement> createEditorPanel( <ILayer>layer )`: creates a panel that will be included in an object popup. It should read and allow editing the property that's processed by the module.
 
 # Configuration Tool
 
@@ -76,7 +76,7 @@ It requires `window.layerList` and `L.StaticLayerSwitcher` for easier editing of
 
 ## Options
 
-`MapBBCodeConfig` class includes all options listed above in "configurable by a forum administrator" table, except the last three (`preferStandardLayerSwitcher`, `allowedHTML` and `outerLinkTemplate`). Instead there are additional options for configuring the configuration panel:
+The `MapBBCodeConfig` class includes all options listed above in "configurable by a forum administrator" table, except the last three (`preferStandardLayerSwitcher`, `allowedHTML` and `outerLinkTemplate`). Instead there are additional options for configuring the configuration panel:
 
 | Option | Type | Default | Description
 |---|---|---|---
@@ -86,10 +86,10 @@ It requires `window.layerList` and `L.StaticLayerSwitcher` for easier editing of
 
 ## Methods
 
-* `setStrings( <Object> strings )`: Replaces strings with provided translations. See `strings/English.Config.js` for default values.
-* `addLayer( <String> id )`: Add a layer to the list. See `window.layerList`.
-* `show( <HTMLElement/String> div )`: Shows a map panel with all the controls inside a given element (can be specified by its id).
-* `bindLayerAdder( <Object> elements )`: Add listeners and labels to several input elements for adding layers:
+* `setStrings( <Object> strings )`: replaces strings with provided translations. See `strings/English.Config.js` for default values.
+* `addLayer( <String> id )`: adds a layer to the list. See `window.layerList`.
+* `show( <HTMLElement/String> div )`: shows a map panel with controls inside a given element (can be specified by its id).
+* `bindLayerAdder( <Object> elements )`: adds listeners and labels to several input elements for adding layers:
 
 | bindLayerAdder option | What does it reference
 |---|---
@@ -133,7 +133,7 @@ When clicked, the control emits a Leaflet event `clicked` with a single data pro
 
 ### L.FunctionButton
 
-This is a subclass of `L.FunctionButtons` designed to work with a single action. It accepts a single object in a contructor, its `setContent()`, `setTitle()` and `setBgPos()` methods accept a single parameter.
+This is a subclass of `L.FunctionButtons` designed to work with a single action. It accepts a single object with options in the contructor, its `setContent()`, `setTitle()` and `setBgPos()` methods accept a single parameter.
 
 ## L.StaticLayerSwitcher
 
@@ -175,11 +175,11 @@ When active, the layer switcher emits following Leaflet events:
 
 This object (not a class!) holds a list of layers that can be used on a leaflet map, and more specifically, as a MapBBCode base layer. It is by no means complete and includes only the most popular and distinctive layers.
 
-The list itself is in the `list` property: it is an array of strings, which have to be passed to `eval()` to be converted into a Leaflet `ILayer` object. Some of entries contain `{key:<url>}` substring. It means that the layer requires a developer key (and the link is for its website). This substring has to be replace with an actual key.
+The list itself is in the `list` property: it is an array of strings, which have to be passed to `eval()` to be converted into a Leaflet `ILayer` object. Some of entries contain `{key:<url>}` substring. It means that the layer requires a developer key (and the link is for its website). This substring has to be replaced with an actual key.
 
 The object has some methods to simplify working with the layer list:
 
 * `<String[]> getSortedKeys()`: returns a sorted list of layer keys (every key is essentially a human-readable label).
 * `<Boolean>  requiresKey( <String> id )`: checks if the layer for a given id requires a developer key.
 * `<String>   getKeyLink( <String> id )`: returns an URL for a developer key required for a layer, or an empty string if there is no URL or the layer does not need a key.
-* `<ILayer[]> getLeafletLayers( <String[]> ids, <Leaflet> L ): converts an array of ids to array of layers ready to be added to a Leaflet map.
+* `<ILayer[]> getLeafletLayers( <String[]> ids, <Leaflet> L )`: converts an array of ids to array of layers ready to be added to a Leaflet map.
