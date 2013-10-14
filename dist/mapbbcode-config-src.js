@@ -14,7 +14,7 @@ L.StaticLayerSwitcher = L.Control.extend({
     includes: L.Mixin.Events,
 
     options: {
-        postition: 'topright',
+        position: 'topright',
         editable: false,
         bgColor: 'white',
         selectedColor: '#ddd',
@@ -34,6 +34,13 @@ L.StaticLayerSwitcher = L.Control.extend({
                     this.addLayer(id, layers[id]);
             }
         }
+    },
+
+    getLayers: function() {
+        var result = [];
+        for( var i = 0; i < this._layers.length; i++ )
+            result.push(this._layers[i].layer);
+        return result;
     },
 
     getLayerIds: function() {
@@ -70,7 +77,9 @@ L.StaticLayerSwitcher = L.Control.extend({
                 }
             }
             this._update();
+            return layer;
         }
+        return null;
     },
 
     addLayer: function( id, layer ) {
@@ -82,9 +91,10 @@ L.StaticLayerSwitcher = L.Control.extend({
             this._update();
             this.fire('layerschanged', { layers: this.getLayerIds() });
             if( this._layers.length == 1 )
-                this.fire('selectionchanged', { selected: this.getSelectedLayer() });
+                this.fire('selectionchanged', { selected: this.getSelectedLayer(), selectedId: this.getSelectedLayerId() });
+            return layer;
         }
-        return this;
+        return null;
     },
 
     removeLayer: function( layer ) {
@@ -99,8 +109,10 @@ L.StaticLayerSwitcher = L.Control.extend({
             this._update();
             this.fire('layerschanged', { layers: this.getLayerIds() });
             if( removingSelected )
-                this.fire('selectionchanged', { selected: this.getSelectedLayer() });
+                this.fire('selectionchanged', { selected: this.getSelectedLayer(), selectedId: this.getSelectedLayerId() });
+            return layer;
         }
+        return null;
     },
 
     moveLayer: function( layer, moveDown ) {
@@ -157,7 +169,7 @@ L.StaticLayerSwitcher = L.Control.extend({
             if( this._selected != index ) {
                 this._selected = index;
                 this._update();
-                this.fire('selectionchanged', { selected: this.getSelectedLayer() });
+                this.fire('selectionchanged', { selected: this.getSelectedLayer(), selectedId: this.getSelectedLayerId() });
             }
         }, this);
         return div;
@@ -359,8 +371,8 @@ window.MapBBCodeConfig = L.Class.extend({
         viewHeight: 300,
         fullViewHeight: 600,
         editorHeight: 400,
-        windowWidth: 600,
-        windowHeight: 400,
+        windowWidth: 800,
+        windowHeight: 500,
         fullFromStart: false,
         editorInWindow: true,
         editorTypeFixed: false,
@@ -676,13 +688,6 @@ L.FunctionButtons = L.Control.extend({
         return container;
     },
 
-    setContent: function( n, content ) {
-        if( n >= this._content.length )
-            return;
-        this._content[n] = content;
-        this._updateContent(n);
-    },
-
     _updateContent: function( n ) {
         if( n >= this._content.length )
             return;
@@ -697,7 +702,7 @@ L.FunctionButtons = L.Control.extend({
                 link.style.padding = '0';
                 link.style.backgroundImage = 'url(' + content + ')';
                 link.style.backgroundRepeat = 'no-repeat';
-                link.style.backgroundPosition = !this.options.bgPos ? '0px 0px' : (-this.options.bgPos.x) + 'px ' + (-this.options.bgPos.y) + 'px';
+                link.style.backgroundPosition = this.options.bgPos && this.options.bgPos.length > n && this.options.bgPos[n] ? (-this.options.bgPos[n][0]) + 'px ' + (-this.options.bgPos[n][1]) + 'px' : '0px 0px';
             } else
                 link.innerHTML = content;
         } else {
@@ -707,13 +712,21 @@ L.FunctionButtons = L.Control.extend({
         }
     },
 
+    setContent: function( n, content ) {
+        if( n >= this._content.length )
+            return;
+        this._content[n] = content;
+        this._updateContent(n);
+    },
+
     setTitle: function( n, title ) {
         this.options.titles[n] = title;
         this._links[n].title = title;
     },
 
-    updateBgPos: function() {
-        this._links[0].style.backgroundPosition = !this.options.bgPos ? '0px 0px' : (-this.options.bgPos.x) + 'px ' + (-this.options.bgPos.y) + 'px';
+    setBgPos: function( n, bgPos ) {
+        this.options.bgPos[n] = bgPos;
+        this._links[n].style.backgroundPosition = bgPos ? (-bgPos[0]) + 'px ' + (-bgPos[1]) + 'px' : '0px 0px';
     },
 
     clicked: function(e) {
@@ -733,6 +746,8 @@ L.FunctionButton = L.FunctionButtons.extend({
     initialize: function( content, options ) {
         if( options.title )
             options.titles = [options.title];
+        if( options.bgPos )
+            options.bgPos = [options.bgPos];
         L.FunctionButtons.prototype.initialize.call(this, [content], options);
     },
 
@@ -742,6 +757,10 @@ L.FunctionButton = L.FunctionButtons.extend({
 
     setTitle: function( title ) {
         L.FunctionButtons.prototype.setTitle.call(this, 0, title);
+    },
+    
+    setBgPos: function( bgPos ) {
+        L.FunctionButtons.prototype.setBgPos.call(this, 0, bgPos);
     }
 });
 

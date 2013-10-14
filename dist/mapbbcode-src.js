@@ -284,7 +284,7 @@ window.MapBBCode = L.Class.extend({
         var el = typeof element === 'string' ? document.getElementById(element) : element;
         if( !el ) return;
         if( !bbcode )
-            bbcode = el.getAttribute('bbcode') || el.innerHTML.replace(/^\s+|\s+$/g, '');
+            bbcode = el.getAttribute('bbcode') || el.getAttribute('value') || el.innerHTML.replace(/^\s+|\s+$/g, '');
         if( !bbcode ) return;
         while( el.firstChild )
             el.removeChild(el.firstChild);
@@ -307,7 +307,7 @@ window.MapBBCode = L.Class.extend({
         this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 
         if( this.options.fullScreenButton && !this.options.fullFromStart ) {
-            var fs = new L.FunctionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: L.point(0, 0), title: this.strings.fullScreenTitle }),
+            var fs = new L.FunctionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [0, 0], title: this.strings.fullScreenTitle }),
                 isFull = false, oldSize;
             map.addControl(fs);
             fs.on('clicked', function() {
@@ -318,14 +318,13 @@ window.MapBBCode = L.Class.extend({
                 style.width = isFull ? '100%' : oldSize[0];
                 style.height = isFull ? this._px(this.options.fullViewHeight) : oldSize[1];
                 map.invalidateSize();
-                fs.options.bgPos.x = isFull ? 26 : 0;
-                fs.updateBgPos();
+                fs.setBgPos([isFull ? 26 : 0, 0]);
                 this._zoomToLayer(map, drawn);
             }, this);
         }
 
         if( this.options.outerLinkTemplate ) {
-            var outer = L.functionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: L.point(52, 0), title: this.strings.outerTitle });
+            var outer = L.functionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle });
             outer.on('clicked', function() {
                 var template = this.options.outerLinkTemplate;
                 template = template.replace('{zoom}', map.getZoom()).replace('{lat}', map.getCenter().lat).replace('{lon}', map.getCenter().lng);
@@ -381,13 +380,6 @@ L.FunctionButtons = L.Control.extend({
         return container;
     },
 
-    setContent: function( n, content ) {
-        if( n >= this._content.length )
-            return;
-        this._content[n] = content;
-        this._updateContent(n);
-    },
-
     _updateContent: function( n ) {
         if( n >= this._content.length )
             return;
@@ -402,7 +394,7 @@ L.FunctionButtons = L.Control.extend({
                 link.style.padding = '0';
                 link.style.backgroundImage = 'url(' + content + ')';
                 link.style.backgroundRepeat = 'no-repeat';
-                link.style.backgroundPosition = !this.options.bgPos ? '0px 0px' : (-this.options.bgPos.x) + 'px ' + (-this.options.bgPos.y) + 'px';
+                link.style.backgroundPosition = this.options.bgPos && this.options.bgPos.length > n && this.options.bgPos[n] ? (-this.options.bgPos[n][0]) + 'px ' + (-this.options.bgPos[n][1]) + 'px' : '0px 0px';
             } else
                 link.innerHTML = content;
         } else {
@@ -412,13 +404,21 @@ L.FunctionButtons = L.Control.extend({
         }
     },
 
+    setContent: function( n, content ) {
+        if( n >= this._content.length )
+            return;
+        this._content[n] = content;
+        this._updateContent(n);
+    },
+
     setTitle: function( n, title ) {
         this.options.titles[n] = title;
         this._links[n].title = title;
     },
 
-    updateBgPos: function() {
-        this._links[0].style.backgroundPosition = !this.options.bgPos ? '0px 0px' : (-this.options.bgPos.x) + 'px ' + (-this.options.bgPos.y) + 'px';
+    setBgPos: function( n, bgPos ) {
+        this.options.bgPos[n] = bgPos;
+        this._links[n].style.backgroundPosition = bgPos ? (-bgPos[0]) + 'px ' + (-bgPos[1]) + 'px' : '0px 0px';
     },
 
     clicked: function(e) {
@@ -438,6 +438,8 @@ L.FunctionButton = L.FunctionButtons.extend({
     initialize: function( content, options ) {
         if( options.title )
             options.titles = [options.title];
+        if( options.bgPos )
+            options.bgPos = [options.bgPos];
         L.FunctionButtons.prototype.initialize.call(this, [content], options);
     },
 
@@ -447,6 +449,10 @@ L.FunctionButton = L.FunctionButtons.extend({
 
     setTitle: function( title ) {
         L.FunctionButtons.prototype.setTitle.call(this, 0, title);
+    },
+    
+    setBgPos: function( bgPos ) {
+        L.FunctionButtons.prototype.setBgPos.call(this, 0, bgPos);
     }
 });
 
@@ -837,7 +843,7 @@ window.MapBBCode.include({
             featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth,
             basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1],
             libUrl = basePath + this.options.libPath,
-            win = window.open(this.options.usePreparedWindow ? libUrl + 'mapbbcode-window.html' : '', 'mapbbcode_editor', features + ',' + featSize);
+            win = window.open(this.options.usePreparedWindow ? (typeof this.options.usePreparedWindow === 'string' ? this.options.usePreparedWindow : libUrl + 'mapbbcode-window.html') : '', 'mapbbcode_editor', features + ',' + featSize);
 
         if( !this.options.usePreparedWindow ) {
             var content = '<script src="' + libUrl + 'leaflet.js"></script>';
