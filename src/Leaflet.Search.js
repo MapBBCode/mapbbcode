@@ -42,7 +42,7 @@ L.Control.Search = L.Control.extend({
         input.style.border = '1px solid grey';
         input.style.padding = '0 0 0 10px';
         form.appendChild(input);
-        L.DomEvent.on(form, 'submit', function(e) { this._doSearch(input.value); return false; }, this).on(form, 'submit', L.DomEvent.preventDefault);
+        L.DomEvent.on(form, 'submit', function() { this._doSearch(input.value); return false; }, this).on(form, 'submit', L.DomEvent.preventDefault);
         container.appendChild(form);
 
         return container;
@@ -75,7 +75,7 @@ L.Control.Search = L.Control.extend({
             q: query,
             format: 'json',
             limit: 1,
-            json_callback: callback
+            'json_callback': callback
         };
         if( this.options.email )
             queryParams.email = this.options.email;
@@ -88,6 +88,7 @@ L.Control.Search = L.Control.extend({
         document.getElementsByTagName('head')[0].appendChild(script);
     },
 
+    /* jshint laxbreak: true */
     _icon: 'data:image/png;base64,'
         +'iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAYAAADFeBvrAAAABHNCSVQICAgIfAhkiAAAAAlwSFlz'
         +'AAAL/wAAC/8Bk9f7AQAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAOnSURB'
@@ -112,4 +113,4 @@ L.Control.Search = L.Control.extend({
 
 L.control.search = function( options ) {
     return new L.Control.Search(options);
-}
+};
