@@ -3,8 +3,10 @@
 <script src="../dist/lib/leaflet.js"></script>
 <script src="../src/config/LayerList.js"></script>
 <script src="../src/config/StaticLayerSwitcher.js"></script>
+<script src="../src/Leaflet.Search.js"></script>
 <div id="map" style="height: 100%;"></div>
 <script>
 var map = L.map('map').setView([59.9, 30.3], 13);
-map.addControl(L.staticLayerSwitcher(['OpenStreetMap', 'CycleMap', 'MapSurfer']));
+map.addControl(L.staticLayerSwitcher(['OpenStreetMap', 'CycleMap', 'OpenMapSurfer']));
+map.addControl(L.control.search());
 </script>

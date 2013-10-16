@@ -114,6 +114,8 @@ window.MapBBCode.include({
 
         var map = L.map(mapDiv, L.extend({}, { zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
+        if( L.Control.Search )
+            map.addControl(new L.Control.Search());
         this._addLayers(map);
 
         var drawn = new L.FeatureGroup();

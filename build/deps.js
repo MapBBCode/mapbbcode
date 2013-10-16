@@ -37,6 +37,11 @@ var deps = {
                 heading: 'Plugins'
         },
 
+        Search: {
+		src: ['Leaflet.Search.js'],
+		desc: 'Nominatim Search Control'
+        },
+
         LayerSwitcher: {
                 src: ['config/StaticLayerSwitcher.js'],
                 desc: 'Layer switcher that is not a single button',
