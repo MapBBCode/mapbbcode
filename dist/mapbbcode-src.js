@@ -209,11 +209,11 @@ window.MapBBCode = L.Class.extend({
             if( stored && stored.pos ) {
                 map.setView(stored.pos, stored.zoom || this.options.maxInitialZoom);
             } else {
-                var maxZoom = this.options.maxInitialZoom;
+                var maxZoom = Math.max(this.options.maxInitialZoom, initial ? 0 : map.getZoom());
                 map.fitBounds(bounds, { animate: false });
                 if( stored && stored.zoom )
                     map.setZoom(stored.zoom, { animate: false });
-                else if( initial && map.getZoom() > maxZoom )
+                else if( map.getZoom() > maxZoom )
                     map.setZoom(maxZoom, { animate: false });
             }
         };
@@ -1035,7 +1035,7 @@ L.Control.Search = L.Control.extend({
         link.href = '#';
         link.style.width = '26px';
         link.style.height = '26px';
-        link.style.backgroundImage = 'url(data:image/base64:' + this._icon + ')';
+        link.style.backgroundImage = 'url(' + this._icon + ')';
         link.style.backgroundSize = '26px 26px';
         link.style.backgroundRepeat = 'no-repeat';
         link.title = this.options.title;
@@ -1046,17 +1046,17 @@ L.Control.Search = L.Control.extend({
             .on(link, 'mousedown', stop)
             .on(link, 'dblclick', stop)
             .on(link, 'click', L.DomEvent.preventDefault)
-            .on(link, 'click', this._expand, this);
+            .on(link, 'click', this._toggle, this);
 
 
         var form = this._form = document.createElement('form');
         form.style.display = 'none';
         form.style.position = 'absolute';
         form.style.left = '27px';
-        form.style.top = '-1px';
+        form.style.top = '0px';
         form.style.zIndex = -10;
         var input = this._input = document.createElement('input');
-        input.style.height = '28px';
+        input.style.height = '25px';
         input.style.border = '1px solid grey';
         input.style.padding = '0 0 0 10px';
         form.appendChild(input);
@@ -1066,9 +1066,13 @@ L.Control.Search = L.Control.extend({
         return container;
     },
 
-    _expand: function() {
-        this._form.style.display = 'block';
-        this._input.focus();
+    _toggle: function() {
+        if( this._form.style.display != 'block' ) {
+            this._form.style.display = 'block';
+            this._input.focus();
+        } else {
+            this._collapse();
+        }
     },
 
     _collapse: function() {

@@ -35,10 +35,10 @@ L.Control.Search = L.Control.extend({
         form.style.display = 'none';
         form.style.position = 'absolute';
         form.style.left = '27px';
-        form.style.top = '-1px';
+        form.style.top = '0px';
         form.style.zIndex = -10;
         var input = this._input = document.createElement('input');
-        input.style.height = '28px';
+        input.style.height = '25px';
         input.style.border = '1px solid grey';
         input.style.padding = '0 0 0 10px';
         form.appendChild(input);
