@@ -17,7 +17,7 @@ L.Control.Search = L.Control.extend({
         link.href = '#';
         link.style.width = '26px';
         link.style.height = '26px';
-        link.style.backgroundImage = 'url(data:image/base64:' + this._icon + ')';
+        link.style.backgroundImage = 'url(' + this._icon + ')';
         link.style.backgroundSize = '26px 26px';
         link.style.backgroundRepeat = 'no-repeat';
         link.title = this.options.title;
@@ -28,7 +28,7 @@ L.Control.Search = L.Control.extend({
             .on(link, 'mousedown', stop)
             .on(link, 'dblclick', stop)
             .on(link, 'click', L.DomEvent.preventDefault)
-            .on(link, 'click', this._expand, this);
+            .on(link, 'click', this._toggle, this);
 
 
         var form = this._form = document.createElement('form');
@@ -48,9 +48,13 @@ L.Control.Search = L.Control.extend({
         return container;
     },
 
-    _expand: function() {
-        this._form.style.display = 'block';
-        this._input.focus();
+    _toggle: function() {
+        if( this._form.style.display != 'block' ) {
+            this._form.style.display = 'block';
+            this._input.focus();
+        } else {
+            this._collapse();
+        }
     },
 
     _collapse: function() {
