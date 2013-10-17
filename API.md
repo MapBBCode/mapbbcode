@@ -183,3 +183,10 @@ The object has some methods to simplify working with the layer list:
 * `<Boolean>  requiresKey( <String> id )`: checks if the layer for a given id requires a developer key.
 * `<String>   getKeyLink( <String> id )`: returns an URL for a developer key required for a layer, or an empty string if there is no URL or the layer does not need a key.
 * `<ILayer[]> getLeafletLayers( <String[]> ids, <Leaflet> L )`: converts an array of ids to array of layers ready to be added to a Leaflet map.
+
+## L.Control.Search
+
+Every search control on the Leaflet plugins page has flaws. This is an attempt on making a simple, good-looking (though not as good as MapBox's closed-source one) search control. You just click a button, type a string and press Enter key. There are only two configurable options:
+
+* `title`: title text on the control.
+* `email`: e-mail address that will be sent to Nominatim server. It can be used for determining a source of suspicious activity. You should use this option, especially if the control is installed on a popular website.

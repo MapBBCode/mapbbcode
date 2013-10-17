@@ -49,7 +49,7 @@ Later this whole block will be conditional, depending on a presence of bbcode ta
 `[map]...[/map]` sequence should be replaced with the following template code:
 
     <div id="map{DIVID}">{MAPBBCODE}</div>
-    <script language="javascript">mapBBcode.show('map{DIVID}');</script>
+    <script language="javascript">if(mapBBcode) mapBBcode.show('map{DIVID}');</script>
 
 Here `{MAPBBCODE}` is the entire bbcode, including the enclosing [map] tags (they could contain map zoom and coordinates). `{DIVID}` is a unique identifier of this bbcode. Not a hash of bbcode string, and not a post identifier (imagine two identical maps in a single post). Ideally this is a big random number.
 
@@ -63,8 +63,8 @@ And then grouping quotes are parsed into `{DIVID}` (#2) and `{MAPBBCODE}` (#1+#3
 In phpBB3 adding a bbcode didn't require any code modifications, only a database entry in table `phpbb_bbcode`. It essentially transforms to a function call:
 
     preg_replace('!\[map:($uid)(=[0-9,.]+)?\](.*?)\[/map:$uid\]!se',
-    '<div id="map${1}'.$i.'">[map${2}]${3}[/map]</div><script language="javascript">mapBBcode.show(\'map${1}'.
-        ($i++).'\');</script>', $message);
+    '<div id="map${1}'.$i.'">[map${2}]${3}[/map]</div><script language="javascript">'.
+    'if(mapBBcode) mapBBcode.show(\'map${1}'.($i++).'\');</script>', $message);
 
 ### Add button to a posting page
 
@@ -101,6 +101,10 @@ mapBBcode.setStrings({
 See src/strings/English.js in MapBBCode repository for the full list of properties. Here `{L_WHATEVER}` are template variables that contain translated strings. Some engines would require to initialize these variables somewhere in code. Don't forget to screen `'` and `\` characters.
 
 The last property, `helpContents`, is an array of strings. It looks like `['line1', 'line2', ..., 'final line']`. It's up to you how this property is defined in a language file (preferably also as an array) and assigned to a template variable.
+
+### Disable maps in signatures
+
+Allowing maps in user signatures is highly undesirable, like having videos or big images in them. If a forum engine processes signatures even slightly different than message bodies, you should find a way to leave [map] bbcode in signatures as is. For example, in phpBB there are options for disabling some of bbcode in signatures, so turning [map] off was just a matter of copying and pasting.
 
 ### Configuration
 
