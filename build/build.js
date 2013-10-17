@@ -177,6 +177,7 @@ exports.pack = function() {
         'cp -r dist/lib ' + target + 'mapbbcode',
         'cp dist/mapbbcode.js ' + target + 'mapbbcode/',
         'cp dist/mapbbcode-config.js ' + target + 'mapbbcode/',
+        'cp dist/mapbbcode-window.html ' + target + 'mapbbcode/',
         'rm -f dist/' + archive,
         'cd ' + target + '; zip -r ../' + archive + ' *',
         'rm -r ' + target
