@@ -166,3 +166,20 @@ exports.build = function (compsBase32, buildName) {
 exports.cfg = function (compsBase32, buildName) {
     exports.build(compsBase32, 'config');
 };
+
+exports.pack = function() {
+    var jake = require('jake'),
+        target = 'dist/target/',
+        archive = 'mapbbcode-'+(exports.version||'dev')+'.zip';
+    var commands = [
+        'mkdir -p ' + target + 'docs',
+        'cp *.md ' + target + 'docs',
+        'cp -r dist/lib ' + target + 'mapbbcode',
+        'cp dist/mapbbcode.js ' + target + 'mapbbcode/',
+        'cp dist/mapbbcode-config.js ' + target + 'mapbbcode/',
+        'rm -f dist/' + archive,
+        'cd ' + target + '; zip -r ../' + archive + ' *',
+        'rm -r ' + target
+    ];
+    jake.exec(commands);
+};

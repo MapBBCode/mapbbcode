@@ -11,6 +11,7 @@ To run the tests, run "jake test".
 */
 
 var build = require('./build/build.js');
+build.version = 'dev';
 
 desc('Check MapBBCode source for errors with JSHint');
 task('lint', build.lint);
@@ -23,5 +24,8 @@ task('cfg', ['lint'], build.cfg);
 
 //desc('Run PhantomJS tests');
 //task('test', ['lint'], build.test);
+
+desc('Create archived package of MapBBCode and all dependencies');
+task('pack', ['build', 'cfg'], build.pack);
 
 task('default', ['build', 'cfg']);
