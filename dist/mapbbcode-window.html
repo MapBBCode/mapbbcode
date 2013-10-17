@@ -23,7 +23,7 @@ function edit() {
     var stored = opener.storedMapBB;
     var mapBB = new MapBBCode(stored.caller.options);
     mapBB.setStrings(stored.caller.strings);
-    mapBB.options.editorHeight = '100%';
+    mapBB.options.editorHeight = 0;
     mapBB.editor('edit', stored.bbcode, function(res) {
         window.close();
         if( stored.callback )
