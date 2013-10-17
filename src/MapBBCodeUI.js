@@ -95,11 +95,11 @@ window.MapBBCode = L.Class.extend({
             if( stored && stored.pos ) {
                 map.setView(stored.pos, stored.zoom || this.options.maxInitialZoom);
             } else {
-                var maxZoom = this.options.maxInitialZoom;
+                var maxZoom = Math.max(this.options.maxInitialZoom, initial ? 0 : map.getZoom());
                 map.fitBounds(bounds, { animate: false });
                 if( stored && stored.zoom )
                     map.setZoom(stored.zoom, { animate: false });
-                else if( initial && map.getZoom() > maxZoom )
+                else if( map.getZoom() > maxZoom )
                     map.setZoom(maxZoom, { animate: false });
             }
         };
