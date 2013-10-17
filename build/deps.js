@@ -39,7 +39,7 @@ var deps = {
 
         Search: {
 		src: ['Leaflet.Search.js'],
-		desc: 'Nominatim Search Control'
+		desc: 'Nominatim search control'
         },
 
         LayerSwitcher: {
@@ -80,16 +80,15 @@ var deps = {
 
         StringsEnglishC: {
                 src: ['strings/English.Config.js'],
-                desc: 'English',
-                heading: 'Translations',
-                deps: ['UI'],
+                desc: 'English for Configuration',
+                deps: ['Configuration'],
                 config: true
         },
 
         StringsRussianC: {
                 src: ['strings/Russian.Config.js'],
-                desc: 'Russian',
-                deps: ['UI'],
+                desc: 'Russian for Configuration',
+                deps: ['Configuration'],
                 noInclude: true,
                 config: true,
                 onlyIn: ['russian']
