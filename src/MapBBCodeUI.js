@@ -75,7 +75,7 @@ window.MapBBCode = L.Class.extend({
                 if( handler.reKeys.test(obj.params[j]) )
                     p.push(obj.params[j]);
             handler.objectToLayer(m, handler.text ? obj.text : p, this);
-        }, this);
+        }, this, m);
             
         m._objParams = obj.params;
         return m;

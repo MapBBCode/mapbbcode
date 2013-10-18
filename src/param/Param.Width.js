@@ -13,7 +13,7 @@ window.MapBBCode.objectParams.push({
     reKeys: new RegExp('^w\\d+$'),
     
     applicableTo: function( layer ) {
-        return layer instanceof L.Polyline;
+        return layer instanceof L.Polyline && !(layer instanceof L.Polygon);
     },
 
     // applies relevant params to the layer object
