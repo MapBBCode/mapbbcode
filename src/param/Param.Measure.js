@@ -43,7 +43,7 @@ window.MapBBCode.objectParams.push({
                 value.innerHTML = L.GeometryUtil.readableArea(area, metric);
             } else { // polyline
                 var i, d = 0, latlngs = layer.getLatLngs();
-                for( var i = 1; i < latlngs.length; i++ ) {
+                for( i = 1; i < latlngs.length; i++ ) {
                     d += latlngs[i-1].distanceTo(latlngs[i]);
                 }
                 value.innerHTML = L.GeometryUtil.readableDistance(d, metric);

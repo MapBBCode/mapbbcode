@@ -11,7 +11,7 @@ window.MapBBCode.objectParams.unshift({
     // this regex always fails
     reKeys: new RegExp('a^'),
     
-    applicableTo: function( layer ) {
+    applicableTo: function() {
         return true;
     },
 
