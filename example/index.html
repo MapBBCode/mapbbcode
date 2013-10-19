@@ -35,8 +35,9 @@ var mapBB = new MapBBCode({
         })
     ]}
 });
+var show = mapBB.show('test', document.getElementById('code').value);
 function update() {
-    mapBB.show('test', document.getElementById('code').value);
+    show.updateBBCode(document.getElementById('code').value);
 }
 function edit() {
     mapBB.editor('edit', document.getElementById('code'), function(res) {
@@ -44,5 +45,4 @@ function edit() {
             update();
     });
 }
-update();
 </script>

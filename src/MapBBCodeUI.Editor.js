@@ -255,6 +255,17 @@ window.MapBBCode.include({
                     objs.push(this._layerToObject(layer));
                 }, this._ui);
                 return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
+            },
+            updateBBCode: function( bbcode, noZoom ) {
+                var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
+                drawn.clearLayers();
+                for( var i = 0; i < objs.length; i++ )
+                    this._ui._makeEditable(this._ui._objectToLayer(objs[i]).addTo(drawn), drawn);
+                if( !noZoom )
+                    this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
+            },
+            zoomToData: function() {
+                this._ui.zoomToLayer(map, drawn);
             }
         };
     },

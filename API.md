@@ -4,13 +4,18 @@
 
 ## Methods
 
-All methods return nothing.
-
 * `setStrings( <Object> strings )`: replaces strings with provided translations. See `strings/English.js` for default values.
 * `show( <HTMLElement/String> div, <String/HTMLElement> bbcode )`: creates a map inside a given element (can be referenced by id) for given bbcode. can be extracted from an HTML element: it can be in `bbcode` or `value` attributes, or inside it.
 * `editor( <HTMLElement/String> div, <String/HTMLTextArea> bbcode, callback, context )`: creates an editor in the given panel, possibly pre-initialized with bbcode. The latter is either a string or a textarea, in latter case caret position is taken into account, and the code is replaced after applying changes.
-    Returns an object `{ <L.Map> map, close(), getBBCode(), updateBBCode( <String/HTMLTextArea bbcode ) }` which can be used to control the editor when it is opened. Calls `callback` when "Apply" or "Cancel" buttons are clicked, with a single parameter of new bbcode.
+    Calls `callback` when "Apply" or "Cancel" buttons are clicked, with a single parameter of new bbcode.
 * `editorWindow( <String/HTMLTextArea> bbcode, callback, context )`: opens a new window with an editor for given bbcode (see `editor()`). Does not return anything.
+
+Methods `show` and `editor` return an object with a `map` property and methods to control the panel:
+
+* `close()`: removes all elements, "closes" the panel.
+* `zoomToData()`: zooms and pans the map view to the data.
+* `getBBCode()`: returns BBCode string for objects currently displayed.
+* `updateBBCode( <String> bbcode, <Boolean> noZoom )`: removes all objects in a panel and replaces them with those defined in the given bbcode. If `noZoom` is `true`, doesn't zoom and pan to new objects.
 
 ## Options
 

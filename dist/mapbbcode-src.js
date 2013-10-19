@@ -285,7 +285,7 @@ window.MapBBCode = L.Class.extend({
         if( !el ) return;
         if( !bbcode )
             bbcode = el.getAttribute('bbcode') || el.getAttribute('value') || el.innerHTML.replace(/^\s+|\s+$/g, '');
-        if( !bbcode ) return;
+        if( !bbcode || typeof bbcode !== 'string' ) return;
         while( el.firstChild )
             el.removeChild(el.firstChild);
         if( this._hideClassPresent(el) )
@@ -332,6 +332,31 @@ window.MapBBCode = L.Class.extend({
             }, this);
             map.addControl(outer);
         }
+
+        return {
+            _ui: this,
+            map: map,
+            close: function() {
+                this.map = null;
+                this._ui = null;
+                el.removeChild(el.firstChild);
+            },
+            getBBCode: function() {
+                return bbcode;
+            },
+            updateBBCode: function( bbcode1, noZoom ) {
+                bbcode = bbcode1;
+                var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
+                drawn.clearLayers();
+                for( var i = 0; i < objs.length; i++ )
+                    this._ui._objectToLayer(objs[i]).addTo(drawn);
+                if( !noZoom )
+                    this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
+            },
+            zoomToData: function() {
+                this._ui._zoomToLayer(map, drawn);
+            }
+        };
     }
 });
 
@@ -828,6 +853,17 @@ window.MapBBCode.include({
                     objs.push(this._layerToObject(layer));
                 }, this._ui);
                 return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
+            },
+            updateBBCode: function( bbcode, noZoom ) {
+                var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
+                drawn.clearLayers();
+                for( var i = 0; i < objs.length; i++ )
+                    this._ui._makeEditable(this._ui._objectToLayer(objs[i]).addTo(drawn), drawn);
+                if( !noZoom )
+                    this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
+            },
+            zoomToData: function() {
+                this._ui.zoomToLayer(map, drawn);
             }
         };
     },
