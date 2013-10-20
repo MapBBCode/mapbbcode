@@ -118,17 +118,17 @@ window.MapBBCode.include({
             map.addControl(new L.Control.Search());
         this._addLayers(map);
 
-        var drawn = new L.FeatureGroup();
-        drawn.addTo(map);
-
         var textArea;
         if( typeof bbcode !== 'string' ) {
             textArea = bbcode;
             bbcode = this._findMapInTextArea(textArea);
         }
+
+        var drawn = new L.FeatureGroup();
         var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
         for( var i = 0; i < objs.length; i++ )
             this._makeEditable(this._objectToLayer(objs[i]).addTo(drawn), drawn);
+        drawn.addTo(map);
         this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 
         // now is the time to update leaflet.draw strings
@@ -259,8 +259,10 @@ window.MapBBCode.include({
             updateBBCode: function( bbcode, noZoom ) {
                 var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
                 drawn.clearLayers();
+                map.removeLayer(drawn); // so options set after object creation could be set
                 for( var i = 0; i < objs.length; i++ )
                     this._ui._makeEditable(this._ui._objectToLayer(objs[i]).addTo(drawn), drawn);
+                map.addLayer(drawn);
                 if( !noZoom )
                     this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
             },
