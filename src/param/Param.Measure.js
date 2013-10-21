@@ -30,7 +30,6 @@ window.MapBBCode.objectParams.push({
         else
             return;
         var measureDiv = document.createElement('div');
-        measureDiv.style.clear = 'both';
         measureDiv.style.textAlign = 'left';
         measureDiv.style.marginBottom = '4px';
         measureDiv.appendChild(document.createTextNode(title + ':'));

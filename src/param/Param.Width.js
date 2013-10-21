@@ -77,6 +77,9 @@ window.MapBBCode.objectParams.push({
             col2.onclick = colOnclick;
             col.appendChild(col2);
         }
+        var anotherDiv = document.createElement('div');
+        anotherDiv.style.clear = 'both';
+        colorDiv.appendChild(anotherDiv);
         return colorDiv;
     }
 });
