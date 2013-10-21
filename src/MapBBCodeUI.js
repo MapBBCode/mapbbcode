@@ -31,6 +31,7 @@ window.MapBBCode = L.Class.extend({
         letterIcons: true,
         enablePolygons: true,
         preferStandardLayerSwitcher: true,
+        decimalDigits: 5,
         hideInsideClasses: []
     },
 

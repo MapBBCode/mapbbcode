@@ -202,6 +202,7 @@ window.MapBBCode.include({
                     objs.push(this._layerToObject(layer));
                 }, this);
                 el.removeChild(el.firstChild);
+                window.MapBBCodeProcessor.decimalDigits = this.options.decimalDigits;
                 var newCode = window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
                 if( textArea )
                     this._updateMapInTextArea(textArea, bbcode, newCode);
@@ -254,6 +255,7 @@ window.MapBBCode.include({
                 drawn.eachLayer(function(layer) {
                     objs.push(this._layerToObject(layer));
                 }, this._ui);
+                window.MapBBCodeProcessor.decimalDigits = _ui.options.decimalDigits;
                 return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
             },
             updateBBCode: function( bbcode, noZoom ) {

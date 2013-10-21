@@ -2,6 +2,8 @@
  * Map BBCode parser and producer. See BBCODE.md for description.
  */
 window.MapBBCodeProcessor = {
+    decimalDigits: 5,
+
     _getRegExp: function() {
         var reCoord = '\\s*(-?\\d+(?:\\.\\d+)?)\\s*,\\s*(-?\\d+(?:\\.\\d+)?)',
             reParams = '\\((?:([a-zA-Z0-9,]*)\\|)?(|[\\s\\S]*?[^\\\\])\\)',
@@ -98,7 +100,7 @@ window.MapBBCodeProcessor = {
     },
 
     _latLngToString: function( latlng ) {
-        var mult = Math.pow(10, 5);
+        var mult = Math.pow(10, this.decimalDigits);
         return '' + (Math.round((latlng.lat || latlng[0]) * mult) / mult) + ',' + (Math.round((latlng.lng || latlng[1]) * mult) / mult);
     }
 };
