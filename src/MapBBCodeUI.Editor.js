@@ -255,7 +255,7 @@ window.MapBBCode.include({
                 drawn.eachLayer(function(layer) {
                     objs.push(this._layerToObject(layer));
                 }, this._ui);
-                window.MapBBCodeProcessor.decimalDigits = _ui.options.decimalDigits;
+                window.MapBBCodeProcessor.decimalDigits = this._ui.options.decimalDigits;
                 return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
             },
             updateBBCode: function( bbcode, noZoom ) {

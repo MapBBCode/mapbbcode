@@ -10,6 +10,8 @@ L = window.L;
  * Map BBCode parser and producer. See BBCODE.md for description.
  */
 window.MapBBCodeProcessor = {
+    decimalDigits: 5,
+
     _getRegExp: function() {
         var reCoord = '\\s*(-?\\d+(?:\\.\\d+)?)\\s*,\\s*(-?\\d+(?:\\.\\d+)?)',
             reParams = '\\((?:([a-zA-Z0-9,]*)\\|)?(|[\\s\\S]*?[^\\\\])\\)',
@@ -106,7 +108,7 @@ window.MapBBCodeProcessor = {
     },
 
     _latLngToString: function( latlng ) {
-        var mult = Math.pow(10, 5);
+        var mult = Math.pow(10, this.decimalDigits);
         return '' + (Math.round((latlng.lat || latlng[0]) * mult) / mult) + ',' + (Math.round((latlng.lng || latlng[1]) * mult) / mult);
     }
 };
@@ -145,6 +147,7 @@ window.MapBBCode = L.Class.extend({
         letterIcons: true,
         enablePolygons: true,
         preferStandardLayerSwitcher: true,
+        decimalDigits: 5,
         hideInsideClasses: []
     },
 
@@ -716,17 +719,17 @@ window.MapBBCode.include({
             map.addControl(new L.Control.Search());
         this._addLayers(map);
 
-        var drawn = new L.FeatureGroup();
-        drawn.addTo(map);
-
         var textArea;
         if( typeof bbcode !== 'string' ) {
             textArea = bbcode;
             bbcode = this._findMapInTextArea(textArea);
         }
+
+        var drawn = new L.FeatureGroup();
         var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
         for( var i = 0; i < objs.length; i++ )
             this._makeEditable(this._objectToLayer(objs[i]).addTo(drawn), drawn);
+        drawn.addTo(map);
         this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 
         // now is the time to update leaflet.draw strings
@@ -800,6 +803,7 @@ window.MapBBCode.include({
                     objs.push(this._layerToObject(layer));
                 }, this);
                 el.removeChild(el.firstChild);
+                window.MapBBCodeProcessor.decimalDigits = this.options.decimalDigits;
                 var newCode = window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
                 if( textArea )
                     this._updateMapInTextArea(textArea, bbcode, newCode);
@@ -852,13 +856,16 @@ window.MapBBCode.include({
                 drawn.eachLayer(function(layer) {
                     objs.push(this._layerToObject(layer));
                 }, this._ui);
+                window.MapBBCodeProcessor.decimalDigits = this._ui.options.decimalDigits;
                 return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
             },
             updateBBCode: function( bbcode, noZoom ) {
                 var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
                 drawn.clearLayers();
+                map.removeLayer(drawn); // so options set after object creation could be set
                 for( var i = 0; i < objs.length; i++ )
                     this._ui._makeEditable(this._ui._objectToLayer(objs[i]).addTo(drawn), drawn);
+                map.addLayer(drawn);
                 if( !noZoom )
                     this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
             },
