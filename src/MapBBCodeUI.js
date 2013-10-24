@@ -28,14 +28,15 @@ window.MapBBCode = L.Class.extend({
         outerLinkTemplate: false, // 'http://openstreetmap.org/#map={zoom}/{lat}/{lon}',
         showHelp: true,
         allowedHTML: '[auib]|span|br|em|strong|tt',
-        letterIcons: true,
+        letterIconLength: 2,
+        popupIconLength: 50,
         enablePolygons: true,
         preferStandardLayerSwitcher: true,
         decimalDigits: 5,
         hideInsideClasses: [],
 
         externalEndpoint: 'http://share.mapbbcode.org/',
-        saveToServerButton: false
+        uploadButton: false
     },
 
     strings: {},

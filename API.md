@@ -6,6 +6,7 @@
 
 * `setStrings( <Object> strings )`: replaces strings with provided translations. See `strings/English.js` for default values.
 * `show( <HTMLElement/String> div, <String/HTMLElement> bbcode )`: creates a map inside a given element (can be referenced by id) for given bbcode. can be extracted from an HTML element: it can be in `bbcode` or `value` attributes, or inside it.
+* `showExternal( <HTMLElement/String> div, <String> id )`: download a map from a map sharing service and display it, along with an export button and a link to the service.
 * `editor( <HTMLElement/String> div, <String/HTMLTextArea> bbcode, callback, context )`: creates an editor in the given panel, possibly pre-initialized with bbcode. The latter is either a string or a textarea, in latter case caret position is taken into account, and the code is replaced after applying changes.
     Calls `callback` when "Apply" or "Cancel" buttons are clicked, with a single parameter of new bbcode.
 * `editorWindow( <String/HTMLTextArea> bbcode, callback, context )`: opens a new window with an editor for given bbcode (see `editor()`). Does not return anything.
@@ -34,7 +35,7 @@ Usually configurable by a forum administrator:
 | `windowWidth` | Number | `800` | Width of an editor window, if `editorWindow()` method is used.
 | `windowHeight` | Number | `500` | Height of an editor window, if `editorWindow()` method is used.
 | `preferStandardLayerSwitcher` | Boolean | `true` | If this option is `false` and `L.StaticLayerSwitcher` class is present, it will be used instead of a standard Leaflet layers control.
-| `allowedHTML` | String | *see sorce code* | Regular expression that matches all HTML tags allowed in object titles.
+| `allowedHTML` | String | *see source code* | Regular expression that matches all HTML tags allowed in object titles.
 | `outerLinkTemplate` | String | `''` | Template for outer link for displayed map center and zoom. Example: `'http://openstreetmap.org/#map={zoom}/{lat}/{lon}'`. If not specified, outer link button is not shown.
 
 Map layers are specified by any of those options. If none are included, an OpenStreetMap default layer is used.
@@ -49,7 +50,11 @@ Other options:
 | Option | Type | Default |  Description
 |---|---|---|---
 | `maxInitialZoom` | Number | `15` | Maximum zoom level for displayed features. Prevents zooming too close for single markers.
-| `letterIcons` | Boolean | `true` | Whether `L.LetterIcon` would be used for markers with short titles.
+| `letterIconLength` | Number | `2` | Maximum title length for using `L.LetterIcon` for markers.
+| `popupIconLength` | Number | `50` | Maximum title length for using `L.PopupIcon` for markers.
+| `decimalDigits` | Number | `5` | Number of decimal digits for exporting bbcode.
+| `externalEndpoint` | String | *see source code* | URL of a map sharing server, for `showExternal()` and the upload button.
+| `uploadButton` | Boolean | Whether to allow uploading maps to a sharing server from editor.
 | `polygonOpacity` | Number | `0.1` | Fill opacity for polygons.
 | `leafletOptions` | Object | `{}` | Additional options passed to `L.Map` constructor.
 | `hideInsideClasses` | String[] | `[]` | List of classes inside which map panel will not be displayed (useful for disabling maps in signatures).
@@ -126,6 +131,10 @@ A round icon with a white border and text inside. Can be used to display markers
 | `color` | String | `'black'` | CSS color of icon background.
 | `radius` | Number | `11` | Icon radius.
 
+## L.PopupIcon
+
+An icon that looks like a popup panel, but significantly smaller. Title should be passed to the constructor. Has only one option: `width` for maximum icon width.
+
 ## L.FunctionButtons
 
 This control simplifies creating simple Leaflet controls that invoke javascript functions when clicked. It supports multiple actions on one control: in that case they are stacked vertically, like on a standard zoom control.
@@ -195,3 +204,14 @@ Every search control on the Leaflet plugins page has flaws. This is an attempt o
 
 * `title`: title text on the control.
 * `email`: e-mail address that will be sent to Nominatim server. It can be used for determining a source of suspicious activity. You should use this option, especially if the control is installed on a popular website.
+
+## L.ExportControl
+
+An export button for maps downloaded from an external service. Gets the supported formats list from the server.
+
+| Option | Type | Default | Description
+|---|---|---|---
+| `endpoint` | String | 'http://share.mapbbcode.org/' | URL of the map sharing service.
+| `codeid` | String | `''` | Identifier of a map to export.
+| `types` | String[] | `[]` | List of supported formats (if empty, then it is downloaded).
+| `titles` | String[] | `[]` | Titles for supported formats (if empty, then it is downloaded).

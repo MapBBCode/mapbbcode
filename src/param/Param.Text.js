@@ -19,14 +19,24 @@ window.MapBBCode.objectParams.unshift({
     objectToLayer: function( layer, text, ui ) {
         if( text ) {
             layer._text = text;
-            if( L.LetterIcon && layer instanceof L.Marker && ui.options.letterIcons && text.length >= 1 && text.length <= 2 ) {
-                layer.setIcon(new L.LetterIcon(text));
+            var icon = this._getIcon(layer, text, ui);
+            if( icon ) {
+                layer.setIcon(icon);
                 layer.options.clickable = false;
             } else {
                 layer.bindPopup(text.replace(new RegExp('<(?!/?(' + ui.options.allowedHTML + ')[ >])', 'g'), '&lt;'));
             }
         } else
             layer.options.clickable = false;
+    },
+    
+    _getIcon: function( layer, text, ui ) {
+        if( layer instanceof L.Marker && text.length > 0 ) {
+            if( L.LetterIcon && text.length <= ui.options.letterIconLength )
+                return new L.LetterIcon(text);
+            if( L.PopupIcon && text.length <= ui.options.popupIconLength && text.indexOf('<') < 0 )
+                return new L.PopupIcon(text);
+        }
     },
     
     // returns new text
@@ -63,11 +73,9 @@ window.MapBBCode.objectParams.unshift({
             inputField.focus();
         });
         layer.on('popupclose', function() {
-            var title = layer.inputField.value;
-            if( L.LetterIcon && ui.options.letterIcons && title.length > 0 && title.length <= 2 )
-                layer.setIcon(new L.LetterIcon(title));
-            else
-                layer.setIcon(layer.defaultIcon);
+            var title = layer.inputField.value,
+                icon = this._getIcon(layer, title, ui) || layer.defaultIcon;
+            layer.setIcon(icon);
         }, this);
         return commentDiv;
     }
