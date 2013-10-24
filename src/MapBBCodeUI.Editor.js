@@ -104,13 +104,8 @@ window.MapBBCode.include({
 
     // Show editor in element. BBcode can be textarea element. Callback is always called, null parameter means cancel
     editor: function( element, bbcode, callback, context ) {
-        var el = typeof element === 'string' ? document.getElementById(element) : element;
-        if( !el ) return;
-        while( el.firstChild )
-            el.removeChild(el.firstChild);
-        var mapDiv = el.ownerDocument.createElement('div');
-        mapDiv.style.height = this._px(this.options.editorHeight);
-        el.appendChild(mapDiv);
+        var mapDiv = this._createMapPanel(element, true);
+        if( !mapDiv ) return;
 
         var map = L.map(mapDiv, L.extend({}, { zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
@@ -201,7 +196,7 @@ window.MapBBCode.include({
                 drawn.eachLayer(function(layer) {
                     objs.push(this._layerToObject(layer));
                 }, this);
-                el.removeChild(el.firstChild);
+                mapDiv.close();
                 window.MapBBCodeProcessor.decimalDigits = this.options.decimalDigits;
                 var newCode = window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
                 if( textArea )
@@ -213,7 +208,7 @@ window.MapBBCode.include({
 
             var cancel = L.functionButton(this.strings.cancel, { position: 'topright', title: this.strings.cancelTitle });
             cancel.on('clicked', function() {
-                el.removeChild(el.firstChild);
+                mapDiv.close();
                 if( callback )
                     callback.call(context, null);
             }, this);
@@ -248,7 +243,7 @@ window.MapBBCode.include({
                 this.map = null;
                 this._ui = null;
                 this.getBBCode = function() { return finalCode; };
-                el.removeChild(el.firstChild);
+                mapDiv.close();
             },
             getBBCode: function() {
                 var objs = [];

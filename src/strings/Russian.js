@@ -13,6 +13,7 @@ window.MapBBCode.include({strings: {
     fullScreenTitle: 'Растянуть или сжать панель карты',
     helpTitle: 'Открыть окно справки',
     outerTitle: 'Открыть внешний сайт с картой этого места',
+    sharedCodeError: 'Внешний сайт выдал ошибку вместо карты<br><br><a href="{url}" target="mapbbcode_outer">Открыть карту в новом окне</a>',
 
     // Leaflet.draw
     polylineTitle: 'Нарисовать ломаную',

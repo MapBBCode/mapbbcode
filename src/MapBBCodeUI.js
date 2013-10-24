@@ -32,7 +32,10 @@ window.MapBBCode = L.Class.extend({
         enablePolygons: true,
         preferStandardLayerSwitcher: true,
         decimalDigits: 5,
-        hideInsideClasses: []
+        hideInsideClasses: [],
+
+        externalEndpoint: 'http://share.mapbbcode.org/',
+        saveToServerButton: false
     },
 
     strings: {},
@@ -166,21 +169,31 @@ window.MapBBCode = L.Class.extend({
         return size ? size + 'px' : '100%';
     },
 
-    // Create map panel, parse and display bbcode (it can be skipped: so it's an attribute or contents of element)
-    show: function( element, bbcode ) {
+    _createMapPanel: function( element, iseditor ) {
         var el = typeof element === 'string' ? document.getElementById(element) : element;
         if( !el ) return;
-        if( !bbcode )
-            bbcode = el.getAttribute('bbcode') || el.getAttribute('value') || el.innerHTML.replace(/^\s+|\s+$/g, '');
-        if( !bbcode || typeof bbcode !== 'string' ) return;
+        var bbcode = el.getAttribute('bbcode') || el.getAttribute('value') || el.innerHTML.replace(/^\s+|\s+$/g, '');
         while( el.firstChild )
             el.removeChild(el.firstChild);
-        if( this._hideClassPresent(el) )
+        if( !iseditor && this._hideClassPresent(el) )
             return;
-        var mapDiv = el.ownerDocument.createElement('div');
-        mapDiv.style.width = this.options.fullFromStart ? '100%' : this._px(this.options.viewWidth);
-        mapDiv.style.height = this.options.fullFromStart ? this._px(this.options.fullViewHeight) : this._px(this.options.viewHeight);
+        var mapDiv = document.createElement('div');
+        mapDiv.style.width = iseditor ? '100%' : this.options.fullFromStart ? '100%' : this._px(this.options.viewWidth);
+        mapDiv.style.height = iseditor ? this._px(this.options.editorHeight) : this.options.fullFromStart ? this._px(this.options.fullViewHeight) : this._px(this.options.viewHeight);
         el.appendChild(mapDiv);
+        mapDiv.storedBBCode = bbcode;
+        mapDiv.close = function() {
+            el.removeChild(mapDiv);
+        };
+        return mapDiv;
+    },
+
+    // Create map panel, parse and display bbcode (it can be skipped: so it's an attribute or contents of element)
+    show: function( element, bbcode ) {
+        var mapDiv = this._createMapPanel(element);
+        if( !mapDiv ) return;
+        if( !bbcode ) bbcode = mapDiv.storedBBCode;
+        if( !bbcode || typeof bbcode !== 'string' ) return;
 
         var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
@@ -226,7 +239,7 @@ window.MapBBCode = L.Class.extend({
             close: function() {
                 this.map = null;
                 this._ui = null;
-                el.removeChild(el.firstChild);
+                mapDiv.close();
             },
             getBBCode: function() {
                 return bbcode;
@@ -244,5 +257,76 @@ window.MapBBCode = L.Class.extend({
                 this._ui._zoomToLayer(map, drawn);
             }
         };
+    },
+
+    showExternal: function( element, id, callback, context ) {
+        var endpoint = this.options.externalEndpoint;
+        if( !endpoint || endpoint.substring(0, 4) !== 'http' || !id )
+            return;
+        var lastChar = endpoint.substring(endpoint.length - 1);
+        if( lastChar != '/' && lastChar != '=' )
+            endpoint += '/';
+
+        var showMap = function(http) {
+            if( http.readyState != 4 ) return;
+            var show;
+            if( http.status != 200 || !http.responseText ) {
+                var errorDiv = this._createMapPanel(element);
+                errorDiv.style.display = 'table-cell';
+                errorDiv.style.backgroundColor = '#ddd';
+                errorDiv.style.textAlign = 'center';
+                errorDiv.style.verticalAlign = 'middle';
+                errorDiv.innerHTML = this.strings.sharedCodeError.replace('{url}', endpoint + id);
+
+                show = {
+                    close: function() { errorDiv.close(); }
+                };
+            } else {
+                var result = http.responseText,
+                    bbpos = result.lastIndexOf('[/map]'),
+                    title = bbpos < 0 ? result : result.substring(bbpos + 6),
+                    bbcode = bbpos < 0 ? '' : result.substring(0, bbpos + 6);
+                show = this.show(element, bbcode);
+                if( title ) {
+                    // todo?
+                    /* jshint noempty: false */
+                }
+                if( show ) {
+                    var map = show.map;
+                    if( !this.options.outerLinkTemplate ) {
+                        var outer = L.functionButton(window.MapBBCode.buttonsImage,
+                               { position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle });
+                        outer.on('clicked', function() {
+                            window.open(endpoint + id, 'mapbbcode_outer');
+                        }, this);
+                        map.addControl(outer);
+                    }
+                    if( L.ExportControl ) {
+                        var ec = new L.ExportControl({
+                            endpoint: endpoint,
+                            codeid: id
+                        });
+                        map.addControl(ec);
+                    }
+                }
+            }
+            if( callback )
+                callback.call(context || this, show);
+        };
+
+        var http;
+        if (window.XMLHttpRequest) {
+            http = new window.XMLHttpRequest();
+        } else if (window.ActiveXObject) { // Older IE.
+            http = new window.ActiveXObject("MSXML2.XMLHTTP.3.0");
+        }
+        if( !http )
+            return;
+        var storedThis = this;
+        http.onreadystatechange = function() {
+            showMap.call(storedThis, http);
+        };
+        http.open('GET', endpoint + id + '?format=raw', true);
+        http.send(null);
     }
 });

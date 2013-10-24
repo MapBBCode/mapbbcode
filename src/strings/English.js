@@ -13,6 +13,7 @@ window.MapBBCode.include({strings: {
     fullScreenTitle: 'Enlarge or shrink map panel',
     helpTitle: 'Open help window',
     outerTitle: 'Show this place on an external map',
+    sharedCodeError: 'Failed to download an external map<br><br><a href="{url}" target="mapbbcode_outer">Open map in a new window</a>',
 
     // Leaflet.draw
     polylineTitle: 'Draw a path',
