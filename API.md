@@ -59,7 +59,7 @@ Other options:
 | `leafletOptions` | Object | `{}` | Additional options passed to `L.Map` constructor.
 | `hideInsideClasses` | String[] | `[]` | List of classes inside which map panel will not be displayed (useful for disabling maps in signatures).
 | `enablePolygons` | Boolean | `true` | Whether to show polygon drawing button in the editing toolbar.
-| `showHelp` | Boolean | `true` | Whether to show help button in the editor.
+| `helpButton` | Boolean | `true` | Whether to show help button in the editor.
 | `editorCloseButtons` | Boolean | `true` | Whether to show "Apply" and "Cancel" buttons in the editor.
 | `windowFeatures` | String | 'resizable,status,dialog' | Parameters for `window.open()` used for opening an editor window.
 | `usePreparedWindow` | Boolean or String | `true` | Whether to use `mapbbcode-window.html` (recommended) or create an editor window from scratch (may fail). If it is a string, it specifies an URL of opened page.

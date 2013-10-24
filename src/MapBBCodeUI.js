@@ -26,7 +26,7 @@ window.MapBBCode = L.Class.extend({
         editorCloseButtons: true,
         libPath: 'lib/',
         outerLinkTemplate: false, // 'http://openstreetmap.org/#map={zoom}/{lat}/{lon}',
-        showHelp: true,
+        helpButton: true,
         allowedHTML: '[auib]|span|br|em|strong|tt',
         letterIconLength: 2,
         popupIconLength: 50,

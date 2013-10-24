@@ -215,7 +215,7 @@ window.MapBBCode.include({
             map.addControl(cancel);
         }
 
-        if( this.options.showHelp ) {
+        if( this.options.helpButton ) {
             var help = L.functionButton('<span style="font-size: 18px; font-weight: bold;">?</span>', { position: 'topright', title: this.strings.helpTitle });
             help.on('clicked', function() {
                 var str = '',
