@@ -12,8 +12,8 @@ L.PopupIcon = L.Icon.extend({
         this._text = text;
     },
 
-	createIcon: function (oldIcon) {
-		var pdiv = document.createElement('div'),
+    createIcon: function() {
+        var pdiv = document.createElement('div'),
             div = document.createElement('div'),
             width = this.options.width;
 
@@ -26,9 +26,10 @@ L.PopupIcon = L.Icon.extend({
         var contentDiv = document.createElement('div');
         contentDiv.innerHTML = this._text;
         contentDiv.style.textAlign = 'center';
+        contentDiv.style.lineHeight = '1.2';
         contentDiv.style.backgroundColor = 'white';
         contentDiv.style.boxShadow = '0px 1px 10px rgba(0, 0, 0, 0.655)';
-        contentDiv.style.padding = '0px 5px';
+        contentDiv.style.padding = '4px 7px';
         contentDiv.style.borderRadius = '5px';
         contentDiv.style.margin = '0 auto';
         contentDiv.style.display = 'table';
@@ -48,13 +49,13 @@ L.PopupIcon = L.Icon.extend({
         div.appendChild(tipcDiv);
         pdiv.appendChild(div);
         return pdiv;
-	},
+    },
     
-	createShadow: function () {
-		return null;
-	}
+    createShadow: function () {
+        return null;
+    }
 });
 
 L.popupIcon = function (text, options) {
-	return new L.PopupIcon(text, options);
+    return new L.PopupIcon(text, options);
 };

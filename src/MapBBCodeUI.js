@@ -29,7 +29,7 @@ window.MapBBCode = L.Class.extend({
         helpButton: true,
         allowedHTML: '[auib]|span|br|em|strong|tt',
         letterIconLength: 2,
-        popupIconLength: 50,
+        popupIconLength: 30,
         enablePolygons: true,
         preferStandardLayerSwitcher: true,
         decimalDigits: 5,

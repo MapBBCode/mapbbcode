@@ -142,16 +142,17 @@ window.MapBBCode = L.Class.extend({
         editorCloseButtons: true,
         libPath: 'lib/',
         outerLinkTemplate: false, // 'http://openstreetmap.org/#map={zoom}/{lat}/{lon}',
-        showHelp: true,
+        helpButton: true,
         allowedHTML: '[auib]|span|br|em|strong|tt',
-        letterIcons: true,
+        letterIconLength: 2,
+        popupIconLength: 30,
         enablePolygons: true,
         preferStandardLayerSwitcher: true,
         decimalDigits: 5,
         hideInsideClasses: [],
 
         externalEndpoint: 'http://share.mapbbcode.org/',
-        saveToServerButton: false
+        uploadButton: false
     },
 
     strings: {},
@@ -628,14 +629,24 @@ window.MapBBCode.objectParams.unshift({
     objectToLayer: function( layer, text, ui ) {
         if( text ) {
             layer._text = text;
-            if( L.LetterIcon && layer instanceof L.Marker && ui.options.letterIcons && text.length >= 1 && text.length <= 2 ) {
-                layer.setIcon(new L.LetterIcon(text));
+            var icon = this._getIcon(layer, text, ui);
+            if( icon ) {
+                layer.setIcon(icon);
                 layer.options.clickable = false;
             } else {
                 layer.bindPopup(text.replace(new RegExp('<(?!/?(' + ui.options.allowedHTML + ')[ >])', 'g'), '&lt;'));
             }
         } else
             layer.options.clickable = false;
+    },
+    
+    _getIcon: function( layer, text, ui ) {
+        if( layer instanceof L.Marker && text.length > 0 ) {
+            if( L.LetterIcon && text.length <= ui.options.letterIconLength )
+                return new L.LetterIcon(text);
+            if( L.PopupIcon && text.length <= ui.options.popupIconLength && text.indexOf('<') < 0 )
+                return new L.PopupIcon(text);
+        }
     },
     
     // returns new text
@@ -672,11 +683,9 @@ window.MapBBCode.objectParams.unshift({
             inputField.focus();
         });
         layer.on('popupclose', function() {
-            var title = layer.inputField.value;
-            if( L.LetterIcon && ui.options.letterIcons && title.length > 0 && title.length <= 2 )
-                layer.setIcon(new L.LetterIcon(title));
-            else
-                layer.setIcon(layer.defaultIcon);
+            var title = layer.inputField.value,
+                icon = this._getIcon(layer, title, ui) || layer.defaultIcon;
+            layer.setIcon(icon);
         }, this);
         return commentDiv;
     }
@@ -900,7 +909,7 @@ window.MapBBCode.include({
             map.addControl(cancel);
         }
 
-        if( this.options.showHelp ) {
+        if( this.options.helpButton ) {
             var help = L.functionButton('<span style="font-size: 18px; font-weight: bold;">?</span>', { position: 'topright', title: this.strings.helpTitle });
             help.on('clicked', function() {
                 var str = '',
@@ -1138,6 +1147,69 @@ L.LetterIcon = L.Icon.extend({
 
 L.letterIcon = function(letter, options) {
     return new L.LetterIcon(letter, options);
+};
+
+
+/*
+ * Small popup-like icon to replace big L.Popup
+ */
+
+L.PopupIcon = L.Icon.extend({
+    options: {
+        width: 150
+    },
+    
+    initialize: function( text, options ){
+        L.Icon.prototype.initialize.call(this, options);
+        this._text = text;
+    },
+
+    createIcon: function() {
+        var pdiv = document.createElement('div'),
+            div = document.createElement('div'),
+            width = this.options.width;
+
+        pdiv.style.position = 'absolute';
+        div.style.position = 'absolute';
+        div.style.width = width + 'px';
+        div.style.bottom = '-3px';
+        div.style.left = (-width / 2) + 'px';
+
+        var contentDiv = document.createElement('div');
+        contentDiv.innerHTML = this._text;
+        contentDiv.style.textAlign = 'center';
+        contentDiv.style.lineHeight = '1.2';
+        contentDiv.style.backgroundColor = 'white';
+        contentDiv.style.boxShadow = '0px 1px 10px rgba(0, 0, 0, 0.655)';
+        contentDiv.style.padding = '4px 7px';
+        contentDiv.style.borderRadius = '5px';
+        contentDiv.style.margin = '0 auto';
+        contentDiv.style.display = 'table';
+
+        var tipcDiv = document.createElement('div');
+        tipcDiv.className = 'leaflet-popup-tip-container';
+        tipcDiv.style.width = '20px';
+        tipcDiv.style.height = '11px';
+        var tipDiv = document.createElement('div');
+        tipDiv.className = 'leaflet-popup-tip';
+        tipDiv.style.width = tipDiv.style.height = '8px';
+        tipDiv.style.marginTop = '-5px';
+        tipDiv.style.boxShadow = 'none';
+        tipcDiv.appendChild(tipDiv);
+        
+        div.appendChild(contentDiv);
+        div.appendChild(tipcDiv);
+        pdiv.appendChild(div);
+        return pdiv;
+    },
+    
+    createShadow: function () {
+        return null;
+    }
+});
+
+L.popupIcon = function (text, options) {
+    return new L.PopupIcon(text, options);
 };
 
 

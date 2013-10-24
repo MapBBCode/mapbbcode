@@ -43,6 +43,11 @@ var deps = {
 		heading: 'Plugins'
 	},
 
+	PopupIcon: {
+		src: ['PopupIcon.js'],
+		desc: 'Icon that looks like a popup panel'
+	},
+
 	Search: {
 		src: ['Leaflet.Search.js'],
 		desc: 'Nominatim search control'
