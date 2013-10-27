@@ -327,7 +327,7 @@ window.layerList = {
     },
 
     getLeafletLayers: function( layers, LL ) {
-        /* jshint evil: true, unused: false */
+        /* jshint unused: false */
         var L = LL || window.L,
             l = typeof layers === 'string' ? layers.split(',') : layers,
             layerList = this.list,
