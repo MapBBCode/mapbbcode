@@ -1038,6 +1038,8 @@ window.MapBBCode.include({
                     }
                     if( L.ExportControl ) {
                         var ec = new L.ExportControl({
+                            name: this.strings.export,
+                            title: this.strings.exportTitle,
                             endpoint: endpoint,
                             codeid: id
                         });
@@ -1499,6 +1501,8 @@ L.ExportControl = L.Control.extend({
 
     options: {
         position: 'topleft',
+        name: 'Export',
+        title: '',
         endpoint: 'http://share.mapbbcode.org/',
         codeid: '',
         types: false,
@@ -1511,7 +1515,8 @@ L.ExportControl = L.Control.extend({
         container.appendChild(wrapper);
         var link = L.DomUtil.create('a', '', wrapper);
         link.href = '#';
-        link.innerHTML = 'Export';
+        link.innerHTML = this.options.name;
+        link.title = this.options.title || '';
         link.style.height = '26px';
         link.style.width = 'auto';
         link.style.padding = '0 4px';
@@ -1635,7 +1640,9 @@ window.MapBBCode.include({strings: {
     outerTitle: 'Show this place on an external map',
 
     // share
-    upload: 'Upload', // button for uploading code to an external server
+    export: 'Export',
+    exportTitle: 'Download this map',
+    upload: 'Upload',
     uploadTitle: 'Upload this map to an external server',
     uploading: 'Uploading',
     uploadError: 'Error while uploading the map',
