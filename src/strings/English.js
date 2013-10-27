@@ -13,6 +13,16 @@ window.MapBBCode.include({strings: {
     fullScreenTitle: 'Enlarge or shrink map panel',
     helpTitle: 'Open help window',
     outerTitle: 'Show this place on an external map',
+
+    // share
+    upload: 'Upload', // button for uploading code to an external server
+    uploadTitle: 'Upload this map to an external server',
+    uploading: 'Uploading',
+    uploadError: 'Error while uploading the map',
+    uploadSuccess: 'Upload was successful. Bookmark this link to be able to edit the map',
+    sharedFormHeader: 'There are no objects to upload. Enter a MapBBCode Share map URL',
+    sharedFormError: 'This map panel has incorrect endpoint set.<br>Please contact an administrator.',
+    sharedFormInvalidCode: 'Map code is invalid',
     sharedCodeError: 'Failed to download an external map<br><br><a href="{url}" target="mapbbcode_outer">Open map in a new window</a>',
 
     // Leaflet.draw

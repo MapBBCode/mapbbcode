@@ -1,0 +1,210 @@
+/*
+ * MapBBCode Share functions. Extends MapBBCode display/edit module.
+ */
+window.MapBBCode.include({
+    _getEndpoint: function() {
+        var endpoint = this.options.externalEndpoint;
+        if( !endpoint || endpoint.substring(0, 4) !== 'http' )
+            return '';
+        var lastChar = endpoint.substring(endpoint.length - 1);
+        if( lastChar != '/' && lastChar != '=' )
+            endpoint += '/';
+        return endpoint;
+    },
+
+    _ajax: function( url, callback, context, post ) {
+        var http;
+        if (window.XMLHttpRequest) {
+            http = new window.XMLHttpRequest();
+        } else if (window.ActiveXObject) { // Older IE.
+            http = new window.ActiveXObject("MSXML2.XMLHTTP.3.0");
+        }
+        if( !http )
+            return;
+        http.onreadystatechange = function() {
+            if( http.readyState == 4 )
+                callback.call(context, http.status == 200 ? false : (http.status || 499), http.responseText);
+        };
+        if( post ) {
+            http.open('POST', url, true);
+            http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            http.send(post);
+        } else {
+            http.open('GET', url, true);
+            http.send(null);
+        }
+    },
+
+    showExternal: function( element, id, callback, context ) {
+        var endpoint = this._getEndpoint();
+        if( !endpoint || !id )
+            return;
+
+        var showMap = function(error, content) {
+            var show, result, derror = false;
+            if( error )
+                derror = true;
+            else
+                result = eval('('+content+')');
+
+            if( error || result.error || !result.bbcode ) {
+                var errorDiv = this._createMapPanel(element);
+                errorDiv.style.display = 'table';
+
+                var cell = document.createElement('div');
+                cell.style.display = 'table-cell';
+                cell.style.width = '100%';
+                cell.style.backgroundColor = '#ddd';
+                cell.style.textAlign = 'center';
+                cell.style.verticalAlign = 'middle';
+                cell.innerHTML = this.strings.sharedCodeError.replace('{url}', endpoint + id);
+                errorDiv.appendChild(cell);
+
+                show = {
+                    close: function() { errorDiv.close(); }
+                };
+            } else {
+                show = this.show(element, result.bbcode);
+                if( result.title ) {
+                    // todo?
+                    /* jshint noempty: false */
+                }
+                if( show ) {
+                    var map = show.map;
+                    if( !this.options.outerLinkTemplate ) {
+                        var outer = L.functionButton(window.MapBBCode.buttonsImage,
+                               { position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle });
+                        outer.on('clicked', function() {
+                            window.open(endpoint + id, 'mapbbcode_outer');
+                        }, this);
+                        map.addControl(outer);
+                    }
+                    if( L.ExportControl ) {
+                        var ec = new L.ExportControl({
+                            endpoint: endpoint,
+                            codeid: id
+                        });
+                        map.addControl(ec);
+                    }
+                }
+            }
+            if( callback )
+                callback.call(context || this, show);
+        };
+
+        this._ajax(endpoint + id + '?api=1', showMap, this);
+    },
+
+    _upload: function( mapDiv, bbcode, callback ) {
+        var outerDiv = document.createElement('div');
+        outerDiv.style.display = 'table';
+        outerDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        outerDiv.style.zIndex = 2000;
+        outerDiv.style.position = 'absolute';
+        outerDiv.style.left = outerDiv.style.right = outerDiv.style.top = outerDiv.style.bottom = 0;
+        outerDiv.style.width = '100%';
+        mapDiv.appendChild(outerDiv);
+
+        var back = document.createElement('div');
+        back.style.width = back.style.height = '100%';
+        back.style.textAlign = 'center';
+        back.style.color = 'white';
+        back.style.verticalAlign = 'middle';
+        back.style.display = 'table-cell';
+
+        var stop = L.DomEvent.stopPropagation;
+        L.DomEvent
+            .on(back, 'click', stop)
+            .on(back, 'mousedown', stop)
+            .on(back, 'dblclick', stop);
+        outerDiv.appendChild(back);
+        var cancel = document.createElement('input');
+
+        var endpoint = this._getEndpoint();
+        if( bbcode ) {
+            var message = document.createElement('div');
+            message.innerHTML = this.strings.uploading + '...';
+            back.appendChild(message);
+            this._ajax(endpoint + 'save?api=1', function(error, content) {
+                if( error ) {
+                    message.innerHTML = this.strings.uploadError + ': ' + error;
+                } else {
+                    var result = eval('('+content+')');
+                    if( result.error || !result.codeid ) {
+                        message.innerHTML = this.strings.uploadError + ':<br>' + result.error;
+                    } else {
+                        message.innerHTML = this.strings.uploadSuccess + ':<br><a href="'+result.editurl+'" target="editmap" style="line-height: 40px; color: #ccf">'+result.editurl+'</a>';
+                        var sthis = this;
+                        cancel.onclick = function() {
+                            mapDiv.removeChild(outerDiv);
+                            callback.call(sthis, result.codeid);
+                        };
+                    }
+                }
+            }, this, 'title=&bbcode=' + encodeURIComponent(bbcode).replace(/%20/g, '+'));
+        } else {
+            var descDiv = document.createElement('div');
+            descDiv.innerHTML = this.strings.sharedFormHeader;
+            back.appendChild(descDiv);
+
+            var inputDiv = document.createElement('div');
+
+            var url = document.createElement('input');
+            url.type = 'text';
+            url.size = 40;
+            inputDiv.appendChild(url);
+
+            var urlBtn = document.createElement('input');
+            urlBtn.type = 'button';
+            urlBtn.value = this.strings.apply;
+            inputDiv.appendChild(urlBtn);
+
+            back.appendChild(inputDiv);
+            url.focus();
+
+            var errorDiv = document.createElement('div');
+            errorDiv.style.color = '#fcc';
+            errorDiv.style.display = 'none';
+            back.appendChild(errorDiv);
+
+            var checkCode = function() {
+                errorDiv.style.display = 'none';
+                var matches = new RegExp('(?:/|^)([a-z]+)\\s*$').exec(url.value);
+                if( matches ) {
+                    var id = matches[1];
+                    this._ajax(endpoint + id + '?api=1', function(error, content) {
+                        if( error ) {
+                            errorDiv.innerHTML = this.strings.sharedFormError;
+                            errorDiv.style.display = 'block';
+                        } else {
+                            if( content.substr(0, 15).indexOf('"error"') > 0 ) {
+                                url.value = '';
+                                errorDiv.innerHTML = this.strings.sharedFormInvalidCode;
+                                errorDiv.style.display = 'block';
+                            } else {
+                                mapDiv.removeChild(outerDiv);
+                                callback.call(this, id);
+                            }
+                        }
+                    }, this);
+                }
+            };
+            L.DomEvent.on(urlBtn, 'click', checkCode, this);
+            L.DomEvent.on(url, 'keypress', function(e) {
+                var keyCode = (window.event) ? (e || window.event).which : e.keyCode;
+                if( keyCode == 13 )
+                    checkCode.call(this);
+                else if( keyCode == 27 )
+                    mapDiv.removeChild(outerDiv);
+            }, this);
+        }
+
+        cancel.type = 'button';
+        cancel.value = this.strings.close;
+        cancel.style.marginTop = '30px';
+        cancel.onclick = function() {
+            mapDiv.removeChild(outerDiv);
+        };
+        back.appendChild(cancel);
+    }
+});

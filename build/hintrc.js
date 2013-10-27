@@ -11,6 +11,7 @@ exports.config = {
 	"curly": false,
 	// "eqeqeq": true, // forced ===
         // "es3": true, // ECMAScript 3
+        "evil": true,
 	"forin": false,
 	"immed": true,
 	"latedef": true,

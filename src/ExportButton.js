@@ -101,7 +101,6 @@ L.ExportControl = L.Control.extend({
     },
 
     _ajax: function( url, func, context ) {
-        /* jshint evil: true */
         var http = null;
         if (window.XMLHttpRequest) {
             http = new window.XMLHttpRequest();

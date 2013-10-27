@@ -36,7 +36,8 @@ window.MapBBCode = L.Class.extend({
         hideInsideClasses: [],
 
         externalEndpoint: 'http://share.mapbbcode.org/',
-        uploadButton: false
+        uploadButton: false,
+        shareTag: 'mapid'
     },
 
     strings: {},
@@ -258,76 +259,5 @@ window.MapBBCode = L.Class.extend({
                 this._ui._zoomToLayer(map, drawn);
             }
         };
-    },
-
-    showExternal: function( element, id, callback, context ) {
-        var endpoint = this.options.externalEndpoint;
-        if( !endpoint || endpoint.substring(0, 4) !== 'http' || !id )
-            return;
-        var lastChar = endpoint.substring(endpoint.length - 1);
-        if( lastChar != '/' && lastChar != '=' )
-            endpoint += '/';
-
-        var showMap = function(http) {
-            if( http.readyState != 4 ) return;
-            var show;
-            if( http.status != 200 || !http.responseText ) {
-                var errorDiv = this._createMapPanel(element);
-                errorDiv.style.display = 'table-cell';
-                errorDiv.style.backgroundColor = '#ddd';
-                errorDiv.style.textAlign = 'center';
-                errorDiv.style.verticalAlign = 'middle';
-                errorDiv.innerHTML = this.strings.sharedCodeError.replace('{url}', endpoint + id);
-
-                show = {
-                    close: function() { errorDiv.close(); }
-                };
-            } else {
-                var result = http.responseText,
-                    bbpos = result.lastIndexOf('[/map]'),
-                    title = bbpos < 0 ? result : result.substring(bbpos + 6),
-                    bbcode = bbpos < 0 ? '' : result.substring(0, bbpos + 6);
-                show = this.show(element, bbcode);
-                if( title ) {
-                    // todo?
-                    /* jshint noempty: false */
-                }
-                if( show ) {
-                    var map = show.map;
-                    if( !this.options.outerLinkTemplate ) {
-                        var outer = L.functionButton(window.MapBBCode.buttonsImage,
-                               { position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle });
-                        outer.on('clicked', function() {
-                            window.open(endpoint + id, 'mapbbcode_outer');
-                        }, this);
-                        map.addControl(outer);
-                    }
-                    if( L.ExportControl ) {
-                        var ec = new L.ExportControl({
-                            endpoint: endpoint,
-                            codeid: id
-                        });
-                        map.addControl(ec);
-                    }
-                }
-            }
-            if( callback )
-                callback.call(context || this, show);
-        };
-
-        var http;
-        if (window.XMLHttpRequest) {
-            http = new window.XMLHttpRequest();
-        } else if (window.ActiveXObject) { // Older IE.
-            http = new window.ActiveXObject("MSXML2.XMLHTTP.3.0");
-        }
-        if( !http )
-            return;
-        var storedThis = this;
-        http.onreadystatechange = function() {
-            showMap.call(storedThis, http);
-        };
-        http.open('GET', endpoint + id + '?format=raw', true);
-        http.send(null);
     }
 });

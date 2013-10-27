@@ -1,7 +1,7 @@
 window.MapBBCode.include({strings: {
     close: 'Закрыть', // close feature editing popup
     remove: 'Удалить', // delete feature from popup
-    apply: 'Применить', // button on an editing map to apply changes
+    apply: 'Вставить код', // button on an editing map to apply changes
     cancel: 'Отменить', // button on an editing map to discard changes
     title: 'Надпись', // prompt for marker title text
 
@@ -13,6 +13,16 @@ window.MapBBCode.include({strings: {
     fullScreenTitle: 'Растянуть или сжать панель карты',
     helpTitle: 'Открыть окно справки',
     outerTitle: 'Открыть внешний сайт с картой этого места',
+
+    // share
+    upload: 'На сервер', // button for uploading code to an external server
+    uploadTitle: 'Загрузить эту карту в интернет-библиотеку',
+    uploading: 'Идёт загрузка',
+    uploadError: 'Загрузка не удалась из-за ошибки',
+    uploadSuccess: 'Карта загружена. Сохраните эту ссылку в закладки, чтобы потом править карту',
+    sharedFormHeader: 'Нет объектов для загрузки. Введите ссылку на карту в MapBBCode Share',
+    sharedFormError: 'В настройках панели карты прописан неправильный адрес.<br>Свяжитесь с администратором.',
+    sharedFormInvalidCode: 'Неправильный код карты',
     sharedCodeError: 'Внешний сайт выдал ошибку вместо карты<br><br><a href="{url}" target="mapbbcode_outer">Открыть карту в новом окне</a>',
 
     // Leaflet.draw

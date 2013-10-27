@@ -19,6 +19,12 @@ var deps = {
 		deps: ['UI']
 	},
 
+	Sharing: {
+		src: ['MapBBCodeUI.Share.js'],
+		desc: 'Methods for interacting with MapBBCode Share',
+		deps: ['UI']
+	},
+
 	ParamColor: {
 		src: ['param/Param.Color.js'],
 		desc: 'Color',
@@ -54,7 +60,7 @@ var deps = {
 	},
 
 	Export: {
-		src: ['MapBBShare.Export.js'],
+		src: ['ExportButton.js'],
 		desc: 'Export to share.mapbbcode.org button'
 	},
 

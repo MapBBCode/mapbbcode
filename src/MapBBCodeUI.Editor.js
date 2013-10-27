@@ -105,6 +105,15 @@ window.MapBBCode.include({
         }
     },
 
+    _getBBCode: function( map, drawn ) {
+        var objs = [];
+        drawn.eachLayer(function(layer) {
+            objs.push(this._layerToObject(layer));
+        }, this);
+        window.MapBBCodeProcessor.decimalDigits = this.options.decimalDigits;
+        return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
+    },
+
     // Show editor in element. BBcode can be textarea element. Callback is always called, null parameter means cancel
     editor: function( element, bbcode, callback, context ) {
         var mapDiv = this._createMapPanel(element, true);
@@ -195,19 +204,29 @@ window.MapBBCode.include({
         if( this.options.editorCloseButtons ) {
             var apply = L.functionButton('<b>'+this.strings.apply+'</b>', { position: 'topleft', title: this.strings.applyTitle });
             apply.on('clicked', function() {
-                var objs = [];
-                drawn.eachLayer(function(layer) {
-                    objs.push(this._layerToObject(layer));
-                }, this);
+                var newCode = this._getBBCode(map, drawn);
                 mapDiv.close();
-                window.MapBBCodeProcessor.decimalDigits = this.options.decimalDigits;
-                var newCode = window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
                 if( textArea )
                     this._updateMapInTextArea(textArea, bbcode, newCode);
                 if( callback )
                     callback.call(context, newCode);
             }, this);
             map.addControl(apply);
+
+            if( this.options.uploadButton && this._upload ) {
+                var upload = L.functionButton(this.strings.upload, { position: 'topleft', title: this.strings.uploadTitle });
+                upload.on('clicked', function() {
+                    this._upload(mapDiv, drawn.getLayers().length ? this._getBBCode(map, drawn) : false, function(codeid) {
+                        mapDiv.close();
+                        var newCode = '[' + this.options.shareTag + ']' + codeid + '[/' + this.options.shareTag + ']';
+                        if( textArea )
+                            this._updateMapInTextArea(textArea, bbcode, newCode);
+                        if( callback )
+                            callback.call(context, newCode);
+                    });
+                }, this);
+                map.addControl(upload);
+            }
 
             var cancel = L.functionButton(this.strings.cancel, { position: 'topright', title: this.strings.cancelTitle });
             cancel.on('clicked', function() {
@@ -249,12 +268,7 @@ window.MapBBCode.include({
                 mapDiv.close();
             },
             getBBCode: function() {
-                var objs = [];
-                drawn.eachLayer(function(layer) {
-                    objs.push(this._layerToObject(layer));
-                }, this._ui);
-                window.MapBBCodeProcessor.decimalDigits = this._ui.options.decimalDigits;
-                return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
+                return this._ui.getBBCode(map, drawn);
             },
             updateBBCode: function( bbcode, noZoom ) {
                 var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
