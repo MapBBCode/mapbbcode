@@ -81,6 +81,8 @@ window.MapBBCode.include({
                     }
                     if( L.ExportControl ) {
                         var ec = new L.ExportControl({
+                            name: this.strings.export,
+                            title: this.strings.exportTitle,
                             endpoint: endpoint,
                             codeid: id
                         });

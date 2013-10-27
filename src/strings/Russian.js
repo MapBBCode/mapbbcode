@@ -15,6 +15,8 @@ window.MapBBCode.include({strings: {
     outerTitle: 'Открыть внешний сайт с картой этого места',
 
     // share
+    export: 'Скачать',
+    exportTitle: 'Сохранить эту карту на диск',
     upload: 'На сервер', // button for uploading code to an external server
     uploadTitle: 'Загрузить эту карту в интернет-библиотеку',
     uploading: 'Идёт загрузка',
