@@ -8,9 +8,12 @@ window.MapBBCode.include({
         if( layer instanceof L.Marker ) {
             obj.coords = [layer.getLatLng()];
         } else {
-            obj.coords = layer.getLatLngs();
+            var llngs = layer.getLatLngs(), len=llngs.length, coords = [], i;
+            for( i = 0; i < len; i++ )
+                coords.push(llngs[i]);
             if( layer instanceof L.Polygon )
-                obj.coords.push(obj.coords[0]);
+                coords.push(coords[0]);
+            obj.coords = coords;
         }
 
         obj.params = layer._objParams || [];

@@ -53,6 +53,11 @@ var deps = {
 		desc: 'Nominatim search control'
 	},
 
+	Export: {
+		src: ['MapBBShare.Export.js'],
+		desc: 'Export to share.mapbbcode.org button'
+	},
+
 	LayerSwitcher: {
 		src: ['config/StaticLayerSwitcher.js'],
 		desc: 'Layer switcher that is not a single button',

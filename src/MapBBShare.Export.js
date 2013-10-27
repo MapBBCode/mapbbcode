@@ -73,6 +73,7 @@ L.ExportControl = L.Control.extend({
             link1.style.border = 'none';
             link1.style.textDecoration = 'none';
             link1.innerHTML = titles[i];
+            var stop = L.DomEvent.stopPropagation;
             if( codeid ) {
                 link1.href = this.options.endpoint + codeid + '?format=' + types[i];
                 L.DomEvent
@@ -100,11 +101,12 @@ L.ExportControl = L.Control.extend({
     },
 
     _ajax: function( url, func, context ) {
+        /* jshint evil: true */
         var http = null;
         if (window.XMLHttpRequest) {
-            http = new XMLHttpRequest();
+            http = new window.XMLHttpRequest();
         } else if (window.ActiveXObject) { // Older IE.
-            http = new ActiveXObject("MSXML2.XMLHTTP.3.0");
+            http = new window.ActiveXObject("MSXML2.XMLHTTP.3.0");
         }
         http.onreadystatechange = function() {
             if( http.readyState != 4 || http.status != 200 ) return;
