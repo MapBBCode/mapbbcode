@@ -15,7 +15,7 @@ window.MapBBCode.include({strings: {
     outerTitle: 'Show this place on an external map',
 
     // share
-    export: 'Export',
+    exportName: 'Export',
     exportTitle: 'Download this map',
     upload: 'Upload',
     uploadTitle: 'Upload this map to an external server',
