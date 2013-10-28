@@ -17,7 +17,7 @@ window.MapBBCode.include({strings: {
     // share
     export: 'Скачать',
     exportTitle: 'Сохранить эту карту на диск',
-    upload: 'На сервер', // button for uploading code to an external server
+    upload: 'На сервер',
     uploadTitle: 'Загрузить эту карту в интернет-библиотеку',
     uploading: 'Идёт загрузка',
     uploadError: 'Загрузка не удалась из-за ошибки',

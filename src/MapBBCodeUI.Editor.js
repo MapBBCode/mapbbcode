@@ -268,7 +268,7 @@ window.MapBBCode.include({
                 mapDiv.close();
             },
             getBBCode: function() {
-                return this._ui.getBBCode(map, drawn);
+                return this._ui._getBBCode(map, drawn);
             },
             updateBBCode: function( bbcode, noZoom ) {
                 var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
