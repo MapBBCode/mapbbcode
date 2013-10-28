@@ -1038,7 +1038,7 @@ window.MapBBCode.include({
                     }
                     if( L.ExportControl ) {
                         var ec = new L.ExportControl({
-                            name: this.strings.export,
+                            name: this.strings.exportName,
                             title: this.strings.exportTitle,
                             endpoint: endpoint,
                             codeid: id
@@ -1640,7 +1640,7 @@ window.MapBBCode.include({strings: {
     outerTitle: 'Show this place on an external map',
 
     // share
-    export: 'Export',
+    exportName: 'Export',
     exportTitle: 'Download this map',
     upload: 'Upload',
     uploadTitle: 'Upload this map to an external server',
