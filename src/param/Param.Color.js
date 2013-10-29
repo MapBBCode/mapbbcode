@@ -55,10 +55,11 @@ window.MapBBCode.objectParams.push({
         colorDiv.style.width = 10 + 20 * colors.length + 'px';
         colorDiv.textAlign = 'center';
         var colOnclick = function(e) {
-            var targetStyle = e.target.style;
+            var target = (window.event && window.event.srcElement) || e.target || e.srcElement,
+                targetStyle = target.style;
             if( targetStyle.borderColor == 'white' ) {
                 layer.setStyle({ color: targetStyle.backgroundColor, fillColor: targetStyle.backgroundColor });
-                layer._colorName = e.target._colorName;
+                layer._colorName = target._colorName;
                 var nodes = colorDiv.childNodes;
                 for( var j = 0; j < nodes.length; j++ )
                     nodes[j].style.borderColor = 'white';

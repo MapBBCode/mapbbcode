@@ -99,8 +99,9 @@ L.ExportControl = L.Control.extend({
     },
 
     _linkClick: function(e) {
+        var target = (window.event && window.event.srcElement) || e.target || e.srcElement;
         this._variants.style.display = 'none';
-        this.fire('export', { fmt: e.target._etype });
+        this.fire('export', { fmt: target._etype });
     },
 
     _ajax: function( url, func, context ) {

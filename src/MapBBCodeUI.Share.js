@@ -25,13 +25,18 @@ window.MapBBCode.include({
             if( http.readyState == 4 )
                 callback.call(context, http.status == 200 ? false : (http.status || 499), http.responseText);
         };
-        if( post ) {
-            http.open('POST', url, true);
-            http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            http.send(post);
-        } else {
-            http.open('GET', url, true);
-            http.send(null);
+        try {
+            if( post ) {
+                http.open('POST', url, true);
+                http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                http.send(post);
+            } else {
+                http.open('GET', url, true);
+                http.send(null);
+            }
+        } catch( err ) {
+            // most likely a security error
+            callback.call(context, 399);
         }
     },
 
@@ -100,7 +105,11 @@ window.MapBBCode.include({
     _upload: function( mapDiv, bbcode, callback ) {
         var outerDiv = document.createElement('div');
         outerDiv.style.display = 'table';
-        outerDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        try {
+            outerDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        } catch( err ) { // invalid value in IE8
+            outerDiv.style.backgroundColor = 'black';
+        }
         outerDiv.style.zIndex = 2000;
         outerDiv.style.position = 'absolute';
         outerDiv.style.left = outerDiv.style.right = outerDiv.style.top = outerDiv.style.bottom = 0;
