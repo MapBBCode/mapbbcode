@@ -55,6 +55,7 @@ Other options:
 | `decimalDigits` | Number | `5` | Number of decimal digits for exporting bbcode.
 | `externalEndpoint` | String | *see source code* | URL of a map sharing server, for `showExternal()` and the upload button.
 | `uploadButton` | Boolean | Whether to allow uploading maps to a sharing server from editor.
+| `shareTag` | String | `'mapid'` | A bbcode tag for external map id.
 | `polygonOpacity` | Number | `0.1` | Fill opacity for polygons.
 | `leafletOptions` | Object | `{}` | Additional options passed to `L.Map` constructor.
 | `hideInsideClasses` | String[] | `[]` | List of classes inside which map panel will not be displayed (useful for disabling maps in signatures).
@@ -62,8 +63,7 @@ Other options:
 | `helpButton` | Boolean | `true` | Whether to show help button in the editor.
 | `editorCloseButtons` | Boolean | `true` | Whether to show "Apply" and "Cancel" buttons in the editor.
 | `windowFeatures` | String | 'resizable,status,dialog' | Parameters for `window.open()` used for opening an editor window.
-| `usePreparedWindow` | Boolean or String | `true` | Whether to use `mapbbcode-window.html` (recommended) or create an editor window from scratch (may fail). If it is a string, it specifies an URL of opened page.
-| `libPath` | String | `'lib/'` | Path to `mapbbcode-window.html`, MapBBCode and Leaflet libraries. Should end with a slash. Is used only in `editorWindow()`, if `usePreparedWindow` is not a string.
+| `windowPath` | String | 'lib/mapbbcode-window.html' | Path (relative or absolute) to the editor window page.
 
 ## Parameter Processors
 
@@ -73,11 +73,11 @@ To create a new parameter module, you have to push to `window.MapBBCode.objectPa
 
 * `<RegExp>   reKeys`: regular expression that matches parameters processed by this module.
 * `<Boolean>  applicableTo( <ILayer> layer )`: tests that given layer can contain module's properties.
-* `           objectToLayer( <ILayer> layer, <String[]> params )`: modifies the layer according to the properties, which are filtered by `reKeys`, so there usually is no more than one.
-* `<String[]> layerToObject( <ILayer> layer, <String[]> lastParams )`: reads properties off the layer and returns them in a string array. `lastParams` array contains properties that the object had before it was edited.
+* `           objectToLayer( <ILayer> layer, <String[]> params, <MapBBCode> ui )`: modifies the layer according to the properties, which are filtered by `reKeys`, so there usually is no more than one.
+* `<String[]> layerToObject( <ILayer> layer, <String[]> lastParams, <MapBBCode> ui )`: reads properties off the layer and returns them in a string array. `lastParams` array contains properties that the object had before it was edited.
 * `           initLayer( <ILayer> layer )`: initializes newly created layer with default property values.
 * `           initDrawControl( <Control.Draw> draw )`: modifies [Leaflet.draw](https://github.com/leaflet/leaflet.draw) control according to default property values.
-* `<HTMLElement> createEditorPanel( <ILayer>layer )`: creates a panel that will be included in an object popup. It should read and allow editing the property that's processed by the module.
+* `<HTMLElement> createEditorPanel( <ILayer>layer, <MapBBCode> ui )`: creates a panel that will be included in an object popup. It should read and allow editing the property that's processed by the module.
 
 # Configuration Tool
 
@@ -163,7 +163,7 @@ The constructor accepts two parameters. The first one is a layer list, either an
 | Option | Type | Default | Description
 |---|---|---|---
 | `maxLayers` | Number | `7` | Maximum number of layers on a map.
-| `bgColor` | String | `white` | Background CSS color of a layer switcher.
+| `bgColor` | String | `'white'` | Background CSS color of a layer switcher.
 | `selectedColor` | String | `#ddd` | Background CSS color of a selected layer line.
 | `editable` | Boolean | `false` | Whether a user can move and delete layers.
 
@@ -211,6 +211,8 @@ An export button for maps downloaded from an external service. Gets the supporte
 
 | Option | Type | Default | Description
 |---|---|---|---
+| `name` | String | 'Export' | Text written on a button.
+| `title` | String | `''` | Title text for the button.
 | `endpoint` | String | 'http://share.mapbbcode.org/' | URL of the map sharing service.
 | `codeid` | String | `''` | Identifier of a map to export.
 | `types` | String[] | `[]` | List of supported formats (if empty, then it is downloaded).

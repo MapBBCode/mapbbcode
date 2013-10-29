@@ -6,7 +6,7 @@ This JavaScript library allows easy integration of [map] bbcode into forums and 
 
 Documentation is split into several files:
 
-* [BBCode specification(BBCODE.md)
+* [BBCode specification](BBCODE.md)
 * [API reference](API.md)
 * [Embedding hints](EMBEDDING.md)
 * [Some answers](FAQ.md)
@@ -27,11 +27,13 @@ If you have found problems in any of those browsers, or tested the library with 
 
 ## Included Libraries
 
-Those libraries reside in `dist/lib` directory and should (though not required to) be put together with `mapbbcode*` files in derived projects.
+Those libraries reside in `dist/lib` directory and should be put together with `mapbbcode*` files in derived projects, otherwise you would have to fix paths in `mapbbcode-window.html`.
 
 * [Leaflet](http://leafletjs.com/) (BSD 2-clause)
 * [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw) (MIT)
 * [Bing.js](https://github.com/shramov/leaflet-plugins/blob/master/layer/tile/Bing.js) (BSD 2-clause)
+
+Thanks to [Vladimir Agafonkin](https://github.com/mourner), [Dave Leaver](https://github.com/danzel), [Jacob Toye](https://github.com/jacobtoye), [Pavel Shramov](https://github.com/shramov) and other contributors to those libraries for the excellent code and functionality that allowed to create MapBBCode so fast.
 
 ## Authors and License
 

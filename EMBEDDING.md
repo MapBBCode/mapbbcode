@@ -66,7 +66,7 @@ In phpBB3 adding a bbcode didn't require any code modifications, only a database
     '<div id="map${1}'.$i.'">[map${2}]${3}[/map]</div><script language="javascript">'.
     'if(mapBBcode) mapBBcode.show(\'map${1}'.($i++).'\');</script>', $message);
 
-### Add button to a posting page
+### Add a button to the posting page
 
 On a posting page there is usually a row of buttons for inserting bbcode. Add a "Map" button there, with the following code in `onclick` parameter:
 
@@ -83,6 +83,16 @@ These three steps are enough to enable [map] bbcode on a forum. Test it by writi
 
 For a production-grade forum modification, changes above are not enough. There is no locatization, no configuration panel, and several hundred kilobytes of javascript and css are included in every page, even in the forum index.
 
+### [mapid] bbcode
+
+The code to insert maps from an external site is very similar in implementation to the [map] bbcode. You have to add another bbcode, `[mapid]`, with the same unique `<div>` id, but instead of `{MAPBBCODE}` it would have `{MAPID}` parameter, that gets passed to `mapBBcode.showExternal('map{DIVID}', '{MAPID}')`. The relevant phpBB 3 entry would look like this:
+
+    preg_replace('!\[mapid:($uid)\]([a-z]+)\[/mapid:$uid\]!e',
+    '<div id="map${1}'.$i.'"></div><script language="javascript">'.
+    'if(mapBBcode) mapBBcode.showExternal(\'map${1}'.($i++).'\', \'${2}\');</script>', $message);
+
+Of course, some adminitrators would like to disable the interaction with external sites, so the code for converting `[mapid]` to HTML should be enclosed in a conditional block.
+    
 ### Localization
 
 If possible, it would be best to keep MapBBCode translation strings in a separate file. Those are used in header templates (remember there can be more than one), right after `mapBBcode` object initialization:
@@ -122,9 +132,10 @@ All constructor options should be read in a page header. Most likely they alread
     windowWidth: {WINDOW_WIDTH}+0,
     windowHeight: {WINDOW_HEIGHT}+0,
     fullFromStart: {ALWAYS_FULL},
+    uploadButton: {ENABLE_EXTERNAL},
     preferStandardLayerSwitcher: {STANDARD_SWITCHER}
 
-The last two properties are boolean, so you should either cast them to `true`/`false` in the initialization code, or use longer expressions:
+The last three properties are boolean, so you should either cast them to `true`/`false` in the initialization code, or use longer expressions:
 
     property: '{PROPERTY)' === 'true' || '{PROPERTY}' === '1'
 
@@ -181,6 +192,7 @@ Then there should be regular key-value configuration fields for other properties
 * `{STANDARD_SWITCHER}`: whether the layer switcher is a button or an always visible list.
 * `{OUTER_LINK}`: a link template for an optional "outer link" button.
 * `{ALLOWED_TAGS}`: a regular expression for HTML tags allowed in feature popup panels.
+* `{ENABLE_EXTERNAL}`: whether to allow [mapid] tags and uploading maps to an external server.
 
 And finally there is a large block of javascript code linking the form and the map UI. Alter form field names and template variables if needed.
 
@@ -206,7 +218,7 @@ var config = new MapBBCodeConfig({
     windowWidth: {WINDOW_WIDTH}+0,
     windowHeight: {WINDOW_HEIGHT}+0,
     fullFromStart: isTrue('{ALWAYS_FULL}'),
-//        editorTypeFixed: true, // uncomment if needed
+//    editorTypeFixed: true, // uncomment if needed
     editorInWindow: isTrue('{EDITOR_WINDOW}') // set to true or false is needed
 });
 
@@ -250,7 +262,7 @@ On the server side, this page should receive its values from the database and up
 
 ### Libraries only when needed
 
-Total size of all libraries and stylesheets is over 230 kilobytes. If they are included on every page of a forum, this would put a strain both on servers and users' bandwidth. So those should only be included in pages that actually use them. This is probably the most complex task in writing the modification.
+Total size of all libraries and stylesheets is over 250 kilobytes. If they are included on every page of a forum, this would put a strain both on servers and users' bandwidth. So those should only be included in pages that actually use them. This is probably the most complex task in writing the modification.
 
 The additional HTML code in page header templates should be wrapped in conditional template directives, so it is displayed only when a certain variable is set to `true`. It may require a modification of a script producing the header. This variable should also control adding localization string variables and pulling configuration properties from the database.
 
@@ -260,7 +272,7 @@ Then in every template that may produce messages with bbcode in them, this varia
 $mapbbcode_present = false;
 for($i = 0; $i < $total_posts; $i++)
 {
-    if (preg_match('/\[map(?:=[0-9.,-]+)?\].*?\[\/map\]/', $postrow[$i]['post_text'])) {
+    if (preg_match('/\[map(?:=[0-9.,-]+)?\].*?\[\/map\]|\[mapid\][a-z]+\[\/mapid\]/', $postrow[$i]['post_text'])) {
         $mapbbcode_present = true;
         break;
     }
@@ -302,6 +314,26 @@ After the modification is complete, install a clean forum instance and apply you
 11. Open a list of topics and check again for absence of any mapbbcode scripts.
 12. Create a new topic with a map and check it out afterwards.
 13. Log out and check maps in topics.
+
+### External maps
+
+1. Enable external maps in the administration panel.
+2. Create a new post, click "Map" button and ensure there is an "Upload" button.
+3. Click it and type a random word into the input field, then press "Apply". An error message should appear.
+4. Press "Close", then draw some lines and markers, then press "Upload".
+5. You would be presented with a link to MapBBCode Share website. Open it in a new tab.
+6. Press "Close" button in the map editor. `[mapid]code[/mapid]` should appear in a text area.
+7. Preview the post, checking that the map is displayed, and there are "Export" and "Outer link" buttons.
+8. Submit the post, check that the map is displayed.
+9. Press "Export" button, select "GeoJSON" and download the file. Then check that its contents are adequate.
+10. Switch to the tab with MapBBCode Share, make adjustments to the map and click "Save".
+11. Go back to the forum and refresh the page. The map should be updated.
+12. Click an outer link button and copy the URL of the page to the clipboard.
+13. Create a new post, click "Map" button, and then "Upload".
+14. Paste the URL into the input field and press "Apply". `[mapid]code[/mapid]` should be added to a text area.
+15. Cancel the posting, go to the administration panel and disable external maps.
+16. Return to the forum thread and check that `[mapid]` code is not parsed.
+17. Create a new pos, click "Map" and ensure there is no "Upload" button.
 
 ### Private messages
 
