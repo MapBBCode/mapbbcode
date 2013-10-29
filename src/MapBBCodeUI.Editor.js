@@ -76,8 +76,8 @@ window.MapBBCode.include({
     },
 
     _findMapInTextArea: function( textarea ) {
-        var pos = textarea.selectionStart,
-            value = textarea.value;
+        var value = textarea.value,
+            pos = 'selectionStart' in textarea ? textarea.selectionStart : value.indexOf('[/map]');
         if( pos >= value.length || value.length < 10 || value.indexOf('[/map]') < 0 )
             return '';
         // check if cursor is inside a map
@@ -98,7 +98,7 @@ window.MapBBCode.include({
             value = textarea.value;
         if( oldCode.length && value.indexOf(oldCode) >= 0 )
             textarea.value = value.replace(oldCode, newCode);
-        else if( pos >= value.length )
+        else if( !('selectionStart' in textarea) || pos >= value.length )
             textarea.value = value + newCode;
         else {
             textarea.value = value.substring(0, pos) + newCode + value.substring(pos);
