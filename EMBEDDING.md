@@ -315,6 +315,15 @@ After the modification is complete, install a clean forum instance and apply you
 12. Create a new topic with a map and check it out afterwards.
 13. Log out and check maps in topics.
 
+### Private messages
+
+1. Create another user.
+2. Open private messages panel and start writing a PM to that user.
+3. Add a map to the private message, check its preview, and then send it.
+4. There should be no mapbbcode scripts in the private messages page now.
+5. Log in as another user and open the received message. The map should be displayed properly.
+6. Click reply, add a map, click preview to check that it's working.
+
 ### External maps
 
 1. Enable external maps in the administration panel.
@@ -334,15 +343,6 @@ After the modification is complete, install a clean forum instance and apply you
 15. Cancel the posting, go to the administration panel and disable external maps.
 16. Return to the forum thread and check that `[mapid]` code is not parsed.
 17. Create a new pos, click "Map" and ensure there is no "Upload" button.
-
-### Private messages
-
-1. Create another user.
-2. Open private messages panel and start writing a PM to that user.
-3. Add a map to the private message, check its preview, and then send it.
-4. There should be no mapbbcode scripts in the private messages page now.
-5. Log in as another user and open the received message. The map should be displayed properly.
-6. Click reply, add a map, click preview to check that it's working.
 
 ### Administration
 

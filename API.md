@@ -54,7 +54,7 @@ Other options:
 | `popupIconLength` | Number | `50` | Maximum title length for using `L.PopupIcon` for markers.
 | `decimalDigits` | Number | `5` | Number of decimal digits for exporting bbcode.
 | `externalEndpoint` | String | *see source code* | URL of a map sharing server, for `showExternal()` and the upload button.
-| `uploadButton` | Boolean | Whether to allow uploading maps to a sharing server from editor.
+| `uploadButton` | Boolean | `false` | Whether to allow uploading maps to a sharing server from editor.
 | `shareTag` | String | `'mapid'` | A bbcode tag for external map id.
 | `polygonOpacity` | Number | `0.1` | Fill opacity for polygons.
 | `leafletOptions` | Object | `{}` | Additional options passed to `L.Map` constructor.
