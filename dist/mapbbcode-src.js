@@ -1061,7 +1061,7 @@ window.MapBBCode.include({
         outerDiv.style.zIndex = 2000;
         outerDiv.style.position = 'absolute';
         outerDiv.style.left = outerDiv.style.right = outerDiv.style.top = outerDiv.style.bottom = 0;
-        outerDiv.style.width = '100%';
+        outerDiv.style.width = outerDiv.style.height = '100%';
         mapDiv.appendChild(outerDiv);
 
         var back = document.createElement('div');
@@ -1070,6 +1070,7 @@ window.MapBBCode.include({
         back.style.color = 'white';
         back.style.verticalAlign = 'middle';
         back.style.display = 'table-cell';
+        back.style.cursor = 'default';
 
         var stop = L.DomEvent.stopPropagation;
         L.DomEvent
