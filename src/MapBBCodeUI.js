@@ -4,7 +4,7 @@
  */
 window.MapBBCode = L.Class.extend({
     options: {
-        createLayers: null, // function(L) { return ['OSM']; },
+        createLayers: null, // function(L) { return [L.tileLayer(...), ...]; },
         layers: null, // array of strings, if LayerList.js included
         maxInitialZoom: 15,
         defaultPosition: [22, 11],
@@ -22,9 +22,8 @@ window.MapBBCode = L.Class.extend({
         windowHeight: 500,
 
         windowFeatures: 'resizable,status,dialog',
-        usePreparedWindow: true,
+        windowPath: 'lib/mapbbcode-window.html',
         editorCloseButtons: true,
-        libPath: 'lib/',
         outerLinkTemplate: false, // 'http://openstreetmap.org/#map={zoom}/{lat}/{lon}',
         helpButton: true,
         allowedHTML: '[auib]|span|br|em|strong|tt',
@@ -132,9 +131,6 @@ window.MapBBCode = L.Class.extend({
             layers = window.layerList.getLeafletLayers(this.options.layers, L);
         if( !layers || !layers.length )
             layers = [this.createOpenStreetMapLayer()];
-        for( var j = 0; j < layers.length; j++ )
-            if( layers[j] === 'OSM' )
-                layers[j] = this.createOpenStreetMapLayer();
         map.addLayer(layers[0]);
         
         if( layers.length > 1 ) {

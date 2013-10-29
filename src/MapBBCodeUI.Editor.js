@@ -286,7 +286,7 @@ window.MapBBCode.include({
         };
     },
 
-    // Opens editor window. Requires options.labPath to be correct
+    // Opens editor window. Requires options.windowPath to be correct
     editorWindow: function( bbcode, callback, context ) {
         window.storedMapBB = {
             bbcode: bbcode,
@@ -297,35 +297,6 @@ window.MapBBCode.include({
 
         var features = this.options.windowFeatures,
             featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth,
-            basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1],
-            libUrl = basePath + this.options.libPath,
-            win = window.open(this.options.usePreparedWindow ? (typeof this.options.usePreparedWindow === 'string' ? this.options.usePreparedWindow : libUrl + 'mapbbcode-window.html') : '', 'mapbbcode_editor', features + ',' + featSize);
-
-        if( !this.options.usePreparedWindow ) {
-            var content = '<script src="' + libUrl + 'leaflet.js"></script>';
-            content += '<script src="' + libUrl + 'leaflet.draw.js"></script>';
-            content += '<script src="' + libUrl + 'mapbbcode.js"></script>';
-            content += '<script src="' + libUrl + 'mapbbcode-config.js"></script>'; // yes, this is a stretch
-            content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.css" />';
-            content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.draw.css" />';
-            content += '<div id="edit"></div>';
-            content += '<script>opener.storedMapBB.caller.editorWindowCallback.call(opener.storedMapBB.caller, window, opener.storedMapBB);</script>';
-            win.document.open();
-            win.document.write(content);
-            win.document.close();
-        }
-    },
-
-    editorWindowCallback: function( w, ctx ) {
-        w.document.body.style.margin = 0;
-        var anotherMapBB = new w.MapBBCode(this.options);
-        anotherMapBB.setStrings(this.strings);
-        anotherMapBB.options.editorHeight = '100%';
-        anotherMapBB.editor('edit', ctx.bbcode, function(res) {
-            w.close();
-            if( ctx.callback )
-                ctx.callback.call(ctx.context, res);
-            this.storedMapBB = null;
-        }, this);
+            win = window.open(this.options.windowPath, 'mapbbcode_editor', features + ',' + featSize);
     }
 });
