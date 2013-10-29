@@ -730,7 +730,8 @@ L.FunctionButtons = L.Control.extend({
     },
 
     clicked: function(e) {
-        var link = e.target, idx = this._links.length;
+        var link = (window.event && window.event.srcElement) || e.target || e.srcElement,
+            idx = this._links.length;
         while( --idx >= 0 )
             if( link === this._links[idx] )
                 break;

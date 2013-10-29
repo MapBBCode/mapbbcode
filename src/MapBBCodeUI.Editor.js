@@ -296,7 +296,8 @@ window.MapBBCode.include({
         };
 
         var features = this.options.windowFeatures,
-            featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth,
-            win = window.open(this.options.windowPath, 'mapbbcode_editor', features + ',' + featSize);
+            featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
+
+        window.open(this.options.windowPath, 'mapbbcode_editor', features + ',' + featSize);
     }
 });

@@ -120,7 +120,7 @@ window.MapBBCodeProcessor = {
  */
 window.MapBBCode = L.Class.extend({
     options: {
-        createLayers: null, // function(L) { return ['OSM']; },
+        createLayers: null, // function(L) { return [L.tileLayer(...), ...]; },
         layers: null, // array of strings, if LayerList.js included
         maxInitialZoom: 15,
         defaultPosition: [22, 11],
@@ -138,9 +138,8 @@ window.MapBBCode = L.Class.extend({
         windowHeight: 500,
 
         windowFeatures: 'resizable,status,dialog',
-        usePreparedWindow: true,
+        windowPath: 'lib/mapbbcode-window.html',
         editorCloseButtons: true,
-        libPath: 'lib/',
         outerLinkTemplate: false, // 'http://openstreetmap.org/#map={zoom}/{lat}/{lon}',
         helpButton: true,
         allowedHTML: '[auib]|span|br|em|strong|tt',
@@ -248,9 +247,6 @@ window.MapBBCode = L.Class.extend({
             layers = window.layerList.getLeafletLayers(this.options.layers, L);
         if( !layers || !layers.length )
             layers = [this.createOpenStreetMapLayer()];
-        for( var j = 0; j < layers.length; j++ )
-            if( layers[j] === 'OSM' )
-                layers[j] = this.createOpenStreetMapLayer();
         map.addLayer(layers[0]);
         
         if( layers.length > 1 ) {
@@ -465,7 +461,8 @@ L.FunctionButtons = L.Control.extend({
     },
 
     clicked: function(e) {
-        var link = e.target, idx = this._links.length;
+        var link = (window.event && window.event.srcElement) || e.target || e.srcElement,
+            idx = this._links.length;
         while( --idx >= 0 )
             if( link === this._links[idx] )
                 break;
@@ -700,8 +697,8 @@ window.MapBBCode.include({
     },
 
     _findMapInTextArea: function( textarea ) {
-        var pos = textarea.selectionStart,
-            value = textarea.value;
+        var value = textarea.value,
+            pos = 'selectionStart' in textarea ? textarea.selectionStart : value.indexOf('[/map]');
         if( pos >= value.length || value.length < 10 || value.indexOf('[/map]') < 0 )
             return '';
         // check if cursor is inside a map
@@ -722,7 +719,7 @@ window.MapBBCode.include({
             value = textarea.value;
         if( oldCode.length && value.indexOf(oldCode) >= 0 )
             textarea.value = value.replace(oldCode, newCode);
-        else if( pos >= value.length )
+        else if( !('selectionStart' in textarea) || pos >= value.length )
             textarea.value = value + newCode;
         else {
             textarea.value = value.substring(0, pos) + newCode + value.substring(pos);
@@ -910,7 +907,7 @@ window.MapBBCode.include({
         };
     },
 
-    // Opens editor window. Requires options.labPath to be correct
+    // Opens editor window. Requires options.windowPath to be correct
     editorWindow: function( bbcode, callback, context ) {
         window.storedMapBB = {
             bbcode: bbcode,
@@ -920,37 +917,9 @@ window.MapBBCode.include({
         };
 
         var features = this.options.windowFeatures,
-            featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth,
-            basePath = location.href.match(/^(.+\/)([^\/]+)?$/)[1],
-            libUrl = basePath + this.options.libPath,
-            win = window.open(this.options.usePreparedWindow ? (typeof this.options.usePreparedWindow === 'string' ? this.options.usePreparedWindow : libUrl + 'mapbbcode-window.html') : '', 'mapbbcode_editor', features + ',' + featSize);
+            featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
 
-        if( !this.options.usePreparedWindow ) {
-            var content = '<script src="' + libUrl + 'leaflet.js"></script>';
-            content += '<script src="' + libUrl + 'leaflet.draw.js"></script>';
-            content += '<script src="' + libUrl + 'mapbbcode.js"></script>';
-            content += '<script src="' + libUrl + 'mapbbcode-config.js"></script>'; // yes, this is a stretch
-            content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.css" />';
-            content += '<link rel="stylesheet" href="' + libUrl + 'leaflet.draw.css" />';
-            content += '<div id="edit"></div>';
-            content += '<script>opener.storedMapBB.caller.editorWindowCallback.call(opener.storedMapBB.caller, window, opener.storedMapBB);</script>';
-            win.document.open();
-            win.document.write(content);
-            win.document.close();
-        }
-    },
-
-    editorWindowCallback: function( w, ctx ) {
-        w.document.body.style.margin = 0;
-        var anotherMapBB = new w.MapBBCode(this.options);
-        anotherMapBB.setStrings(this.strings);
-        anotherMapBB.options.editorHeight = '100%';
-        anotherMapBB.editor('edit', ctx.bbcode, function(res) {
-            w.close();
-            if( ctx.callback )
-                ctx.callback.call(ctx.context, res);
-            this.storedMapBB = null;
-        }, this);
+        window.open(this.options.windowPath, 'mapbbcode_editor', features + ',' + featSize);
     }
 });
 
@@ -982,13 +951,18 @@ window.MapBBCode.include({
             if( http.readyState == 4 )
                 callback.call(context, http.status == 200 ? false : (http.status || 499), http.responseText);
         };
-        if( post ) {
-            http.open('POST', url, true);
-            http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            http.send(post);
-        } else {
-            http.open('GET', url, true);
-            http.send(null);
+        try {
+            if( post ) {
+                http.open('POST', url, true);
+                http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                http.send(post);
+            } else {
+                http.open('GET', url, true);
+                http.send(null);
+            }
+        } catch( err ) {
+            // most likely a security error
+            callback.call(context, 399);
         }
     },
 
@@ -1057,7 +1031,11 @@ window.MapBBCode.include({
     _upload: function( mapDiv, bbcode, callback ) {
         var outerDiv = document.createElement('div');
         outerDiv.style.display = 'table';
-        outerDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        try {
+            outerDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+        } catch( err ) { // invalid value in IE8
+            outerDiv.style.backgroundColor = 'black';
+        }
         outerDiv.style.zIndex = 2000;
         outerDiv.style.position = 'absolute';
         outerDiv.style.left = outerDiv.style.right = outerDiv.style.top = outerDiv.style.bottom = 0;
@@ -1227,10 +1205,11 @@ window.MapBBCode.objectParams.push({
         colorDiv.style.width = 10 + 20 * colors.length + 'px';
         colorDiv.textAlign = 'center';
         var colOnclick = function(e) {
-            var targetStyle = e.target.style;
+            var target = (window.event && window.event.srcElement) || e.target || e.srcElement,
+                targetStyle = target.style;
             if( targetStyle.borderColor == 'white' ) {
                 layer.setStyle({ color: targetStyle.backgroundColor, fillColor: targetStyle.backgroundColor });
-                layer._colorName = e.target._colorName;
+                layer._colorName = target._colorName;
                 var nodes = colorDiv.childNodes;
                 for( var j = 0; j < nodes.length; j++ )
                     nodes[j].style.borderColor = 'white';
@@ -1598,8 +1577,9 @@ L.ExportControl = L.Control.extend({
     },
 
     _linkClick: function(e) {
+        var target = (window.event && window.event.srcElement) || e.target || e.srcElement;
         this._variants.style.display = 'none';
-        this.fire('export', { fmt: e.target._etype });
+        this.fire('export', { fmt: target._etype });
     },
 
     _ajax: function( url, func, context ) {
