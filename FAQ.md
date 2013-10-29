@@ -23,7 +23,7 @@ The drawback is that uploaded maps cannot be edited from a library, and editing 
 
 **External maps are not loaded in Internet Explorer**
 
-Open "Internet Options", select "Security" tab, click "Custom level..." button and find "Access data sources across domains" in "Miscellaneous" section. Set it to "Enable" and refresh the page. This setting is off by default, and I do not know a way to circumvent it. Maybe [XDomainRequest](http://blogs.msdn.com/b/ieinternals/archive/2010/05/13/xdomainrequest-restrictions-limitations-and-workarounds.aspx)? Please submit a pull request to `MapBBCodeUI.Share.js`, if you know how to solve this problem.
+Open "Internet Options", select "Security" tab, click "Custom level..." button and find "Access data sources across domains" in "Miscellaneous" section. Set it to "Enable" and refresh the page. This setting is off by default, and I do not know a way to circumvent it. Please refer to #8 and submit a pull request to `MapBBCodeUI.Share.js`, if you know how to solve this problem.
 
 **Why some dimensions are grayed out in a configuration panel?**
 
