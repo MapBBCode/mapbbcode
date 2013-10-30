@@ -140,6 +140,7 @@ window.MapBBCode = L.Class.extend({
         windowFeatures: 'resizable,status,dialog',
         windowPath: 'lib/mapbbcode-window.html',
         editorCloseButtons: true,
+        confirmFormSubmit: true,
         outerLinkTemplate: false, // 'http://openstreetmap.org/#map={zoom}/{lat}/{lon}',
         helpButton: true,
         allowedHTML: '[auib]|span|br|em|strong|tt',
@@ -337,7 +338,7 @@ window.MapBBCode = L.Class.extend({
             }, this);
         }
 
-        if( this.options.outerLinkTemplate ) {
+        if( this.options.outerLinkTemplate && this.options.outerLinkTemplate.substring(0, 4) == 'http' ) {
             var outer = L.functionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle });
             outer.on('clicked', function() {
                 var template = this.options.outerLinkTemplate;
@@ -696,6 +697,30 @@ window.MapBBCode.include({
         return layer;
     },
 
+    _findParentForm: function( element ) {
+        var node = element;
+        while( node && node.tagName != 'FORM' && node.tagName != 'HTML' )
+            node = node.parentElement;
+        return node && node.tagName == 'FORM' ? node : false;
+    },
+
+    _addSubmitHandler: function( map, drawn ) {
+        var initialBBCode = this._getBBCode(map, drawn);
+        var node = this._findParentForm(map.getContainer());
+        if( node ) {
+            L.DomEvent.on(node, 'submit', function(e) {
+                if( !this._findParentForm(map.getContainer()) )
+                    return;
+
+                var bbcode = this._getBBCode(map, drawn);
+                if( bbcode != initialBBCode && drawn.getLayers().length > 0 ) {
+                    if( !window.confirm(this.strings.submitWarning) )
+                        L.DomEvent.preventDefault(e);
+                }
+            }, this);
+        }
+    },
+
     _findMapInTextArea: function( textarea ) {
         var value = textarea.value,
             pos = 'selectionStart' in textarea ? textarea.selectionStart : value.indexOf('[/map]');
@@ -877,6 +902,9 @@ window.MapBBCode.include({
             }, this);
             map.addControl(help);
         }
+
+        if( this.options.confirmFormSubmit )
+            this._addSubmitHandler(map, drawn);
         
         return {
             _ui: this,
@@ -917,9 +945,11 @@ window.MapBBCode.include({
         };
 
         var features = this.options.windowFeatures,
-            featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
+            featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth,
+            windowPath = this.options.windowPath,
+            url = windowPath.substring(windowPath.length - 1) == '/' ? windowPath + 'mapbbcode-window.html' : windowPath;
 
-        window.open(this.options.windowPath, 'mapbbcode_editor', features + ',' + featSize);
+        window.open(url, 'mapbbcode_editor', features + ',' + featSize);
     }
 });
 
@@ -971,6 +1001,18 @@ window.MapBBCode.include({
         if( !endpoint || !id )
             return;
 
+        var errorDiv = this._createMapPanel(element);
+        errorDiv.style.display = 'table';
+
+        var cell = document.createElement('div');
+        cell.style.display = 'table-cell';
+        cell.style.width = '100%';
+        cell.style.backgroundColor = '#ddd';
+        cell.style.textAlign = 'center';
+        cell.style.verticalAlign = 'middle';
+        cell.innerHTML = this.strings.sharedCodeLoading.replace('{url}', endpoint + id);
+        errorDiv.appendChild(cell);
+
         var showMap = function(error, content) {
             var show, result, derror = false;
             if( error )
@@ -979,18 +1021,7 @@ window.MapBBCode.include({
                 result = eval('('+content+')');
 
             if( error || result.error || !result.bbcode ) {
-                var errorDiv = this._createMapPanel(element);
-                errorDiv.style.display = 'table';
-
-                var cell = document.createElement('div');
-                cell.style.display = 'table-cell';
-                cell.style.width = '100%';
-                cell.style.backgroundColor = '#ddd';
-                cell.style.textAlign = 'center';
-                cell.style.verticalAlign = 'middle';
                 cell.innerHTML = this.strings.sharedCodeError.replace('{url}', endpoint + id);
-                errorDiv.appendChild(cell);
-
                 show = {
                     close: function() { errorDiv.close(); }
                 };
@@ -1620,6 +1651,8 @@ window.MapBBCode.include({strings: {
     helpTitle: 'Open help window',
     outerTitle: 'Show this place on an external map',
 
+    submitWarning: 'You will lose changes to the map. Proceed?',
+
     // share
     exportName: 'Export',
     exportTitle: 'Download this map',
@@ -1631,6 +1664,7 @@ window.MapBBCode.include({strings: {
     sharedFormHeader: 'There are no objects to upload. Enter a MapBBCode Share map URL',
     sharedFormError: 'This map panel has incorrect endpoint set.<br>Please contact an administrator.',
     sharedFormInvalidCode: 'Map code is invalid',
+    sharedCodeLoading: 'Downloading <a href="{url}" target="mapbbcode_outer">a map</a>...',
     sharedCodeError: 'Failed to download an external map<br><br><a href="{url}" target="mapbbcode_outer">Open map in a new window</a>',
 
     // Leaflet.draw
