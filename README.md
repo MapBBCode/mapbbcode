@@ -11,7 +11,7 @@ Documentation is split into several files:
 * [Embedding hints](EMBEDDING.md)
 * [Some answers](FAQ.md)
 
-Also check out [examples](example) that demonstrate various aspects of the library.
+Also check out [examples](examples) that demonstrate various aspects of the library.
 
 ## Supported Browsers
 
