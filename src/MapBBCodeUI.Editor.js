@@ -277,6 +277,12 @@ window.MapBBCode.include({
                 win.document.write(css);
                 win.document.write(str);
                 win.document.close();
+                win.onkeypress = function(e) {
+                    var keyCode = (window.event) ? (e || window.event).which : e.keyCode;
+                    if( keyCode == 27 ) {
+                        win.close();
+                    }
+                };
             }, this);
             map.addControl(help);
         }

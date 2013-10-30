@@ -134,6 +134,8 @@ exports.build = function (compsBase32, buildName) {
 	    oldSrc = loadSilently(srcPath),
 	    srcDelta = getSizeDelta(newSrc, oldSrc);
 
+	    newSrc = newSrc.replace(/\$\$VERSION\$\$/g, build.version || 'dev');
+
 	console.log('\tUncompressed size: ' + newSrc.length + ' bytes (' + srcDelta + ')');
 
 	if (newSrc === oldSrc) {

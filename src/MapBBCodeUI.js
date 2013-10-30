@@ -218,7 +218,8 @@ window.MapBBCode = L.Class.extend({
                 style.height = isFull ? this._px(this.options.fullViewHeight) : oldSize[1];
                 map.invalidateSize();
                 fs.setBgPos([isFull ? 26 : 0, 0]);
-                this._zoomToLayer(map, drawn);
+                var dZoom = isFull ? 1 : -1;
+                map.setZoom(map.getZoom() + dZoom, { animate: false });
             }, this);
         }
 

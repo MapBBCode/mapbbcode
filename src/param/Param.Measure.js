@@ -26,7 +26,7 @@ window.MapBBCode.objectParams.push({
         if( layer instanceof L.Polygon )
             title = ui.strings.area || 'Area';
         else if( layer instanceof L.Polyline )
-            title = ui.strings.length || 'Length';
+            title = ui.strings.mlength || 'Length';
         else
             return;
         var measureDiv = document.createElement('div');
