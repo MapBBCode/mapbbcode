@@ -24,6 +24,7 @@ window.MapBBCode = L.Class.extend({
         windowFeatures: 'resizable,status,dialog',
         windowPath: 'lib/mapbbcode-window.html',
         editorCloseButtons: true,
+        confirmFormSubmit: true,
         outerLinkTemplate: false, // 'http://openstreetmap.org/#map={zoom}/{lat}/{lon}',
         helpButton: true,
         allowedHTML: '[auib]|span|br|em|strong|tt',
@@ -221,7 +222,7 @@ window.MapBBCode = L.Class.extend({
             }, this);
         }
 
-        if( this.options.outerLinkTemplate ) {
+        if( this.options.outerLinkTemplate && this.options.outerLinkTemplate.substring(0, 4) == 'http' ) {
             var outer = L.functionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle });
             outer.on('clicked', function() {
                 var template = this.options.outerLinkTemplate;

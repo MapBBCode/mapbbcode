@@ -75,6 +75,30 @@ window.MapBBCode.include({
         return layer;
     },
 
+    _findParentForm: function( element ) {
+        var node = element;
+        while( node && node.tagName != 'FORM' && node.tagName != 'HTML' )
+            node = node.parentElement;
+        return node && node.tagName == 'FORM' ? node : false;
+    },
+
+    _addSubmitHandler: function( map, drawn ) {
+        var initialBBCode = this._getBBCode(map, drawn);
+        var node = this._findParentForm(map.getContainer());
+        if( node ) {
+            L.DomEvent.on(node, 'submit', function(e) {
+                if( !this._findParentForm(map.getContainer()) )
+                    return;
+
+                var bbcode = this._getBBCode(map, drawn);
+                if( bbcode != initialBBCode && drawn.getLayers().length > 0 ) {
+                    if( !window.confirm(this.strings.submitWarning) )
+                        L.DomEvent.preventDefault(e);
+                }
+            }, this);
+        }
+    },
+
     _findMapInTextArea: function( textarea ) {
         var value = textarea.value,
             pos = 'selectionStart' in textarea ? textarea.selectionStart : value.indexOf('[/map]');
@@ -256,6 +280,9 @@ window.MapBBCode.include({
             }, this);
             map.addControl(help);
         }
+
+        if( this.options.confirmFormSubmit )
+            this._addSubmitHandler(map, drawn);
         
         return {
             _ui: this,
@@ -296,8 +323,10 @@ window.MapBBCode.include({
         };
 
         var features = this.options.windowFeatures,
-            featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
+            featSize = 'height=' + this.options.windowHeight + ',width=' + this.options.windowWidth,
+            windowPath = this.options.windowPath,
+            url = windowPath.substring(windowPath.length - 1) == '/' ? windowPath + 'mapbbcode-window.html' : windowPath;
 
-        window.open(this.options.windowPath, 'mapbbcode_editor', features + ',' + featSize);
+        window.open(url, 'mapbbcode_editor', features + ',' + featSize);
     }
 });

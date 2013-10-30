@@ -45,6 +45,18 @@ window.MapBBCode.include({
         if( !endpoint || !id )
             return;
 
+        var errorDiv = this._createMapPanel(element);
+        errorDiv.style.display = 'table';
+
+        var cell = document.createElement('div');
+        cell.style.display = 'table-cell';
+        cell.style.width = '100%';
+        cell.style.backgroundColor = '#ddd';
+        cell.style.textAlign = 'center';
+        cell.style.verticalAlign = 'middle';
+        cell.innerHTML = this.strings.sharedCodeLoading.replace('{url}', endpoint + id);
+        errorDiv.appendChild(cell);
+
         var showMap = function(error, content) {
             var show, result, derror = false;
             if( error )
@@ -53,18 +65,7 @@ window.MapBBCode.include({
                 result = eval('('+content+')');
 
             if( error || result.error || !result.bbcode ) {
-                var errorDiv = this._createMapPanel(element);
-                errorDiv.style.display = 'table';
-
-                var cell = document.createElement('div');
-                cell.style.display = 'table-cell';
-                cell.style.width = '100%';
-                cell.style.backgroundColor = '#ddd';
-                cell.style.textAlign = 'center';
-                cell.style.verticalAlign = 'middle';
                 cell.innerHTML = this.strings.sharedCodeError.replace('{url}', endpoint + id);
-                errorDiv.appendChild(cell);
-
                 show = {
                     close: function() { errorDiv.close(); }
                 };

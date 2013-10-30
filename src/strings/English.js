@@ -14,6 +14,8 @@ window.MapBBCode.include({strings: {
     helpTitle: 'Open help window',
     outerTitle: 'Show this place on an external map',
 
+    submitWarning: 'You will lose changes to the map. Proceed?',
+
     // share
     exportName: 'Export',
     exportTitle: 'Download this map',
@@ -25,6 +27,7 @@ window.MapBBCode.include({strings: {
     sharedFormHeader: 'There are no objects to upload. Enter a MapBBCode Share map URL',
     sharedFormError: 'This map panel has incorrect endpoint set.<br>Please contact an administrator.',
     sharedFormInvalidCode: 'Map code is invalid',
+    sharedCodeLoading: 'Downloading <a href="{url}" target="mapbbcode_outer">a map</a>...',
     sharedCodeError: 'Failed to download an external map<br><br><a href="{url}" target="mapbbcode_outer">Open map in a new window</a>',
 
     // Leaflet.draw

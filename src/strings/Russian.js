@@ -14,6 +14,8 @@ window.MapBBCode.include({strings: {
     helpTitle: 'Открыть окно справки',
     outerTitle: 'Открыть внешний сайт с картой этого места',
 
+    submitWarning: 'Вы изменили карту и не сохранили её. Правки будут утеряны. Продолжить?',
+
     // share
     exportName: 'Скачать',
     exportTitle: 'Сохранить эту карту на диск',
@@ -25,6 +27,7 @@ window.MapBBCode.include({strings: {
     sharedFormHeader: 'Нет объектов для загрузки. Введите ссылку на карту в MapBBCode Share',
     sharedFormError: 'В настройках панели карты прописан неправильный адрес.<br>Свяжитесь с администратором.',
     sharedFormInvalidCode: 'Неправильный код карты',
+    sharedCodeLoading: 'Загружается <a href="{url}" target="mapbbcode_outer">карта</a>...',
     sharedCodeError: 'Внешний сайт выдал ошибку вместо карты<br><br><a href="{url}" target="mapbbcode_outer">Открыть карту в новом окне</a>',
 
     // Leaflet.draw

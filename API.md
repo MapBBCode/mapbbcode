@@ -62,8 +62,9 @@ Other options:
 | `enablePolygons` | Boolean | `true` | Whether to show polygon drawing button in the editing toolbar.
 | `helpButton` | Boolean | `true` | Whether to show help button in the editor.
 | `editorCloseButtons` | Boolean | `true` | Whether to show "Apply" and "Cancel" buttons in the editor.
+| `confirmFormSubmit` | Boolean | `true` | If the editor is opened inside a form, inform a user of losing changes when the form is submitted.
 | `windowFeatures` | String | 'resizable,status,dialog' | Parameters for `window.open()` used for opening an editor window.
-| `windowPath` | String | 'lib/mapbbcode-window.html' | Path (relative or absolute) to the editor window page.
+| `windowPath` | String | 'lib/mapbbcode-window.html' | Path (relative or absolute) to the editor window page (file name can be omitted).
 
 ## Parameter Processors
 
