@@ -861,7 +861,7 @@ window.MapBBCode.include({
             }, this);
             map.addControl(apply);
 
-            if( this.options.uploadButton && this._upload ) {
+            if( this.options.shareTag && this.options.uploadButton && this._upload ) {
                 var upload = L.functionButton(this.strings.upload, { position: 'topleft', title: this.strings.uploadTitle });
                 upload.on('clicked', function() {
                     this._upload(mapDiv, drawn.getLayers().length ? this._getBBCode(map, drawn) : false, function(codeid) {
@@ -1008,7 +1008,7 @@ window.MapBBCode.include({
 
     showExternal: function( element, id, callback, context ) {
         var endpoint = this._getEndpoint();
-        if( !endpoint || !id )
+        if( !this.options.shareTag || !endpoint || !id )
             return;
 
         var errorDiv = this._createMapPanel(element);
