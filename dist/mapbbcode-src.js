@@ -1,6 +1,6 @@
 /*
  JavaScript library for [map] BBCode parsing, displaying and editing.
- Version dev
+ Version 1.0.0
  https://github.com/MapBBCode/mapbbcode
  (c) 2013, Ilya Zverev
  Licensed WTFPL.
@@ -890,7 +890,7 @@ window.MapBBCode.include({
             help.on('clicked', function() {
                 var str = '',
                     help = this.strings.helpContents,
-                    version = 'dev',
+                    version = '1.0.0',
                     features = 'resizable,dialog,scrollbars,height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
                 var win = window.open('', 'mapbbcode_help', features);
                 for( var i = 0; i < help.length; i++ ) {
