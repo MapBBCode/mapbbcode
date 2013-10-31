@@ -52,6 +52,6 @@ window.MapBBCode.include({strings: {
         '# External maps',
         'If the feature is not disabled by administrators, you can upload your maps to a server, <a href="http://share.mapbbcode.org" target="mapbb">share.mapbbcode.org</a> by default, with an "Upload" button. If you click it not having drawn anything, it will ask for a map URL or identifier. Those are converted to <tt>[mapid]id[/mapid]</tt> bbcode, which looks like a regular map, but with an export button: users can download a drawing as GPX or CSV or in any other format. If you share an edit link for a map, others can join in, and changes will be reflected in embedded maps.',
         '# Plugin',
-        '<a href="http://mapbbcode.org/" target="mapbb">MapBBCode</a> is an open source javascript library with plugins around it available for some forum and blog engines. Its goal is to make sharing maps easier. This is version $$VERSION$$.'
+        '<a href="http://mapbbcode.org/" target="mapbb">MapBBCode</a> is an open source javascript library with plugins around it available for some forum and blog engines. Its goal is to make sharing maps easier. This is version {version}.'
     ]
 }});
