@@ -1,5 +1,6 @@
 /*
- A JavaScript library for [map] BBCode parsing, displaying and editing.
+ JavaScript library for [map] BBCode parsing, displaying and editing.
+ Version dev
  https://github.com/MapBBCode/mapbbcode
  (c) 2013, Ilya Zverev
  Licensed WTFPL.
@@ -334,7 +335,8 @@ window.MapBBCode = L.Class.extend({
                 style.height = isFull ? this._px(this.options.fullViewHeight) : oldSize[1];
                 map.invalidateSize();
                 fs.setBgPos([isFull ? 26 : 0, 0]);
-                this._zoomToLayer(map, drawn);
+                var dZoom = isFull ? 1 : -1;
+                map.setZoom(map.getZoom() + dZoom, { animate: false });
             }, this);
         }
 
@@ -888,17 +890,25 @@ window.MapBBCode.include({
             help.on('clicked', function() {
                 var str = '',
                     help = this.strings.helpContents,
+                    version = 'dev',
                     features = 'resizable,dialog,scrollbars,height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
                 var win = window.open('', 'mapbbcode_help', features);
                 for( var i = 0; i < help.length; i++ ) {
                     str += !i ? '<h1>'+help[0]+'</h1>' : help[i].substr(0, 1) === '#' ? '<h2>'+help[i].replace(/^#\s*/, '')+'</h2>' : '<p>'+help[i]+'</p>';
                 }
+                str = str.replace('{version}', version);
                 str += '<div id="close"><input type="button" value="' + this.strings.close + '" onclick="javascript:window.close();"></div>';
                 var css = '<style>body { font-family: sans-serif; font-size: 12pt; } p { line-height: 1.5; } h1 { text-align: center; font-size: 18pt; } h2 { font-size: 14pt; } #close { text-align: center; margin-top: 1em; }</style>';
                 win.document.open();
                 win.document.write(css);
                 win.document.write(str);
                 win.document.close();
+                win.onkeypress = function(e) {
+                    var keyCode = (window.event) ? (e || window.event).which : e.keyCode;
+                    if( keyCode == 27 ) {
+                        win.close();
+                    }
+                };
             }, this);
             map.addControl(help);
         }
@@ -1682,20 +1692,14 @@ window.MapBBCode.include({strings: {
     // help: array of html paragraphs, simply joined together. First line is <h1>, start with '#' for <h2>.
     helpContents: [
         'Map BBCode Editor',
-        'You have opened this help window from inside the map editor. It is activated with "Map" button. When the cursor in the textarea is inside [map] sequence, the editor will edit that bbcode, otherwise it will create new bbcode and insert it at cursor position after clicking "Apply".',
-        '# BBCode',
-        'Map BBCode is placed inside <tt>[map]...[/map]</tt> tags. Opening tag may contain zoom with optional position in latitude,longitude format: <tt>[map=10]</tt> or <tt>[map=15,60.1,30.05]</tt>. Decimal separator is always a full stop.',
-        'The tag contains a semicolon-separated list of features: markers and paths. They differ only by a number of space-separated coordinates: markers have one, and paths have more. There can be optional title in brackets after the list: <tt>12.3,-5.1(Popup)</tt> (only for markers in the editor). Title is HTML and can contain any characters, but "(" should be replaced with "\\(", and only a limited set of HTML tags is allowed.',
-        'Paths can have different colours, which are stated in <i>parameters</i>: part of a title followed by "|" character. For example, <tt>12.3,-5.1 12.5,-5 12,0 (red|)</tt> will produce a red path.',
-        '# Map Viewer',
-        'Plus and minus buttons on the map change its zoom. Other buttons are optional. A button with four arrows ("fullscreen") expands map view to maximum width and around twice the height. If a map has many layers, there is a layer switcher in the top right corner. There also might be a button with a curved arrow, that opens an external site (usually www.openstreetmap.org) at a position shown on the map.',
-        'You can drag the map to pan around, press zoom buttons while holding Shift key to change zoom quickly, or drag the map with Shift pressed to zoom to an area. Scroll-wheel zoom is disabled in viewer to not interfere with page scrolling, but in works in map editor.',
-        '# Editor Buttons',
-        '"Apply" saves map features (or map state if there are none) to a post body, "Cancel" just closes the editor panel. And you have already figured out what the button with a question mark does. Two buttons underneath zoom controls add features on the map.',
-        'To draw a path, press the button with a diagonal line and click somewhere on the map. Then click again, and again, until you\'ve got a nice polyline. Do not worry if you got some points wrong: you can fix it later. Click on the final point to finish drawing. Then you may fix points and add intermediate nodes by dragging small square or circular handlers. To delete a path (or a marker), click on it, and in the popup window press "Delete" button.',
-        'Markers are easier to place: click on the marker button, then click on the map. In a popup window for a marker you can type a title: if it is 1 or 2 characters long, the text would appear right on the marker. Otherwise map viewers would have to click on a marker to read the title. A title may contain URLs and line feeds.',
+        'Since you have already activated the editor, you know the drill. There are buttons for markers and geometry, you click the map and objects appear, they have popups activated by clicking, from which you can change some properties, like color. To save the drawing click "Apply", otherwise there is a "Cancel" button.',
+        'What you should know is that you are editing not the map, but the underlying bbcode, with all restrictions it imposes. It is a text string, which you can copy and paste to different services, and edit directly. <a href="https://github.com/MapBBCode/mapbbcode/blob/master/BBCODE.md" target="mapbb">The syntax</a> of it is quite simple: <tt>[map]...[/map]</tt> tags with a list of objects as coordinate sequences and attributes. When a cursor is inside bbcode, the editor is opened with a drawing it represents, otherwise it will be empty. If you have any questions, check <a href="https://github.com/MapBBCode/mapbbcode/blob/master/FAQ.md" target="mapbb">the FAQ</a> first.',
+        '# Navigating the map',
+        'Here are some hints for using map panels. Keyboard arrows work when a map is in focus. Shift+drag with a mouse to quickly zoom into an area, shift+zoom buttons to change zoom 3 steps at a time. Use the layer switcher at the top right corner to see the drawing on a different map. Mouse wheel is disabled in the viewer, but can be used in the editor to quickly zoom in or out. Use the button with a magnifier to navigate to a named place or a road.',
+        '# External maps',
+        'If the feature is not disabled by administrators, you can upload your maps to a server, <a href="http://share.mapbbcode.org" target="mapbb">share.mapbbcode.org</a> by default, with an "Upload" button. If you click it not having drawn anything, it will ask for a map URL or identifier. Those are converted to <tt>[mapid]id[/mapid]</tt> bbcode, which looks like a regular map, but with an export button: users can download a drawing as GPX or CSV or in any other format. If you share an edit link for a map, others can join in, and changes will be reflected in embedded maps.',
         '# Plugin',
-        'Map BBCode Editor is an open source product, available at <a href="https://github.com/MapBBCode/mapbbcode">github</a>. You will also find there plugins for some of popular forum engines. All issues and suggestions can be placed in the github issue tracker.'
+        '<a href="http://mapbbcode.org/" target="mapbb">MapBBCode</a> is an open source javascript library with plugins around it available for some forum and blog engines. Its goal is to make sharing maps easier. This is version {version}.'
     ]
 }});
 
