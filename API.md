@@ -55,7 +55,7 @@ Other options:
 | `decimalDigits` | Number | `5` | Number of decimal digits for exporting bbcode.
 | `externalEndpoint` | String | *see source code* | URL of a map sharing server, for `showExternal()` and the upload button.
 | `uploadButton` | Boolean | `false` | Whether to allow uploading maps to a sharing server from editor.
-| `shareTag` | String | `'mapid'` | A bbcode tag for external map id.
+| `shareTag` | String | `'mapid'` | A bbcode tag for external map id. If empty, upload button is hidden and `showExternal()` method is disabled.
 | `polygonOpacity` | Number | `0.1` | Fill opacity for polygons.
 | `leafletOptions` | Object | `{}` | Additional options passed to `L.Map` constructor.
 | `hideInsideClasses` | String[] | `[]` | List of classes inside which map panel will not be displayed (useful for disabling maps in signatures).
