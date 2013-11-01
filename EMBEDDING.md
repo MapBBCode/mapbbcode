@@ -25,7 +25,7 @@ Usually there is a main theme, like `subSilver` or `proSilver` in phpBB. Find a 
 <script language="Javascript" type="text/javascript">
 <!--
 var mapBBcode = new MapBBCode({
-    libPath: 'includes/mapbbcode/',
+    windowPath: 'includes/mapbbcode/',
     layers: 'OpenStreetMap',
     defaultZoom: 2,
     defaultPosition: [22, 11],
@@ -70,8 +70,8 @@ In phpBB3 adding a bbcode didn't require any code modifications, only a database
 
 On a posting page there is usually a row of buttons for inserting bbcode. Add a "Map" button there, with the following code in `onclick` parameter:
 
-    javascript:true ? mapBBcode.editorWindow(document.post.message)
-                    : mapBBcode.editor('mapedit', document.post.message);
+    javascript:true ? mapBBcode.editorWindow(document.getElementById('post_area'))
+                    : mapBBcode.editor('mapedit', document.getElementById('post_area'));
 
 It unconditionally opens an editor window — for now. Later `true` will be replaced with a configuration parameter, so an administrator can choose where does the editor appear. For a inline panel option, you have to add the following tag somewhere inside a posting form, before bbcode buttons.
 
