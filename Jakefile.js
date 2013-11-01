@@ -11,7 +11,7 @@ To run the tests, run "jake test".
 */
 
 var build = require('./build/build.js');
-build.version = 'dev';
+build.version = '1.0.0';
 
 desc('Check MapBBCode source for errors with JSHint');
 task('lint', build.lint);

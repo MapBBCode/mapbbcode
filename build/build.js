@@ -127,14 +127,13 @@ exports.build = function (compsBase32, buildName) {
 	    intro = '(function (window, document, undefined) {\nL = window.L;\n',
 	    outro = '}(window, document));',
 	    newSrc = copy + intro + combineFiles(files) + outro,
+	    newSrc = newSrc.replace(/\$\$VERSION\$\$/g, exports.version || 'dev'),
 
 	    pathPart = 'dist/mapbbcode' + (buildName ? '-' + buildName : ''),
 	    srcPath = pathPart + '-src.js',
 
 	    oldSrc = loadSilently(srcPath),
 	    srcDelta = getSizeDelta(newSrc, oldSrc);
-
-	    newSrc = newSrc.replace(/\$\$VERSION\$\$/g, exports.version || 'dev');
 
 	console.log('\tUncompressed size: ' + newSrc.length + ' bytes (' + srcDelta + ')');
 
@@ -153,6 +152,7 @@ exports.build = function (compsBase32, buildName) {
 	        warnings: true,
 	        fromString: true
 	    }).code,
+	    newCompressed = newCompressed.replace(/\$\$VERSION\$\$/g, exports.version || 'dev'),
 	    delta = getSizeDelta(newCompressed, oldCompressed);
 
 	console.log('\tCompressed size: ' + newCompressed.length + ' bytes (' + delta + ')');
