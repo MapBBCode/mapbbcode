@@ -68,7 +68,17 @@ This is a [Leaflet library issue](https://github.com/Leaflet/Leaflet/issues/2086
 Add this line to scripts in page templates before MapBBCode objects instantiation:
 
 ```javascript
-window.layerList.list.push('Layer Name', 'L.tileLayer("http://...", { ... })');
+window.layerList.list['Layer Name'] = 'L.tileLayer("http://...", { ... })';
+```
+
+**Specifically, I want Google Maps in my forum**
+
+Google layers are not included because Google is evil. And sometimes charge for their maps. And you should promote free and open maps, that is, OSM. But of course there is a way to add google maps to a forum. Download Pavel's [Google.js](https://raw.github.com/shramov/leaflet-plugins/master/layer/tile/Google.js) and put it in the mapbbcode directory. Then add those lines after `mapbbcode-config.js` but before `new MapBBCode()`:
+
+```javascript
+<script src="mapbbcode/Google.js"></script>
+<script src="http://maps.google.com/maps/api/js?v=3&sensor=false"></script>
+<script>window.layerList.list['Google Maps'] = 'new L.Google("ROADMAP")';</script>
 ```
 
 **I haven't found my question in this list**
