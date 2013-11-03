@@ -289,6 +289,11 @@ window.MapBBCode = L.Class.extend({
         var el = typeof element === 'string' ? document.getElementById(element) : element;
         if( !el ) return;
         var bbcode = el.getAttribute('bbcode') || el.getAttribute('value') || el.innerHTML.replace(/^\s+|\s+$/g, '');
+        if( bbcode && bbcode.indexOf('[/map]') < 0 ) {
+            var pos = el.getAttribute('pos'),
+                openTag = pos ? '[map' + (pos.substring(0, 1) == '=' ? pos : '=' + pos) + ']' : '[map]';
+            bbcode = openTag + bbcode + '[/map]';
+        }
         while( el.firstChild )
             el.removeChild(el.firstChild);
         if( !iseditor && this._hideClassPresent(el) )
