@@ -6,6 +6,8 @@ All changes without author are by @Zverik.
 
 ## 1.1-dev (master)
 
+* BBCode for `show()` can be split: `<div id="id" map="=10,11,22">10.01,10.99(M)</div>`. For those engines that do not tolerate unprocessed bbcode.
+
 ## 1.0.0 (2013-10-31)
 
 Initial release
