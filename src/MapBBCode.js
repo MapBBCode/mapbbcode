@@ -3,13 +3,16 @@
  */
 window.MapBBCodeProcessor = {
     decimalDigits: 5,
+    brackets: '[]',
 
     _getRegExp: function() {
+        var openBr = this.brackets.substring(0, 1).replace(/([\[\({])/, '\\$1'),
+            closBr = this.brackets.substring(1, 2).replace(/([\]\)}])/, '\\$1');
         var reCoord = '\\s*(-?\\d+(?:\\.\\d+)?)\\s*,\\s*(-?\\d+(?:\\.\\d+)?)',
             reParams = '\\((?:([a-zA-Z0-9,]*)\\|)?(|[\\s\\S]*?[^\\\\])\\)',
             reMapElement = reCoord + '(?:' + reCoord + ')*(?:\\s*' + reParams + ')?',
-            reMapOpeningTag = '\\[map(?:=([12]?\\d)(?:,' + reCoord + ')?)?\\]',
-            reMap = reMapOpeningTag + '(' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*\\[/map\\]',
+            reMapOpeningTag = openBr + 'map(?:=([12]?\\d)(?:,' + reCoord + ')?)?' + closBr,
+            reMap = reMapOpeningTag + '(' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*' + openBr + '/map' + closBr,
             reMapC = new RegExp(reMap, 'i');
         return {
             coord: reCoord,
@@ -96,7 +99,9 @@ window.MapBBCodeProcessor = {
             }
         }
 
-        return markers.length || paths.length || mapData.length ? '[map' + mapData + ']' + markers.concat(paths).join('; ') + '[/map]' : '';
+        var openBr = this.brackets.substring(0, 1),
+            closBr = this.brackets.substring(1, 2);
+        return markers.length || paths.length || mapData.length ? openBr + 'map' + mapData + closBr + markers.concat(paths).join('; ') + openBr + '/map' + closBr : '';
     },
 
     _latLngToString: function( latlng ) {

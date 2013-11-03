@@ -100,14 +100,17 @@ window.MapBBCode.include({
     },
 
     _findMapInTextArea: function( textarea ) {
+        var brackets = window.MapBBCodeProcessor.brackets = this.options.codeBrackets,
+            openBr = brackets.substring(0, 1),
+            closBr = brackets.substring(1, 2);
         var value = textarea.value,
-            pos = 'selectionStart' in textarea ? textarea.selectionStart : value.indexOf('[/map]');
-        if( pos >= value.length || value.length < 10 || value.indexOf('[/map]') < 0 )
+            pos = 'selectionStart' in textarea ? textarea.selectionStart : value.indexOf(openBr + '/map' + closBr);
+        if( pos >= value.length || value.length < 10 || value.indexOf(openBr + '/map' + closBr) < 0 )
             return '';
         // check if cursor is inside a map
-        var start = value.lastIndexOf('[map', pos);
+        var start = value.lastIndexOf(openBr + 'map', pos);
         if( start >= 0 ) {
-            var end = value.indexOf('[/map]', start);
+            var end = value.indexOf(openBr + '/map' + closBr, start);
             if( end + 5 >= pos ) {
                 var mapPart = value.substring(start, end + 6);
                 if( window.MapBBCodeProcessor.isValid(mapPart) )
@@ -135,6 +138,7 @@ window.MapBBCode.include({
             objs.push(this._layerToObject(layer));
         }, this);
         window.MapBBCodeProcessor.decimalDigits = this.options.decimalDigits;
+        window.MapBBCodeProcessor.brackets = this.options.codeBrackets;
         return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
     },
 
