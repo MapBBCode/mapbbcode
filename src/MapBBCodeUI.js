@@ -172,8 +172,8 @@ window.MapBBCode = L.Class.extend({
         var el = typeof element === 'string' ? document.getElementById(element) : element;
         if( !el ) return;
         var bbcode = el.getAttribute('bbcode') || el.getAttribute('value') || el.innerHTML.replace(/^\s+|\s+$/g, '');
-        if( bbcode && bbcode.indexOf('[/map]') < 0 ) {
-            var pos = el.getAttribute('pos'),
+        if( (bbcode && bbcode.indexOf('[/map]') < 0) || (!bbcode && el.getAttribute('map')) ) {
+            var pos = el.getAttribute('map'),
                 openTag = pos ? '[map' + (pos.substring(0, 1) == '=' ? pos : '=' + pos) + ']' : '[map]';
             bbcode = openTag + bbcode + '[/map]';
         }

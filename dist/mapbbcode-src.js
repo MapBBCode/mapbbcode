@@ -1,6 +1,6 @@
 /*
  JavaScript library for [map] BBCode parsing, displaying and editing.
- Version 1.0.0
+ Version 1.0.1-dev
  https://github.com/MapBBCode/mapbbcode
  (c) 2013, Ilya Zverev
  Licensed WTFPL.
@@ -289,8 +289,8 @@ window.MapBBCode = L.Class.extend({
         var el = typeof element === 'string' ? document.getElementById(element) : element;
         if( !el ) return;
         var bbcode = el.getAttribute('bbcode') || el.getAttribute('value') || el.innerHTML.replace(/^\s+|\s+$/g, '');
-        if( bbcode && bbcode.indexOf('[/map]') < 0 ) {
-            var pos = el.getAttribute('pos'),
+        if( (bbcode && bbcode.indexOf('[/map]') < 0) || (!bbcode && el.getAttribute('map')) ) {
+            var pos = el.getAttribute('map'),
                 openTag = pos ? '[map' + (pos.substring(0, 1) == '=' ? pos : '=' + pos) + ']' : '[map]';
             bbcode = openTag + bbcode + '[/map]';
         }
@@ -895,7 +895,7 @@ window.MapBBCode.include({
             help.on('clicked', function() {
                 var str = '',
                     help = this.strings.helpContents,
-                    version = '1.0.0',
+                    version = '1.0.1-dev',
                     features = 'resizable,dialog,scrollbars,height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
                 var win = window.open('', 'mapbbcode_help', features);
                 for( var i = 0; i < help.length; i++ ) {

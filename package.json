@@ -1,9 +1,10 @@
 {
   "name": "mapbbcode",
-  "version": "0.1.0-alpha",
+  "version": "1.0.1-dev",
   "description": "JavaScript library for [map] BBCode parsing, displaying and editing",
   "devDependencies": {
     "leaflet": "git://github.com/Leaflet/Leaflet.git",
+    "leaflet-draw": "git://github.com/Leaflet/Leaflet.draw.git",
     "jshint": "~2.1.11",
 //    "mocha": "~1.13.0",
 //    "karma": "~0.10.2",
