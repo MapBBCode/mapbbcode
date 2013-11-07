@@ -34,7 +34,7 @@ window.MapBBCodeProcessor = {
             result.zoom = +matches[1];
             if( matches[3] && matches[3].length > 0 ) {
                 try {
-                    result.pos = L.LatLng ? new L.LatLng(matches[2], matches[3]) : [+matches[2], +matches[3]];
+                    result.pos = L && L.LatLng ? new L.LatLng(matches[2], matches[3]) : [+matches[2], +matches[3]];
                 } catch(e) {}
             }
         }
@@ -49,7 +49,7 @@ window.MapBBCodeProcessor = {
                     coords = [], m, text = '', params = [];
                 m = s.match(reCoordC);
                 while( m ) {
-                    coords.push(L.LatLng ? new L.LatLng(m[1], m[2]) : [+m[1], +m[2]]);
+                    coords.push(L && L.LatLng ? new L.LatLng(m[1], m[2]) : [+m[1], +m[2]]);
                     s = s.substr(m[0].length);
                     m = s.match(reCoordC);
                 }

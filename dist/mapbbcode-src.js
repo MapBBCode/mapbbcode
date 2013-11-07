@@ -43,7 +43,7 @@ window.MapBBCodeProcessor = {
             result.zoom = +matches[1];
             if( matches[3] && matches[3].length > 0 ) {
                 try {
-                    result.pos = L.LatLng ? new L.LatLng(matches[2], matches[3]) : [+matches[2], +matches[3]];
+                    result.pos = L && L.LatLng ? new L.LatLng(matches[2], matches[3]) : [+matches[2], +matches[3]];
                 } catch(e) {}
             }
         }
@@ -58,7 +58,7 @@ window.MapBBCodeProcessor = {
                     coords = [], m, text = '', params = [];
                 m = s.match(reCoordC);
                 while( m ) {
-                    coords.push(L.LatLng ? new L.LatLng(m[1], m[2]) : [+m[1], +m[2]]);
+                    coords.push(L && L.LatLng ? new L.LatLng(m[1], m[2]) : [+m[1], +m[2]]);
                     s = s.substr(m[0].length);
                     m = s.match(reCoordC);
                 }
@@ -318,6 +318,7 @@ window.MapBBCode = L.Class.extend({
 
         var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
+		map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="A library for [map] bbcode parsing, editing and displaying">MapBBCode</a>');
         this._addLayers(map);
 
         var drawn = new L.FeatureGroup();

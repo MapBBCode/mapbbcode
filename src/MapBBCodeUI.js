@@ -201,6 +201,7 @@ window.MapBBCode = L.Class.extend({
 
         var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
+		map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="A library for [map] bbcode parsing, editing and displaying">MapBBCode</a>');
         this._addLayers(map);
 
         var drawn = new L.FeatureGroup();
