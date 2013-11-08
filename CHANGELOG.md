@@ -6,6 +6,8 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 ## 1.0.1-dev (master)
 
+* Polygon button missed a tooltip, and search tooltip was too technical.
+* Replaced Leaflet with MapBBCode in attribution.
 * Updated Leaflet.draw: tooltip doesn't hang in top left corner anymore.
 * BBCode for `show()` can be split: `<div id="id" map="=10,11,22">10.01,10.99(M)</div>`. For those engines that do not tolerate unprocessed bbcode.
 

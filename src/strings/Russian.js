@@ -11,6 +11,7 @@ window.MapBBCode.include({strings: {
     applyTitle: 'Сохранить изменения',
     cancelTitle: 'Отменить изменения',
     fullScreenTitle: 'Растянуть или сжать панель карты',
+    searchTitle: 'Найти место на карте',
     helpTitle: 'Открыть окно справки',
     outerTitle: 'Открыть внешний сайт с картой этого места',
 
