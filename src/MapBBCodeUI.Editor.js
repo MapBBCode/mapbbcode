@@ -100,7 +100,7 @@ window.MapBBCode.include({
     },
 
     _findMapInTextArea: function( textarea ) {
-        var brackets = window.MapBBCodeProcessor.brackets = this.options.codeBrackets,
+        var brackets = window.MapBBCodeProcessor.brackets,
             openBr = brackets.substring(0, 1),
             closBr = brackets.substring(1, 2);
         var value = textarea.value,
@@ -137,8 +137,6 @@ window.MapBBCode.include({
         drawn.eachLayer(function(layer) {
             objs.push(this._layerToObject(layer));
         }, this);
-        window.MapBBCodeProcessor.decimalDigits = this.options.decimalDigits;
-        window.MapBBCodeProcessor.brackets = this.options.codeBrackets;
         return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
     },
 
