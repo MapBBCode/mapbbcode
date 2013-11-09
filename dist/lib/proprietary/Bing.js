@@ -1,3 +1,6 @@
+// source: https://github.com/shramov/leaflet-plugins/tree/master/layer/tile
+// author: Pavel Shramov
+// license: BSD 2-clause
 L.BingLayer = L.TileLayer.extend({
 	options: {
 		subdomains: [0, 1, 2, 3],
@@ -122,3 +125,7 @@ L.BingLayer = L.TileLayer.extend({
 L.bingLayer = function (key, options) {
     return new L.BingLayer(key, options);
 };
+
+if( window.layerList ) {
+	window.layerList.list["Bing Satellite"] = "new L.BingLayer('{key:http://msdn.microsoft.com/en-us/library/ff428642.aspx}')";
+}
