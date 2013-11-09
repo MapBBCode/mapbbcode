@@ -11,6 +11,7 @@ window.MapBBCode.include({strings: {
     applyTitle: 'Apply changes',
     cancelTitle: 'Cancel changes',
     fullScreenTitle: 'Enlarge or shrink map panel',
+    searchTitle: 'Search for a location',
     helpTitle: 'Open help window',
     outerTitle: 'Show this place on an external map',
 
@@ -32,6 +33,7 @@ window.MapBBCode.include({strings: {
 
     // Leaflet.draw
     polylineTitle: 'Draw a path',
+    polygonTitle: 'Draw a polygon',
     markerTitle: 'Add a marker',
     drawCancelTitle: 'Cancel drawing',
     markerTooltip: 'Click map to place marker',
