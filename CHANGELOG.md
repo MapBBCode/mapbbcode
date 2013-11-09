@@ -6,6 +6,8 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 ## 1.0.1-dev (master)
 
+* Brackets and opening tag style can be configured: `<map z="12" ll="60.1,30.2"></map>` is possible.
+* Removed `decimalDigits` option, configure MapBBCodeProcessor directly.
 * Added OpenMapSurfer Contour layer (also as an example of adding an overlay layer).
 * Polygon button missed a tooltip, and search tooltip was too technical.
 * Replaced Leaflet with MapBBCode in attribution.

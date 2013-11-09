@@ -100,18 +100,17 @@ window.MapBBCode.include({
     },
 
     _findMapInTextArea: function( textarea ) {
-        var brackets = window.MapBBCodeProcessor.brackets,
-            openBr = brackets.substring(0, 1),
-            closBr = brackets.substring(1, 2);
+        var openTag = window.MapBBCodeProcessor.getOpenTagSubstring(),
+			closeTag = window.MapBBCodeProcessor.getCloseTagSubstring();
         var value = textarea.value,
-            pos = 'selectionStart' in textarea ? textarea.selectionStart : value.indexOf(openBr + '/map' + closBr);
-        if( pos >= value.length || value.length < 10 || value.indexOf(openBr + '/map' + closBr) < 0 )
+            pos = 'selectionStart' in textarea ? textarea.selectionStart : value.indexOf(closeTag);
+        if( pos >= value.length || value.length < 10 || value.indexOf(closeTag) < 0 )
             return '';
         // check if cursor is inside a map
-        var start = value.lastIndexOf(openBr + 'map', pos);
+        var start = value.lastIndexOf(openTag, pos);
         if( start >= 0 ) {
-            var end = value.indexOf(openBr + '/map' + closBr, start);
-            if( end + 5 >= pos ) {
+            var end = value.indexOf(closeTag, start);
+            if( end + closeTag.length > pos ) {
                 var mapPart = value.substring(start, end + 6);
                 if( window.MapBBCodeProcessor.isValid(mapPart) )
                     return mapPart;
