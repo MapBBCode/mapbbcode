@@ -101,7 +101,7 @@ window.MapBBCode = L.Class.extend({
                 map.setView(stored.pos, stored.zoom || this.options.maxInitialZoom);
             } else {
                 var maxZoom = Math.max(this.options.maxInitialZoom, initial ? 0 : map.getZoom());
-                map.fitBounds(bounds, { animate: false });
+                map.fitBounds(bounds, { animate: false, paddingTopLeft: [30, 30], paddingBottomRight: [30, 5] });
                 if( stored && stored.zoom )
                     map.setZoom(stored.zoom, { animate: false });
                 else if( map.getZoom() > maxZoom )

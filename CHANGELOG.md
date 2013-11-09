@@ -7,12 +7,12 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 ## 1.0.1-dev (master)
 
 * Brackets and opening tag style can be configured: `<map z="12" ll="60.1,30.2"></map>` is possible.
-* Removed `decimalDigits` option, configure MapBBCodeProcessor directly.
+* Removed `decimalDigits` option from UI, configure MapBBCodeProcessor directly.
 * Added OpenMapSurfer Contour layer (also as an example of adding an overlay layer).
 * Polygon button missed a tooltip, and search tooltip was too technical.
 * Replaced Leaflet with MapBBCode in attribution.
 * Updated Leaflet.draw: tooltip doesn't hang in top left corner anymore.
-* BBCode for `show()` can be split: `<div id="id" map="=10,11,22">10.01,10.99(M)</div>`. For those engines that do not tolerate unprocessed bbcode.
+* BBCode for `show()` can be split: `<div id="id" map="=10,11,22">10.01,10.99(M)</div>` (`=` is optional). For those engines that do not tolerate unprocessed bbcode.
 
 ## 1.0.0 (2013-10-31)
 
