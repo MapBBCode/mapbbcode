@@ -134,7 +134,6 @@ window.MapBBCode.include({
         drawn.eachLayer(function(layer) {
             objs.push(this._layerToObject(layer));
         }, this);
-        window.MapBBCodeProcessor.decimalDigits = this.options.decimalDigits;
         return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
     },
 

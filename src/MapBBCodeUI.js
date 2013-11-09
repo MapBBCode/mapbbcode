@@ -32,7 +32,6 @@ window.MapBBCode = L.Class.extend({
         popupIconLength: 30,
         enablePolygons: true,
         preferStandardLayerSwitcher: true,
-        decimalDigits: 5,
         hideInsideClasses: [],
 
         externalEndpoint: 'http://share.mapbbcode.org/',
