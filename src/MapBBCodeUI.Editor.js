@@ -293,8 +293,9 @@ window.MapBBCode.include({
         if( this.options.confirmFormSubmit )
             this._addSubmitHandler(map, drawn);
         
-        return {
+        var control = {
             _ui: this,
+			editor: true,
             map: map,
             close: function() {
                 var finalCode = this.getBBCode();
@@ -320,6 +321,11 @@ window.MapBBCode.include({
                 this._ui.zoomToLayer(map, drawn);
             }
         };
+
+		if( this.options.panelHook )
+			this.options.panelHook.call(this, control);
+
+		return control;
     },
 
     // Opens editor window. Requires options.windowPath to be correct

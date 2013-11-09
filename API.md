@@ -11,7 +11,7 @@
     Calls `callback` when "Apply" or "Cancel" buttons are clicked, with a single parameter of new bbcode.
 * `editorWindow( <String/HTMLTextArea> bbcode, callback, context )`: opens a new window with an editor for given bbcode (see `editor()`). Does not return anything.
 
-Methods `show` and `editor` return an object with a `map` property and methods to control the panel:
+Methods `show` and `editor` return an object with a `map` property, `editor` flag and methods to control the panel:
 
 * `close()`: removes all elements, "closes" the panel.
 * `zoomToData()`: zooms and pans the map view to the data.

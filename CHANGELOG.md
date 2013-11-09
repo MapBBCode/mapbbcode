@@ -6,8 +6,10 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 ## 1.0.1-dev (master)
 
-* Added proprietary layers: Google, Yandex. Moved Bing to that company from layerList. To include a proprietary layer into layerList, just include a script file.
-* Brackets and opening tag style can be configured: `<map z="12" ll="60.1,30.2"></map>` is possible.
+* `panelHook` for altering viewer and editor panels. Also `editor` property in control objects.
+* Added proprietary layers: Google, Yandex. Moved Bing to that company from layerList. To include a proprietary layer into layerList, just include a script file. #16
+* Markers are now fit inside a map panel. #14
+* Brackets and opening tag style can be configured: `<map z="12" ll="60.1,30.2"></map>` is possible. #9
 * Removed `decimalDigits` option from UI, configure MapBBCodeProcessor directly.
 * Added OpenMapSurfer Contour layer (also as an example of adding an overlay layer).
 * Polygon button missed a tooltip, and search tooltip was too technical.

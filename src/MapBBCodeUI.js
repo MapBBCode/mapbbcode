@@ -33,6 +33,7 @@ window.MapBBCode = L.Class.extend({
         enablePolygons: true,
         preferStandardLayerSwitcher: true,
         hideInsideClasses: [],
+		panelHook: null, // function({map, getBBCode(), ...})
 
         externalEndpoint: 'http://share.mapbbcode.org/',
         uploadButton: false,
@@ -238,8 +239,9 @@ window.MapBBCode = L.Class.extend({
             map.addControl(outer);
         }
 
-        return {
+        var control = {
             _ui: this,
+			editor: false,
             map: map,
             close: function() {
                 this.map = null;
@@ -262,5 +264,10 @@ window.MapBBCode = L.Class.extend({
                 this._ui._zoomToLayer(map, drawn);
             }
         };
+
+		if( this.options.panelHook )
+			this.options.panelHook.call(this, control);
+
+		return control;
     }
 });
