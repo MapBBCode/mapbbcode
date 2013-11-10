@@ -11,36 +11,38 @@ L = window.L;
  * Map BBCode parser and producer. See BBCODE.md for description.
  */
 window.MapBBCodeProcessor = {
-    decimalDigits: 5,
-    brackets: '[]',
-	tagParams: false,
+    options: {
+        decimalDigits: 5,
+        brackets: '[]',
+        tagParams: false,
+    },
 
     _getRegExp: function() {
-        var openBr = this.brackets.substring(0, 1).replace(/([\[\({])/, '\\$1'),
-            closBr = this.brackets.substring(1, 2).replace(/([\]\)}])/, '\\$1');
+        var openBr = this.options.brackets.substring(0, 1).replace(/([\[\({])/, '\\$1'),
+            closBr = this.options.brackets.substring(1, 2).replace(/([\]\)}])/, '\\$1');
         var reCoord = '\\s*(-?\\d+(?:\\.\\d+)?)\\s*,\\s*(-?\\d+(?:\\.\\d+)?)',
             reParams = '\\((?:([a-zA-Z0-9,]*)\\|)?(|[\\s\\S]*?[^\\\\])\\)',
             reMapElement = reCoord + '(?:' + reCoord + ')*(?:\\s*' + reParams + ')?',
-            reMapOpeningTag = openBr + 'map(?:' + (this.tagParams ? '\\s+z=[\'"]([12]?\\d)[\'"](?:\\s+ll=[\'"]' + reCoord + '[\'"])?' : '=([12]?\\d)(?:,' + reCoord + ')?') + ')?' + closBr,
-            reMap = reMapOpeningTag + '(' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*' + openBr + '/map' + closBr,
-            reMapC = new RegExp(reMap, 'i');
+            reMapOpeningTag = openBr + 'map(?:' + (this.options.tagParams ? '\\s+z=[\'"]([12]?\\d)[\'"](?:\\s+ll=[\'"]' + reCoord + '[\'"])?' : '=([12]?\\d)(?:,' + reCoord + ')?') + ')?' + closBr,
+            reMap = reMapOpeningTag + '(' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*' + openBr + '/map' + closBr;
         return {
             coord: reCoord,
             params: reParams,
+            mapElement: reMapElement,
             map: reMap,
-            mapCompiled: reMapC
+            mapCompiled: new RegExp(reMap, 'i')
         };
     },
 
-	// returns longest substring for determining a start of map bbcode, "[map" by default
-	getOpenTagSubstring: function() {
-		return this.brackets.substring(0, 1) + 'map';
-	},
+    // returns longest substring for determining a start of map bbcode, "[map" by default
+    getOpenTagSubstring: function() {
+        return this.options.brackets.substring(0, 1) + 'map';
+    },
 
-	// returns longest substring for determining an end of map bbcode, "[/map]" by default
-	getCloseTagSubstring: function() {
-		return this.brackets.substring(0, 1) + '/map' + this.brackets.substring(1, 2);
-	},
+    // returns longest substring for determining an end of map bbcode, "[/map]" by default
+    getCloseTagSubstring: function() {
+        return this.options.brackets.substring(0, 1) + '/map' + this.options.brackets.substring(1, 2);
+    },
 
     // Checks that bbcode string is a valid map bbcode
     isValid: function( bbcode ) {
@@ -63,26 +65,28 @@ window.MapBBCodeProcessor = {
         }
 
         if( matches && matches[4] ) {
-            // todo: parse element by element instead of splitting at semicolons
-            var items = matches[4].replace(/;;/g, '##%##').split(';'),
-                reCoordC = new RegExp('^' + regExp.coord),
-                reParamsC = new RegExp(regExp.params);
-            for( var i = 0; i < items.length; i++ ) {
-                var s = items[i].replace(/##%##/g, ';'),
+            var items = matches[4], itm,
+                reElementC = new RegExp('^\\s*(?:;\\s*)?(' + regExp.mapElement + ')'),
+                reCoordC = new RegExp('^' + regExp.coord);
+
+            itm = items.match(reElementC);
+            while( itm ) {
+                var s = itm[1],
                     coords = [], m, text = '', params = [];
                 m = s.match(reCoordC);
                 while( m ) {
                     coords.push(L && L.LatLng ? new L.LatLng(m[1], m[2]) : [+m[1], +m[2]]);
-                    s = s.substr(m[0].length);
+                    s = s.substring(m[0].length);
                     m = s.match(reCoordC);
                 }
-                m = s.match(reParamsC);
-                if( m ) {
-                    if( m[1] )
-                        params = m[1].split(',');
-                    text = m[2].replace(/\\\)/g, ')').replace(/^\s+|\s+$/g, '');
-                }
+                if( itm[6] )
+                    params = itm[6].split(',');
+                if( typeof itm[7] === 'string' && itm[7].length > 0 )
+                    text = itm[7].replace(/\\\)/g, ')').replace(/^\s+|\s+$/g, '');
                 result.objs.push({ coords: coords, text: text, params: params });
+
+                items = items.substring(itm[0].length);
+                itm = items.match(reElementC);
             }
         }
 
@@ -93,9 +97,9 @@ window.MapBBCodeProcessor = {
     objectsToString: function( data ) {
         var mapData = '';
         if( data.zoom > 0 ) {
-            mapData = this.tagParams ? ' z="' + data.zoom + '"' : '=' + data.zoom;
+            mapData = this.options.tagParams ? ' z="' + data.zoom + '"' : '=' + data.zoom;
             if( data.pos )
-                mapData += this.tagParams ? ' ll="' + this._latLngToString(data.pos) + '"' : ',' + this._latLngToString(data.pos);
+                mapData += this.options.tagParams ? ' ll="' + this._latLngToString(data.pos) + '"' : ',' + this._latLngToString(data.pos);
         }
 
         var markers = [], paths = [], objs = data.objs || [];
@@ -110,7 +114,7 @@ window.MapBBCodeProcessor = {
             if( text.indexOf('|') >= 0 && params.length === 0 )
                 text = '|' + text;
             if( text.length > 0 || params.length > 0 )
-                str = str + '(' + (params.length > 0 ? params.join(',') + '|' : '') + text.replace(/\)/g, '\\)').replace(/;/g, ';;') + ')';
+                str = str + '(' + (params.length > 0 ? params.join(',') + '|' : '') + text.replace(/\)/g, '\\)') + ')';
             if( coords.length ) {
                 if( coords.length == 1 )
                     markers.push(str);
@@ -119,13 +123,13 @@ window.MapBBCodeProcessor = {
             }
         }
 
-        var openBr = this.brackets.substring(0, 1),
-            closBr = this.brackets.substring(1, 2);
+        var openBr = this.options.brackets.substring(0, 1),
+            closBr = this.options.brackets.substring(1, 2);
         return markers.length || paths.length || mapData.length ? openBr + 'map' + mapData + closBr + markers.concat(paths).join('; ') + openBr + '/map' + closBr : '';
     },
 
     _latLngToString: function( latlng ) {
-        var mult = Math.pow(10, this.decimalDigits);
+        var mult = Math.pow(10, this.options.decimalDigits);
         return '' + (Math.round((latlng.lat || latlng[0]) * mult) / mult) + ',' + (Math.round((latlng.lng || latlng[1]) * mult) / mult);
     }
 };
@@ -926,7 +930,7 @@ window.MapBBCode.include({
                     features = 'resizable,dialog,scrollbars,height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
                 var win = window.open('', 'mapbbcode_help', features);
                 for( var i = 0; i < help.length; i++ ) {
-                    str += !i ? '<h1>'+help[0]+'</h1>' : help[i].substr(0, 1) === '#' ? '<h2>'+help[i].replace(/^#\s*/, '')+'</h2>' : '<p>'+help[i]+'</p>';
+                    str += !i ? '<h1>'+help[0]+'</h1>' : help[i].substring(0, 1) === '#' ? '<h2>'+help[i].replace(/^#\s*/, '')+'</h2>' : '<p>'+help[i]+'</p>';
                 }
                 str = str.replace('{version}', version);
                 str += '<div id="close"><input type="button" value="' + this.strings.close + '" onclick="javascript:window.close();"></div>';
@@ -1194,7 +1198,7 @@ window.MapBBCode.include({
                             errorDiv.innerHTML = this.strings.sharedFormError;
                             errorDiv.style.display = 'block';
                         } else {
-                            if( content.substr(0, 15).indexOf('"error"') > 0 ) {
+                            if( content.substring(0, 15).indexOf('"error"') > 0 ) {
                                 url.value = '';
                                 errorDiv.innerHTML = this.strings.sharedFormInvalidCode;
                                 errorDiv.style.display = 'block';
@@ -1588,7 +1592,7 @@ L.Control.PermalinkAttribution = L.Control.Attribution.extend({
 				// make permalink for openstreetmap
 				if( i.indexOf('/openstreetmap.org') > 0 || i.indexOf('/www.openstreetmap.org') > 0 ) {
 					var latlng = this._map.getCenter(),
-						permalink = 'http://www.openstreetmap.org/#map=' + this._map.getZoom() + '/' + L.Util.formatNum(latlng.lat, 5) + '/' + L.Util.formatNum(latlng.lng, 5);
+						permalink = 'http://www.openstreetmap.org/#map=' + this._map.getZoom() + '/' + L.Util.formatNum(latlng.lat, 4) + '/' + L.Util.formatNum(latlng.lng, 4);
 					i = i.replace(/(['"])http[^'"]+openstreetmap.org[^'"]*(['"])/, '$1' + permalink + '$2');
 					if( this.options.editLink ) {
 						var editlink = permalink.replace('#', 'edit#');

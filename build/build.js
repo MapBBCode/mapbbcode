@@ -174,9 +174,9 @@ exports.pack = function() {
         target = 'dist/target/',
         archive = 'mapbbcode-'+(exports.version||'dev')+'.zip';
     var commands = [
-        'mkdir -p ' + target + 'docs',
-        'cp *.md ' + target + 'docs',
+        'mkdir -p ' + target,
         'cp -r dist/lib ' + target + 'mapbbcode',
+        'cp -r src/strings ' + target + 'mapbbcode/lang',
         'cp dist/mapbbcode.js ' + target + 'mapbbcode/',
         'cp dist/mapbbcode-config.js ' + target + 'mapbbcode/',
         'cp dist/mapbbcode-window.html ' + target + 'mapbbcode/',
