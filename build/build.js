@@ -172,14 +172,16 @@ exports.cfg = function (compsBase32, buildName) {
 exports.pack = function() {
     var jake = require('jake'),
         target = 'dist/target/',
+        mapbb = target + 'mapbbcode',
         archive = 'mapbbcode-'+(exports.version||'dev')+'.zip';
     var commands = [
-        'mkdir -p ' + target,
-        'cp -r dist/lib ' + target + 'mapbbcode',
-        'cp -r src/strings ' + target + 'mapbbcode/lang',
-        'cp dist/mapbbcode.js ' + target + 'mapbbcode/',
-        'cp dist/mapbbcode-config.js ' + target + 'mapbbcode/',
-        'cp dist/mapbbcode-window.html ' + target + 'mapbbcode/',
+        'mkdir -p ' + mapbb,
+        'cp -r dist/lib/* ' + mapbb,
+        'cp -r src/strings ' + mapbb + '/lang',
+        'cp dist/mapbbcode.js ' + mapbb,
+        'cp dist/mapbbcode-config.js ' + mapbb,
+        'cp dist/mapbbcode-window.html ' + mapbb,
+		'cp ' + mapbb + '/proprietary/Bing.js ' + mapbb, // temporary
         'rm -f dist/' + archive,
         'cd ' + target + '; zip -r ../' + archive + ' *',
         'rm -r ' + target

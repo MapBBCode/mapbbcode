@@ -22,7 +22,7 @@ Those libraries reside in `dist/lib` directory and should be put together with `
 
 * [Leaflet](http://leafletjs.com/) (BSD 2-clause)
 * [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw) (MIT)
-* [Bing.js](https://github.com/shramov/leaflet-plugins/blob/master/layer/tile/Bing.js) (BSD 2-clause)
+* [Bing.js, Google.js, Yandex.js](https://github.com/shramov/leaflet-plugins/tree/master/layer/tile/) (BSD 2-clause)
 
 Thanks to [Vladimir Agafonkin](https://github.com/mourner), [Dave Leaver](https://github.com/danzel), [Jacob Toye](https://github.com/jacobtoye), [Pavel Shramov](https://github.com/shramov) and other contributors to those libraries for the excellent code and functionality that allowed to create MapBBCode so fast.
 
