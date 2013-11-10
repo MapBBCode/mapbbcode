@@ -18,8 +18,9 @@ window.MapBBCodeProcessor = {
         return {
             coord: reCoord,
             params: reParams,
+			mapElement: reMapElement,
             map: reMap,
-            mapCompiled: reMapC
+            mapCompiled: new RegExp(reMap, 'i')
         };
     },
 
@@ -54,26 +55,28 @@ window.MapBBCodeProcessor = {
         }
 
         if( matches && matches[4] ) {
-            // todo: parse element by element instead of splitting at semicolons
-            var items = matches[4].replace(/;;/g, '##%##').split(';'),
-                reCoordC = new RegExp('^' + regExp.coord),
-                reParamsC = new RegExp(regExp.params);
-            for( var i = 0; i < items.length; i++ ) {
-                var s = items[i].replace(/##%##/g, ';'),
+            var items = matches[4], itm,
+				reElementC = new RegExp('^\\s*(?:;\\s*)?(' + regExp.mapElement + ')');
+                reCoordC = new RegExp('^' + regExp.coord);
+
+			itm = items.match(reElementC);
+			while( itm ) {
+                var s = itm[1],
                     coords = [], m, text = '', params = [];
                 m = s.match(reCoordC);
                 while( m ) {
                     coords.push(L && L.LatLng ? new L.LatLng(m[1], m[2]) : [+m[1], +m[2]]);
-                    s = s.substr(m[0].length);
+                    s = s.substring(m[0].length);
                     m = s.match(reCoordC);
                 }
-                m = s.match(reParamsC);
-                if( m ) {
-                    if( m[1] )
-                        params = m[1].split(',');
-                    text = m[2].replace(/\\\)/g, ')').replace(/^\s+|\s+$/g, '');
-                }
+				if( itm[6] )
+					params = itm[6].split(',');
+				if( typeof itm[7] === 'string' && itm[7].length > 0 )
+					text = itm[7].replace(/\\\)/g, ')').replace(/^\s+|\s+$/g, '');
                 result.objs.push({ coords: coords, text: text, params: params });
+
+				items = items.substring(itm[0].length);
+				itm = items.match(reElementC);
             }
         }
 
@@ -101,7 +104,7 @@ window.MapBBCodeProcessor = {
             if( text.indexOf('|') >= 0 && params.length === 0 )
                 text = '|' + text;
             if( text.length > 0 || params.length > 0 )
-                str = str + '(' + (params.length > 0 ? params.join(',') + '|' : '') + text.replace(/\)/g, '\\)').replace(/;/g, ';;') + ')';
+                str = str + '(' + (params.length > 0 ? params.join(',') + '|' : '') + text.replace(/\)/g, '\\)') + ')';
             if( coords.length ) {
                 if( coords.length == 1 )
                     markers.push(str);
