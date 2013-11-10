@@ -31,7 +31,7 @@ L.Control.PermalinkAttribution = L.Control.Attribution.extend({
 				// make permalink for openstreetmap
 				if( i.indexOf('/openstreetmap.org') > 0 || i.indexOf('/www.openstreetmap.org') > 0 ) {
 					var latlng = this._map.getCenter(),
-						permalink = 'http://www.openstreetmap.org/#map=' + this._map.getZoom() + '/' + L.Util.formatNum(latlng.lat, 5) + '/' + L.Util.formatNum(latlng.lng, 5);
+						permalink = 'http://www.openstreetmap.org/#map=' + this._map.getZoom() + '/' + L.Util.formatNum(latlng.lat, 4) + '/' + L.Util.formatNum(latlng.lng, 4);
 					i = i.replace(/(['"])http[^'"]+openstreetmap.org[^'"]*(['"])/, '$1' + permalink + '$2');
 					if( this.options.editLink ) {
 						var editlink = permalink.replace('#', 'edit#');
