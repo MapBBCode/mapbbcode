@@ -59,6 +59,11 @@ var deps = {
 		desc: 'Nominatim search control'
 	},
 
+	Attribution: {
+		src: ['PermalinkAttribution.js'],
+		desc: 'Make permalinks out of OSM attribution'
+	},
+
 	Export: {
 		src: ['ExportButton.js'],
 		desc: 'Export to share.mapbbcode.org button'

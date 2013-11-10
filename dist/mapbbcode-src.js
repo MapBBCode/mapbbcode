@@ -12,13 +12,17 @@ L = window.L;
  */
 window.MapBBCodeProcessor = {
     decimalDigits: 5,
+    brackets: '[]',
+	tagParams: false,
 
     _getRegExp: function() {
+        var openBr = this.brackets.substring(0, 1).replace(/([\[\({])/, '\\$1'),
+            closBr = this.brackets.substring(1, 2).replace(/([\]\)}])/, '\\$1');
         var reCoord = '\\s*(-?\\d+(?:\\.\\d+)?)\\s*,\\s*(-?\\d+(?:\\.\\d+)?)',
             reParams = '\\((?:([a-zA-Z0-9,]*)\\|)?(|[\\s\\S]*?[^\\\\])\\)',
             reMapElement = reCoord + '(?:' + reCoord + ')*(?:\\s*' + reParams + ')?',
-            reMapOpeningTag = '\\[map(?:=([12]?\\d)(?:,' + reCoord + ')?)?\\]',
-            reMap = reMapOpeningTag + '(' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*\\[/map\\]',
+            reMapOpeningTag = openBr + 'map(?:' + (this.tagParams ? '\\s+z=[\'"]([12]?\\d)[\'"](?:\\s+ll=[\'"]' + reCoord + '[\'"])?' : '=([12]?\\d)(?:,' + reCoord + ')?') + ')?' + closBr,
+            reMap = reMapOpeningTag + '(' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*' + openBr + '/map' + closBr,
             reMapC = new RegExp(reMap, 'i');
         return {
             coord: reCoord,
@@ -27,6 +31,16 @@ window.MapBBCodeProcessor = {
             mapCompiled: reMapC
         };
     },
+
+	// returns longest substring for determining a start of map bbcode, "[map" by default
+	getOpenTagSubstring: function() {
+		return this.brackets.substring(0, 1) + 'map';
+	},
+
+	// returns longest substring for determining an end of map bbcode, "[/map]" by default
+	getCloseTagSubstring: function() {
+		return this.brackets.substring(0, 1) + '/map' + this.brackets.substring(1, 2);
+	},
 
     // Checks that bbcode string is a valid map bbcode
     isValid: function( bbcode ) {
@@ -79,9 +93,9 @@ window.MapBBCodeProcessor = {
     objectsToString: function( data ) {
         var mapData = '';
         if( data.zoom > 0 ) {
-            mapData = '=' + data.zoom;
+            mapData = this.tagParams ? ' z="' + data.zoom + '"' : '=' + data.zoom;
             if( data.pos )
-                mapData += ',' + this._latLngToString(data.pos);
+                mapData += this.tagParams ? ' ll="' + this._latLngToString(data.pos) + '"' : ',' + this._latLngToString(data.pos);
         }
 
         var markers = [], paths = [], objs = data.objs || [];
@@ -105,7 +119,9 @@ window.MapBBCodeProcessor = {
             }
         }
 
-        return markers.length || paths.length || mapData.length ? '[map' + mapData + ']' + markers.concat(paths).join('; ') + '[/map]' : '';
+        var openBr = this.brackets.substring(0, 1),
+            closBr = this.brackets.substring(1, 2);
+        return markers.length || paths.length || mapData.length ? openBr + 'map' + mapData + closBr + markers.concat(paths).join('; ') + openBr + '/map' + closBr : '';
     },
 
     _latLngToString: function( latlng ) {
@@ -149,8 +165,8 @@ window.MapBBCode = L.Class.extend({
         popupIconLength: 30,
         enablePolygons: true,
         preferStandardLayerSwitcher: true,
-        decimalDigits: 5,
         hideInsideClasses: [],
+		panelHook: null, // function({map, getBBCode(), ...})
 
         externalEndpoint: 'http://share.mapbbcode.org/',
         uploadButton: false,
@@ -219,7 +235,7 @@ window.MapBBCode = L.Class.extend({
                 map.setView(stored.pos, stored.zoom || this.options.maxInitialZoom);
             } else {
                 var maxZoom = Math.max(this.options.maxInitialZoom, initial ? 0 : map.getZoom());
-                map.fitBounds(bounds, { animate: false });
+                map.fitBounds(bounds, { animate: false, paddingTopLeft: [30, 30], paddingBottomRight: [30, 5] });
                 if( stored && stored.zoom )
                     map.setZoom(stored.zoom, { animate: false });
                 else if( map.getZoom() > maxZoom )
@@ -318,7 +334,8 @@ window.MapBBCode = L.Class.extend({
 
         var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
-		map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="A library for [map] bbcode parsing, editing and displaying">MapBBCode</a>');
+        if( map.attributionControl )
+            map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="A library for [map] bbcode parsing, editing and displaying">MapBBCode</a>');
         this._addLayers(map);
 
         var drawn = new L.FeatureGroup();
@@ -356,8 +373,9 @@ window.MapBBCode = L.Class.extend({
             map.addControl(outer);
         }
 
-        return {
+        var control = {
             _ui: this,
+			editor: false,
             map: map,
             close: function() {
                 this.map = null;
@@ -380,6 +398,11 @@ window.MapBBCode = L.Class.extend({
                 this._ui._zoomToLayer(map, drawn);
             }
         };
+
+		if( this.options.panelHook )
+			this.options.panelHook.call(this, control);
+
+		return control;
     }
 });
 
@@ -730,15 +753,17 @@ window.MapBBCode.include({
     },
 
     _findMapInTextArea: function( textarea ) {
+        var openTag = window.MapBBCodeProcessor.getOpenTagSubstring(),
+			closeTag = window.MapBBCodeProcessor.getCloseTagSubstring();
         var value = textarea.value,
-            pos = 'selectionStart' in textarea ? textarea.selectionStart : value.indexOf('[/map]');
-        if( pos >= value.length || value.length < 10 || value.indexOf('[/map]') < 0 )
+            pos = 'selectionStart' in textarea ? textarea.selectionStart : value.indexOf(closeTag);
+        if( pos >= value.length || value.length < 10 || value.indexOf(closeTag) < 0 )
             return '';
         // check if cursor is inside a map
-        var start = value.lastIndexOf('[map', pos);
+        var start = value.lastIndexOf(openTag, pos);
         if( start >= 0 ) {
-            var end = value.indexOf('[/map]', start);
-            if( end + 5 >= pos ) {
+            var end = value.indexOf(closeTag, start);
+            if( end + closeTag.length > pos ) {
                 var mapPart = value.substring(start, end + 6);
                 if( window.MapBBCodeProcessor.isValid(mapPart) )
                     return mapPart;
@@ -764,7 +789,6 @@ window.MapBBCode.include({
         drawn.eachLayer(function(layer) {
             objs.push(this._layerToObject(layer));
         }, this);
-        window.MapBBCodeProcessor.decimalDigits = this.options.decimalDigits;
         return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
     },
 
@@ -775,8 +799,10 @@ window.MapBBCode.include({
 
         var map = L.map(mapDiv, L.extend({}, { zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
+        if( map.attributionControl )
+            map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="A library for [map] bbcode parsing, editing and displaying">MapBBCode</a>');
         if( L.Control.Search )
-            map.addControl(new L.Control.Search());
+            map.addControl(new L.Control.Search({ title: this.strings.searchTitle }));
         this._addLayers(map);
 
         var textArea;
@@ -922,8 +948,9 @@ window.MapBBCode.include({
         if( this.options.confirmFormSubmit )
             this._addSubmitHandler(map, drawn);
         
-        return {
+        var control = {
             _ui: this,
+			editor: true,
             map: map,
             close: function() {
                 var finalCode = this.getBBCode();
@@ -949,6 +976,11 @@ window.MapBBCode.include({
                 this._ui.zoomToLayer(map, drawn);
             }
         };
+
+		if( this.options.panelHook )
+			this.options.panelHook.call(this, control);
+
+		return control;
     },
 
     // Opens editor window. Requires options.windowPath to be correct
@@ -1523,6 +1555,72 @@ L.control.search = function( options ) {
 };
 
 
+/*
+ * L.Control.Attribution that replaces OpenStreetMap links with permalinks.
+ * Also can edd an edit link.
+ * Replaces standard attribution control, because of https://github.com/Leaflet/Leaflet/issues/2177
+ */
+L.Control.StandardAttribution = L.Control.Attribution;
+L.Control.PermalinkAttribution = L.Control.Attribution.extend({
+	options: {
+		editLink: false
+	},
+
+	onAdd: function( map ) {
+		var container = L.Control.StandardAttribution.prototype.onAdd.call(this, map);
+		map.on('moveend', this._update, this);
+		return container;
+	},
+
+	onRemove: function( map ) {
+		map.off('moveend', this._update);
+		L.Control.StandardAttribution.prototype.onRemove.call(this, map);
+	},
+
+	// copied from original class and slightly modified
+	_update: function () {
+		if (!this._map) { return; }
+
+		var attribs = [];
+
+		for (var i in this._attributions) {
+			if (this._attributions[i]) {
+				// make permalink for openstreetmap
+				if( i.indexOf('/openstreetmap.org') > 0 || i.indexOf('/www.openstreetmap.org') > 0 ) {
+					var latlng = this._map.getCenter(),
+						permalink = 'http://www.openstreetmap.org/#map=' + this._map.getZoom() + '/' + L.Util.formatNum(latlng.lat, 5) + '/' + L.Util.formatNum(latlng.lng, 5);
+					i = i.replace(/(['"])http[^'"]+openstreetmap.org[^'"]*(['"])/, '$1' + permalink + '$2');
+					if( this.options.editLink ) {
+						var editlink = permalink.replace('#', 'edit#');
+						i = i.replace(/(openstreetmap.org[^'"]*(['"])[^>]*>[^<]+<\/a>)/, '$1 (<a href=$2' + editlink + '$2 target=$2osmedit$2>Edit</a>)');
+					}
+				}
+				attribs.push(i);
+			}
+		}
+
+		var prefixAndAttribs = [];
+
+		if (this.options.prefix) {
+			prefixAndAttribs.push(this.options.prefix);
+		}
+		if (attribs.length) {
+			prefixAndAttribs.push(attribs.join(', '));
+		}
+
+		this._container.innerHTML = prefixAndAttribs.join(' | ');
+	}
+});
+
+L.control.permalinkAttribution = function( options ) {
+	return new L.Control.PermalinkAttribution(options);
+};
+
+L.Control.Attribution = L.Control.PermalinkAttribution;
+L.control.standardAttribution = L.control.attribution;
+L.control.attribution = L.control.permalinkAttribution;
+
+
 L.ExportControl = L.Control.extend({
     includes: L.Mixin.Events,
 
@@ -1664,6 +1762,7 @@ window.MapBBCode.include({strings: {
     applyTitle: 'Apply changes',
     cancelTitle: 'Cancel changes',
     fullScreenTitle: 'Enlarge or shrink map panel',
+    searchTitle: 'Search for a location',
     helpTitle: 'Open help window',
     outerTitle: 'Show this place on an external map',
 
@@ -1685,6 +1784,7 @@ window.MapBBCode.include({strings: {
 
     // Leaflet.draw
     polylineTitle: 'Draw a path',
+    polygonTitle: 'Draw a polygon',
     markerTitle: 'Add a marker',
     drawCancelTitle: 'Cancel drawing',
     markerTooltip: 'Click map to place marker',
