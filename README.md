@@ -2,16 +2,7 @@
 
 This JavaScript library allows easy integration of [map] bbcode into forums and other collaboration tools. It contains not only a bbcode parser, but also a simple API for displaying and editing code. It was written with a goal to be included into every popular forum and blog engine distribution. The author would be glad to see another plugin for maps based on this library.
 
-## Documentation
-
-Documentation is split into several files:
-
-* [BBCode specification](BBCODE.md)
-* [API reference](API.md)
-* [Embedding hints](EMBEDDING.md)
-* [Some answers](FAQ.md)
-
-Also check out [examples](examples) that demonstrate various aspects of the library.
+Documentation for this library and its use is published on [the official website](http://mapbbcode.org). Also check out [examples](examples) that demonstrate various aspects of the library.
 
 ## Supported Browsers
 
