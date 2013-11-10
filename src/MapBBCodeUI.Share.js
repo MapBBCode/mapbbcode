@@ -190,7 +190,7 @@ window.MapBBCode.include({
                             errorDiv.innerHTML = this.strings.sharedFormError;
                             errorDiv.style.display = 'block';
                         } else {
-                            if( content.substr(0, 15).indexOf('"error"') > 0 ) {
+                            if( content.substring(0, 15).indexOf('"error"') > 0 ) {
                                 url.value = '';
                                 errorDiv.innerHTML = this.strings.sharedFormInvalidCode;
                                 errorDiv.style.display = 'block';
