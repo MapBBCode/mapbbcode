@@ -6,6 +6,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 ## 1.0.1-dev (master)
 
+* New `L.PermalinkAttribution` Leaflet plugin that makes permalinks out of OSM attribution links (enabled by default).
 * `panelHook` for altering viewer and editor panels. Also `editor` property in control objects.
 * Added proprietary layers: Google, Yandex. Moved Bing to that company from layerList. To include a proprietary layer into layerList, just include a script file. #16
 * Markers are now fit inside a map panel. #14
