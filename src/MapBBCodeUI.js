@@ -33,7 +33,7 @@ window.MapBBCode = L.Class.extend({
         enablePolygons: true,
         preferStandardLayerSwitcher: true,
         hideInsideClasses: [],
-		panelHook: null, // function({map, getBBCode(), ...})
+        panelHook: null, // function({map, getBBCode(), ...})
 
         externalEndpoint: 'http://share.mapbbcode.org/',
         uploadButton: false,
@@ -202,7 +202,7 @@ window.MapBBCode = L.Class.extend({
         var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
         if( map.attributionControl )
-            map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="A library for [map] bbcode parsing, editing and displaying">MapBBCode</a>');
+            map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="' + this.strings.mapbbcodeTitle + '">MapBBCode</a>');
         this._addLayers(map);
 
         var drawn = new L.FeatureGroup();
@@ -242,7 +242,7 @@ window.MapBBCode = L.Class.extend({
 
         var control = {
             _ui: this,
-			editor: false,
+            editor: false,
             map: map,
             close: function() {
                 this.map = null;
@@ -266,9 +266,9 @@ window.MapBBCode = L.Class.extend({
             }
         };
 
-		if( this.options.panelHook )
-			this.options.panelHook.call(this, control);
+        if( this.options.panelHook )
+            this.options.panelHook.call(this, control);
 
-		return control;
+        return control;
     }
 });

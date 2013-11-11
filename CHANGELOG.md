@@ -10,7 +10,8 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Semicolons in object titles are now parsed correctly. #10
 * New `L.PermalinkAttribution` Leaflet plugin that makes permalinks out of OSM attribution links (enabled by default).
 * `panelHook` for altering viewer and editor panels. Also `editor` property in control objects.
-* Added proprietary layers: Google, Yandex. Moved Bing to that company from layerList. To include a proprietary layer into layerList, just include a script file. #16
+* Esri and Bing layers were moved to separate scripts for proprietary layers.
+* Added proprietary layers: Google, Yandex. To include a proprietary layer into layerList, just include a script file. #16
 * Markers are now fit inside a map panel. #14
 * All options in MapBBCodeProcessor are now in `options` property.
 * Brackets and opening tag style can be configured: `<map z="12" ll="60.1,30.2"></map>` is possible. #9

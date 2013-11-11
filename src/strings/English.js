@@ -15,6 +15,7 @@ window.MapBBCode.include({strings: {
     helpTitle: 'Open help window',
     outerTitle: 'Show this place on an external map',
 
+    mapbbcodeTitle: 'A library for parsing, editing and displaying [map] bbcode',
     submitWarning: 'You will lose changes to the map. Proceed?',
 
     // share

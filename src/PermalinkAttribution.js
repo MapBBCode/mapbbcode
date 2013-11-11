@@ -5,10 +5,6 @@
  */
 L.Control.StandardAttribution = L.Control.Attribution;
 L.Control.PermalinkAttribution = L.Control.Attribution.extend({
-	options: {
-		editLink: false
-	},
-
 	onAdd: function( map ) {
 		var container = L.Control.StandardAttribution.prototype.onAdd.call(this, map);
 		map.on('moveend', this._update, this);
@@ -33,7 +29,7 @@ L.Control.PermalinkAttribution = L.Control.Attribution.extend({
 					var latlng = this._map.getCenter(),
 						permalink = 'http://www.openstreetmap.org/#map=' + this._map.getZoom() + '/' + L.Util.formatNum(latlng.lat, 4) + '/' + L.Util.formatNum(latlng.lng, 4);
 					i = i.replace(/(['"])http[^'"]+openstreetmap.org[^'"]*(['"])/, '$1' + permalink + '$2');
-					if( this.options.editLink ) {
+					if( this._map.options.attributionEditLink ) {
 						var editlink = permalink.replace('#', 'edit#');
 						i = i.replace(/(openstreetmap.org[^'"]*(['"])[^>]*>[^<]+<\/a>)/, '$1 (<a href=$2' + editlink + '$2 target=$2osmedit$2>Edit</a>)');
 					}
@@ -58,6 +54,10 @@ L.Control.PermalinkAttribution = L.Control.Attribution.extend({
 L.control.permalinkAttribution = function( options ) {
 	return new L.Control.PermalinkAttribution(options);
 };
+
+L.Map.mergeOptions({
+	attributionEditLink: false
+});
 
 L.Control.Attribution = L.Control.PermalinkAttribution;
 L.control.standardAttribution = L.control.attribution;
