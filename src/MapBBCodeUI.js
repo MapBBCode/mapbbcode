@@ -200,6 +200,7 @@ window.MapBBCode = L.Class.extend({
         if( !bbcode || typeof bbcode !== 'string' ) return;
 
         var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
+        map.once('focus', function() { map.scrollWheelZoom.enable(); });
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
         if( map.attributionControl )
             map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="' + this.strings.mapbbcodeTitle + '">MapBBCode</a>');

@@ -15,6 +15,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 ### Improvements
 
+* Zooming with scroll wheel is enabled once a user clicks or pans a map. [#21](https://github.com/MapBBCode/mapbbcode/issues/21)
 * `panelHook` for altering viewer and editor panels. Also `editor` property in control objects.
 * Esri and Bing layers were moved to separate scripts for proprietary layers.
 * Added OpenMapSurfer Contour layer (also as an example of adding an overlay layer).
