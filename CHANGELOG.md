@@ -10,7 +10,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 * Moved all documentation to [mapbbcode.org](http://mapbbcode.org/toc.html). [#19](https://github.com/MapBBCode/mapbbcode/issues/19)
 * Replaced Leaflet with MapBBCode in attribution.
-* New `L.PermalinkAttribution` Leaflet plugin that makes permalinks out of OSM attribution links (enabled by default).
+* New `L.PermalinkAttribution` Leaflet plugin that makes permalinks out of OSM attribution links (enabled by default). [#17](https://github.com/MapBBCode/mapbbcode/issues/17)
 * Added proprietary layers: Google, Yandex. To include a proprietary layer into layerList, just include a script file. [#16](https://github.com/MapBBCode/mapbbcode/issues/16)
 
 ### Improvements
@@ -28,7 +28,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Semicolons in object titles are now parsed correctly. [#10](https://github.com/MapBBCode/mapbbcode/issues/10)
 * Markers are now fit inside a map panel. [#14](https://github.com/MapBBCode/mapbbcode/issues/14)
 * Polygon button missed a tooltip, and search tooltip was too technical.
-* Updated Leaflet.draw: tooltip doesn't hang in top left corner anymore.
+* Updated Leaflet.draw: tooltip doesn't hang in top left corner anymore. [#210](https://github.com/Leaflet/Leaflet.draw/pull/210)
 
 ## 1.0.0 (2013-10-31)
 
