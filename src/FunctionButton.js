@@ -26,6 +26,8 @@ L.FunctionButtons = L.Control.extend({
             link.style.padding = '0 4px';
             link.style.width = 'auto';
             link.style.minWidth = '20px';
+			if( this.options.bgColor )
+				link.style.backgroundColor = this.options.bgColor;
             if( this.options.titles && this.options.titles.length > i )
                 link.title = this.options.titles[i];
             this._updateContent(i);
