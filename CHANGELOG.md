@@ -11,19 +11,19 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Moved all documentation to [mapbbcode.org](http://mapbbcode.org/toc.html). [#19](https://github.com/MapBBCode/mapbbcode/issues/19)
 * Replaced Leaflet with MapBBCode in attribution.
 * New `L.PermalinkAttribution` Leaflet plugin that makes permalinks out of OSM attribution links (enabled by default). [#17](https://github.com/MapBBCode/mapbbcode/issues/17)
+* Zooming with scroll wheel is enabled once a user clicks or pans a map. [#21](https://github.com/MapBBCode/mapbbcode/issues/21)
 * Added proprietary layers: Google, Yandex. To include a proprietary layer into layerList, just include a script file. [#16](https://github.com/MapBBCode/mapbbcode/issues/16)
 
 ### Improvements
 
-* Background colors for function buttons.
-* Zooming with scroll wheel is enabled once a user clicks or pans a map. [#21](https://github.com/MapBBCode/mapbbcode/issues/21)
-* `panelHook` for altering viewer and editor panels. Also `editor` property in control objects.
 * Esri and Bing layers were moved to separate scripts for proprietary layers.
-* Added OpenMapSurfer Contour layer (also as an example of adding an overlay layer).
 * All options in MapBBCodeProcessor are now in `options` property.
 * Removed `decimalDigits` option from UI, configure MapBBCodeProcessor directly. [#11](https://github.com/MapBBCode/mapbbcode/issues/11)
 * Brackets and opening tag style can be configured: `<map z="12" ll="60.1,30.2"></map>` is possible. [#9](https://github.com/MapBBCode/mapbbcode/issues/9)
 * BBCode for `show()` can be split: `<div id="id" map="=10,11,22">10.01,10.99(M)</div>` (`=` is optional). For those engines that do not tolerate unprocessed bbcode.
+* Added OpenMapSurfer Contour layer (also as an example of adding an overlay layer).
+* `panelHook` for altering viewer and editor panels. Also `editor` property in control objects.
+* Background colors for function buttons.
 
 ### Bug fixes
 
