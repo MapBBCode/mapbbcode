@@ -1,6 +1,6 @@
 {
   "name": "mapbbcode",
-  "version": "1.1.0-dev",
+  "version": "1.1.0",
   "description": "JavaScript library for [map] BBCode parsing, displaying and editing",
   "devDependencies": {
     "leaflet": "git://github.com/Leaflet/Leaflet.git",
@@ -12,7 +12,7 @@
     "jake": "~0.7.2",
 //    "karma-mocha": "~0.1.0"
   },
-  "main": "dist/mapbbcode.js",
+  "main": "dist/mapbbcode-src.js",
   "scripts": {
 //    "test": "jake test",
     "prepublish": "jake"

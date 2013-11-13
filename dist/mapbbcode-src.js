@@ -1,6 +1,6 @@
 /*
  JavaScript library for [map] BBCode parsing, displaying and editing.
- Version 1.0.1-dev
+ Version 1.1.0
  https://github.com/MapBBCode/mapbbcode
  (c) 2013, Ilya Zverev
  Licensed WTFPL.
@@ -170,7 +170,7 @@ window.MapBBCode = L.Class.extend({
         enablePolygons: true,
         preferStandardLayerSwitcher: true,
         hideInsideClasses: [],
-		panelHook: null, // function({map, getBBCode(), ...})
+        panelHook: null, // function({map, getBBCode(), ...})
 
         externalEndpoint: 'http://share.mapbbcode.org/',
         uploadButton: false,
@@ -337,9 +337,10 @@ window.MapBBCode = L.Class.extend({
         if( !bbcode || typeof bbcode !== 'string' ) return;
 
         var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
+        map.once('focus', function() { map.scrollWheelZoom.enable(); });
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
         if( map.attributionControl )
-            map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="A library for [map] bbcode parsing, editing and displaying">MapBBCode</a>');
+            map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="' + this.strings.mapbbcodeTitle + '">MapBBCode</a>');
         this._addLayers(map);
 
         var drawn = new L.FeatureGroup();
@@ -379,7 +380,7 @@ window.MapBBCode = L.Class.extend({
 
         var control = {
             _ui: this,
-			editor: false,
+            editor: false,
             map: map,
             close: function() {
                 this.map = null;
@@ -403,10 +404,10 @@ window.MapBBCode = L.Class.extend({
             }
         };
 
-		if( this.options.panelHook )
-			this.options.panelHook.call(this, control);
+        if( this.options.panelHook )
+            this.options.panelHook.call(this, control);
 
-		return control;
+        return control;
     }
 });
 
@@ -439,6 +440,8 @@ L.FunctionButtons = L.Control.extend({
             link.style.padding = '0 4px';
             link.style.width = 'auto';
             link.style.minWidth = '20px';
+			if( this.options.bgColor )
+				link.style.backgroundColor = this.options.bgColor;
             if( this.options.titles && this.options.titles.length > i )
                 link.title = this.options.titles[i];
             this._updateContent(i);
@@ -804,7 +807,7 @@ window.MapBBCode.include({
         var map = L.map(mapDiv, L.extend({}, { zoomControl: false }, this.options.leafletOptions));
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
         if( map.attributionControl )
-            map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="A library for [map] bbcode parsing, editing and displaying">MapBBCode</a>');
+            map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="' + this.strings.mapbbcodeTitle + '">MapBBCode</a>');
         if( L.Control.Search )
             map.addControl(new L.Control.Search({ title: this.strings.searchTitle }));
         this._addLayers(map);
@@ -926,7 +929,7 @@ window.MapBBCode.include({
             help.on('clicked', function() {
                 var str = '',
                     help = this.strings.helpContents,
-                    version = '1.0.1-dev',
+                    version = '1.1.0',
                     features = 'resizable,dialog,scrollbars,height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
                 var win = window.open('', 'mapbbcode_help', features);
                 for( var i = 0; i < help.length; i++ ) {
@@ -981,10 +984,10 @@ window.MapBBCode.include({
             }
         };
 
-		if( this.options.panelHook )
-			this.options.panelHook.call(this, control);
+        if( this.options.panelHook )
+            this.options.panelHook.call(this, control);
 
-		return control;
+        return control;
     },
 
     // Opens editor window. Requires options.windowPath to be correct
@@ -1566,10 +1569,6 @@ L.control.search = function( options ) {
  */
 L.Control.StandardAttribution = L.Control.Attribution;
 L.Control.PermalinkAttribution = L.Control.Attribution.extend({
-	options: {
-		editLink: false
-	},
-
 	onAdd: function( map ) {
 		var container = L.Control.StandardAttribution.prototype.onAdd.call(this, map);
 		map.on('moveend', this._update, this);
@@ -1591,14 +1590,15 @@ L.Control.PermalinkAttribution = L.Control.Attribution.extend({
 			if (this._attributions[i]) {
 				// make permalink for openstreetmap
 				if( i.indexOf('/openstreetmap.org') > 0 || i.indexOf('/www.openstreetmap.org') > 0 ) {
-					var latlng = this._map.getCenter(),
-						permalink = 'http://www.openstreetmap.org/#map=' + this._map.getZoom() + '/' + L.Util.formatNum(latlng.lat, 4) + '/' + L.Util.formatNum(latlng.lng, 4);
+					var permalink = 'http://www.openstreetmap.org/#map={zoom}/{lat}/{lon}';
 					i = i.replace(/(['"])http[^'"]+openstreetmap.org[^'"]*(['"])/, '$1' + permalink + '$2');
-					if( this.options.editLink ) {
+					if( this._map.options.attributionEditLink ) {
 						var editlink = permalink.replace('#', 'edit#');
 						i = i.replace(/(openstreetmap.org[^'"]*(['"])[^>]*>[^<]+<\/a>)/, '$1 (<a href=$2' + editlink + '$2 target=$2osmedit$2>Edit</a>)');
 					}
 				}
+				var latlng = this._map.getCenter();
+				i = i.replace(/\{zoom\}/g, this._map.getZoom()).replace(/\{lat\}/g, L.Util.formatNum(latlng.lat, 4)).replace(/\{lon\}/g, L.Util.formatNum(latlng.lng, 4));
 				attribs.push(i);
 			}
 		}
@@ -1619,6 +1619,10 @@ L.Control.PermalinkAttribution = L.Control.Attribution.extend({
 L.control.permalinkAttribution = function( options ) {
 	return new L.Control.PermalinkAttribution(options);
 };
+
+L.Map.mergeOptions({
+	attributionEditLink: false
+});
 
 L.Control.Attribution = L.Control.PermalinkAttribution;
 L.control.standardAttribution = L.control.attribution;
@@ -1770,6 +1774,7 @@ window.MapBBCode.include({strings: {
     helpTitle: 'Open help window',
     outerTitle: 'Show this place on an external map',
 
+    mapbbcodeTitle: 'A library for parsing, editing and displaying [map] bbcode',
     submitWarning: 'You will lose changes to the map. Proceed?',
 
     // share
@@ -1803,7 +1808,8 @@ window.MapBBCode.include({strings: {
     helpContents: [
         'Map BBCode Editor',
         'Since you have already activated the editor, you know the drill. There are buttons for markers and geometry, you click the map and objects appear, they have popups activated by clicking, from which you can change some properties, like color. To save the drawing click "Apply", otherwise there is a "Cancel" button.',
-        'What you should know is that you are editing not the map, but the underlying bbcode, with all restrictions it imposes. It is a text string, which you can copy and paste to different services, and edit directly. <a href="https://github.com/MapBBCode/mapbbcode/blob/master/BBCODE.md" target="mapbb">The syntax</a> of it is quite simple: <tt>[map]...[/map]</tt> tags with a list of objects as coordinate sequences and attributes. When a cursor is inside bbcode, the editor is opened with a drawing it represents, otherwise it will be empty. If you have any questions, check <a href="https://github.com/MapBBCode/mapbbcode/blob/master/FAQ.md" target="mapbb">the FAQ</a> first.',
+        'What you should know is that you are editing not the map, but the underlying bbcode, with all restrictions it imposes. It is a text string, which you can copy and paste to different services, and edit directly. <a href="http://mapbbcode.org/bbcode.html" target="mapbb">The syntax</a> of it is quite simple: <tt>[map]...[/map]</tt> tags with a list of objects as coordinate sequences and attributes. When a cursor is inside bbcode, the editor is opened with a drawing it represents, otherwise it will be empty. If you have any questions, check <a href="http://mapbbcode.org/faq.html" target="mapbb">the FAQ</a> first.',
+		'For a complete manual see <a href="http://mapbbcode.org/guide.html" target="mapbb">User\'s Guide</a> on the official MapBBCode site.',
         '# Navigating the map',
         'Here are some hints for using map panels. Keyboard arrows work when a map is in focus. Shift+drag with a mouse to quickly zoom into an area, shift+zoom buttons to change zoom 3 steps at a time. Use the layer switcher at the top right corner to see the drawing on a different map. Mouse wheel is disabled in the viewer, but can be used in the editor to quickly zoom in or out. Use the button with a magnifier to navigate to a named place or a road.',
         '# External maps',
