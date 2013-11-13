@@ -27,13 +27,14 @@ L.Control.PermalinkAttribution = L.Control.Attribution.extend({
 				// make permalink for openstreetmap
 				if( i.indexOf('/openstreetmap.org') > 0 || i.indexOf('/www.openstreetmap.org') > 0 ) {
 					var latlng = this._map.getCenter(),
-						permalink = 'http://www.openstreetmap.org/#map=' + this._map.getZoom() + '/' + L.Util.formatNum(latlng.lat, 4) + '/' + L.Util.formatNum(latlng.lng, 4);
+						permalink = 'http://www.openstreetmap.org/#map={zoom}/{lat}/{lon}';
 					i = i.replace(/(['"])http[^'"]+openstreetmap.org[^'"]*(['"])/, '$1' + permalink + '$2');
 					if( this._map.options.attributionEditLink ) {
 						var editlink = permalink.replace('#', 'edit#');
 						i = i.replace(/(openstreetmap.org[^'"]*(['"])[^>]*>[^<]+<\/a>)/, '$1 (<a href=$2' + editlink + '$2 target=$2osmedit$2>Edit</a>)');
 					}
 				}
+				i = i.replace(/\{zoom\}/g, this._map.getZoom()).replace(/\{lat\}/g, L.Util.formatNum(latlng.lat, 4)).replace(/\{lon\}/g, L.Util.formatNum(latlng.lng, 4));
 				attribs.push(i);
 			}
 		}
