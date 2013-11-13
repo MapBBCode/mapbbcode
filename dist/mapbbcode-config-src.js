@@ -1,6 +1,6 @@
 /*
  JavaScript library for [map] BBCode parsing, displaying and editing.
- Version 1.1.0
+ Version 1.1.1-dev
  https://github.com/MapBBCode/mapbbcode
  (c) 2013, Ilya Zverev
  Licensed WTFPL.
@@ -339,8 +339,9 @@ window.layerList = {
                     try {
                         var done = eval(layer);
                         if( done ) {
-                            if( done.options )
-                                done.options.name = m[1];
+                            if( !done.options )
+                                done.options = {};
+                            done.options.name = m[1];
                             result.push(done);
                         }
                     } catch(e) {}
