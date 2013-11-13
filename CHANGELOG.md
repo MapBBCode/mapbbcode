@@ -6,6 +6,10 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 ## 1.1.1-dev (master)
 
+### Bugfixes
+
+* Layers with no options property failed to be displayed.
+
 ## 1.1.0 (2013-11-13)
 
 ### Notable changes

@@ -59,8 +59,9 @@ window.layerList = {
                     try {
                         var done = eval(layer);
                         if( done ) {
-                            if( done.options )
-                                done.options.name = m[1];
+                            if( !done.options )
+                                done.options = {};
+                            done.options.name = m[1];
                             result.push(done);
                         }
                     } catch(e) {}
