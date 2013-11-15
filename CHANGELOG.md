@@ -9,6 +9,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 ### Bugfixes
 
 * Layers with no options property failed to be displayed.
+* Link to MapBBCode website in configuration panel.
 
 ## 1.1.0 (2013-11-13)
 

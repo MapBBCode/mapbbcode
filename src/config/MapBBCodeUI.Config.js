@@ -168,6 +168,8 @@ window.MapBBCodeConfig = L.Class.extend({
 
         var map = L.map(mapDiv, { zoomControl: false }).setView(this.options.defaultPosition && this.options.defaultPosition.length == 2 ? this.options.defaultPosition : [22, 11], this.options.defaultZoom);
         map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
+        if( map.attributionControl )
+            map.attributionControl.setPrefix('<a href="http://mapbbcode.org">MapBBCode</a>');
         var layerSwitcher = L.staticLayerSwitcher(this.options.layers, { editable: true, maxLayers: this.options.maxLayers });
         map.addControl(layerSwitcher);
         layerSwitcher.on('layerschanged', function(e) {
