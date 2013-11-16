@@ -9,6 +9,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 ### Improvements
 
 * Updated OpenMapSurfer tile URLs.
+* LayerList and StaticLayerSwitcher don't allow the first layer to be non-OpenStreetMap based one. [#23](https://github.com/MapBBCode/mapbbcode/issues/23)
 
 ### Bugfixes
 

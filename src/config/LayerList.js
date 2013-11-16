@@ -42,32 +42,59 @@ window.layerList = {
         return m && m[1] && m[1].length > 0 ? m[1] : '';
     },
 
-    getLeafletLayers: function( layers, LL ) {
+    getLeafletLayer: function( layerId, LL ) {
         /* jshint unused: false */
         var L = LL || window.L,
-            l = typeof layers === 'string' ? layers.split(',') : layers,
-            layerList = this.list,
             reKeyC = /{key(?::[^}]+)?}/,
-            result = [];
-        for( var i = 0; i < l.length; i++ ) {
-            var m = l[i].match(/^(.+?)(?::([^'"]+))?$/);
-            if( m && m[1] && layerList[m[1]] ) {
-                var layer = layerList[m[1]];
-                if( m[2] && m[2].length > 0 )
-                    layer = layer.replace(reKeyC, m[2]);
-                if( !reKeyC.test(layer) ) {
-                    try {
-                        var done = eval(layer);
-                        if( done ) {
-                            if( !done.options )
-                                done.options = {};
-                            done.options.name = m[1];
-                            result.push(done);
-                        }
-                    } catch(e) {}
-                }
+            m = layerId.match(/^(.+?)(?::([^'"]+))?$/);
+        if( m && m[1] && this.list[m[1]] ) {
+            var layer = this.list[m[1]];
+            if( m[2] && m[2].length > 0 )
+                layer = layer.replace(reKeyC, m[2]);
+            if( !reKeyC.test(layer) ) {
+                try {
+                    var done = eval(layer);
+                    if( done ) {
+                        if( !done.options )
+                            done.options = {};
+                        done.options.name = m[1];
+                        return done;
+                    }
+                } catch(e) {}
             }
         }
+        return null;
+    },
+
+    getLeafletLayers: function( layers, LL ) {
+        var l = typeof layers === 'string' ? layers.split(',') : layers,
+            result = [], i, osmidx = -1;
+
+        for( i = 0; i < l.length; i++ ) {
+            var layer = this.getLeafletLayer(l[i]);
+            if( layer ) {
+                result.push(layer);
+                if( osmidx < 0 && this.isOpenStreetMapLayer(layer) )
+                    osmidx = i;
+            }
+        }
+
+        if( osmidx > 0 ) {
+            var tmp = l[i];
+            l[i] = l[0];
+            l[0] = tmp;
+        } else if( osmidx < 0 && result.length > 0 ) {
+            result.unshift(this.getLeafletLayer('OpenStreetMap'));
+        }
+
         return result;
+    },
+
+    isOpenStreetMapLayer: function( layer ) {
+        if( typeof layer === 'string' || layer.substring )
+            return layer.indexOf('openstreetmap.org') > 0;
+        if( layer.options && layer._url )
+            return (layer.options.attribution && layer.options.attribution.indexOf('openstreetmap.org') > 0) || layer._url.indexOf('tile.openstreetmap.') > 0 || layer._url.indexOf('opencyclemap.org') > 0 || layer._url.indexOf('stamen.com') > 0 || layer._url.indexOf('server.arcgisonline.com') > 0;
+        return false;
     }
 };

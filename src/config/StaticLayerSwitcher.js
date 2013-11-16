@@ -57,7 +57,7 @@ L.StaticLayerSwitcher = L.Control.extend({
             l.id = id;
             if( l.fromList ) {
                 var onMap = this._map && this._map.hasLayer(layer),
-                    newLayer = window.layerList.getLeafletLayers([id])[0];
+                    newLayer = window.layerList.getLeafletLayer(id);
                 if( onMap )
                     this._map.removeLayer(layer);
                 if( newLayer ) {
@@ -77,7 +77,7 @@ L.StaticLayerSwitcher = L.Control.extend({
     addLayer: function( id, layer ) {
         if( this._layers.length >= this.options.maxLayers )
             return;
-        var l = layer || (window.layerList && window.layerList.getLeafletLayers([id])[0]);
+        var l = layer || (window.layerList && window.layerList.getLeafletLayer(id));
         if( l ) {
             this._layers.push({ id: id, layer: l, fromList: !layer });
             this._update();
@@ -96,6 +96,15 @@ L.StaticLayerSwitcher = L.Control.extend({
             if( removingSelected )
                 this._map.removeLayer(layer);
             this._layers.splice(i, 1);
+            if( i == 0 ) {
+                // if first layer is not OSM layer, swap it with first OSM layer
+                var osmidx = this._findFirstOSMLayer();
+                if( osmidx > 0 ) {
+                    var tmp = this._layers[osmidx];
+                    this._layers[osmidx] = this._layers[0];
+                    this._layers[0] = tmp;
+                }
+            }
             if( this._selected >= this._layers.length )
                 this._selected = this._layers.length - 1;
             this._update();
@@ -111,6 +120,13 @@ L.StaticLayerSwitcher = L.Control.extend({
         var pos = this._findLayer(layer),
             newPos = moveDown ? pos + 1 : pos - 1;
         if( pos >= 0 && newPos >= 0 && newPos < this._layers.length ) {
+            if( pos + newPos == 1 && window.layerList && !window.layerList.isOpenStreetMapLayer(this._layers[1].layer) ) {
+                var nextOSM = this._findFirstOSMLayer(1);
+                if( pos == 0 && nextOSM > 1 )
+                    newPos = nextOSM;
+                else
+                    return;
+            }
             var tmp = this._layers[pos];
             this._layers[pos] = this._layers[newPos];
             this._layers[newPos] = tmp;
@@ -121,6 +137,17 @@ L.StaticLayerSwitcher = L.Control.extend({
             this._update();
             this.fire('layerschanged', { layers: this.getLayerIds() });
         }
+    },
+
+    _findFirstOSMLayer: function( start ) {
+        if( !window.layerList )
+            return start || 0;
+        var i = start || 0;
+        while( i < this._layers.length && !window.layerList.isOpenStreetMapLayer(this._layers[i].layer) )
+            i++;
+        if( i >= this._layers.length )
+            i = -1;
+        return i;
     },
 
     _findLayer: function( layer ) {
