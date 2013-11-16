@@ -80,6 +80,12 @@ L.StaticLayerSwitcher = L.Control.extend({
         var l = layer || (window.layerList && window.layerList.getLeafletLayer(id));
         if( l ) {
             this._layers.push({ id: id, layer: l, fromList: !layer });
+            var osmidx = this._findFirstOSMLayer();
+            if( osmidx > 0 ) {
+                var tmp = this._layers[osmidx];
+                this._layers[osmidx] = this._layers[0];
+                this._layers[0] = tmp;
+            }
             this._update();
             this.fire('layerschanged', { layers: this.getLayerIds() });
             if( this._layers.length == 1 )
