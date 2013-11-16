@@ -71,7 +71,7 @@ window.layerList = {
             result = [], i, osmidx = -1;
 
         for( i = 0; i < l.length; i++ ) {
-            var layer = this.getLeafletLayer(l[i]);
+            var layer = this.getLeafletLayer(l[i], LL);
             if( layer ) {
                 result.push(layer);
                 if( osmidx < 0 && this.isOpenStreetMapLayer(layer) )
@@ -84,7 +84,7 @@ window.layerList = {
             l[i] = l[0];
             l[0] = tmp;
         } else if( osmidx < 0 && result.length > 0 ) {
-            result.unshift(this.getLeafletLayer('OpenStreetMap'));
+            result.unshift(this.getLeafletLayer('OpenStreetMap', LL));
         }
 
         return result;

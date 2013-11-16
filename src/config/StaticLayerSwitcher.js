@@ -102,7 +102,7 @@ L.StaticLayerSwitcher = L.Control.extend({
             if( removingSelected )
                 this._map.removeLayer(layer);
             this._layers.splice(i, 1);
-            if( i == 0 ) {
+            if( i === 0 ) {
                 // if first layer is not OSM layer, swap it with first OSM layer
                 var osmidx = this._findFirstOSMLayer();
                 if( osmidx > 0 ) {
@@ -128,7 +128,7 @@ L.StaticLayerSwitcher = L.Control.extend({
         if( pos >= 0 && newPos >= 0 && newPos < this._layers.length ) {
             if( pos + newPos == 1 && window.layerList && !window.layerList.isOpenStreetMapLayer(this._layers[1].layer) ) {
                 var nextOSM = this._findFirstOSMLayer(1);
-                if( pos == 0 && nextOSM > 1 )
+                if( pos === 0 && nextOSM > 1 )
                     newPos = nextOSM;
                 else
                     return;

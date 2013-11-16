@@ -136,7 +136,7 @@ window.MapBBCode.include({
         drawn.eachLayer(function(layer) {
             objs.push(this._layerToObject(layer));
         }, this);
-        var needZoomPos = objs.length == 0 || map.wasPositionSet;
+        var needZoomPos = !objs.length || map.wasPositionSet;
         return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: needZoomPos ? map.getZoom() : 0, pos: needZoomPos ? map.getCenter() : 0 });
     },
 
