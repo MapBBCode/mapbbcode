@@ -14,6 +14,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 * Layers with no options property failed to be displayed.
 * Link to MapBBCode website in configuration panel.
+* Invoking `show()` without bbcode now shows an empty map instead of failing. [#25](https://github.com/MapBBCode/mapbbcode/issues/25)
 
 ## 1.1.0 (2013-11-13)
 

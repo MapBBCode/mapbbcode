@@ -173,7 +173,8 @@ exports.pack = function() {
     var jake = require('jake'),
         target = 'dist/target/',
         mapbb = target + 'mapbbcode/',
-        archive = 'mapbbcode-'+(exports.version||'dev')+'.zip';
+        archive = 'mapbbcode-latest.zip';
+        //archive = 'mapbbcode-'+(exports.version||'dev')+'.zip';
     var commands = [
         'mkdir -p ' + mapbb,
         'cp -r dist/lib/* ' + mapbb,

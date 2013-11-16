@@ -197,7 +197,8 @@ window.MapBBCode = L.Class.extend({
         var mapDiv = this._createMapPanel(element);
         if( !mapDiv ) return;
         if( !bbcode ) bbcode = mapDiv.storedBBCode;
-        if( !bbcode || typeof bbcode !== 'string' ) return;
+        if( !bbcode || typeof bbcode !== 'string' )
+			bbcode = '';
 
         var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
         map.once('focus', function() { map.scrollWheelZoom.enable(); });
