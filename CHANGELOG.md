@@ -13,6 +13,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Added `MapBBCodeProcessor.setOptions(options)`.
 * MapBBCodeProcessor's `getCloseTagSubstring` was renamed to `getCloseTag`, added some `getOpenTag*` methods.
 * For codes with objects and explicit zoom/pos, after editing zoom/pos are also explicitly specified.
+* Replaced four-space indentation with tabs, thus reducing source files by 16%.
 
 ### Bugfixes
 
