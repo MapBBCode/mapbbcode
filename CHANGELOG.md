@@ -9,13 +9,16 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 ### Improvements
 
 * Updated OpenMapSurfer tile URLs.
-* LayerList and StaticLayerSwitcher don't allow the first layer to be non-OpenStreetMap based one. [#23](https://github.com/MapBBCode/mapbbcode/issues/23)
+* Made LayerList and StaticLayerSwitcher not allow the first layer to be non-OpenStreetMap based one. [#23](https://github.com/MapBBCode/mapbbcode/issues/23)
+* Added `MapBBCodeProcessor.setOptions(options)`.
+* MapBBCodeProcessor's `getCloseTagSubstring` was renamed to `getCloseTag`, added some `getOpenTag*` methods.
 
 ### Bugfixes
 
 * Layers with no options property failed to be displayed.
 * Link to MapBBCode website in configuration panel.
 * Invoking `show()` without bbcode now shows an empty map instead of failing. [#25](https://github.com/MapBBCode/mapbbcode/issues/25)
+* Fixed `map=""` HTML attribute processing for non-standard bbcodes.
 
 ## 1.1.0 (2013-11-13)
 

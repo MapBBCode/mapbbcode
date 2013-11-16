@@ -172,10 +172,11 @@ window.MapBBCode = L.Class.extend({
         var el = typeof element === 'string' ? document.getElementById(element) : element;
         if( !el ) return;
         var bbcode = el.getAttribute('bbcode') || el.getAttribute('value') || el.innerHTML.replace(/^\s+|\s+$/g, '');
-        if( (bbcode && bbcode.indexOf('[/map]') < 0) || (!bbcode && el.getAttribute('map')) ) {
+        var closeTag = window.MapBBCodeProcessor.getCloseTag();
+        if( (bbcode && bbcode.indexOf(closeTag) < 0) || (!bbcode && el.getAttribute('map')) ) {
             var pos = el.getAttribute('map'),
-                openTag = pos ? '[map' + (pos.substring(0, 1) == '=' ? pos : '=' + pos) + ']' : '[map]';
-            bbcode = openTag + bbcode + '[/map]';
+                openTag = window.MapBBCodeProcessor.getOpenTagWithPart(pos);
+            bbcode = openTag + bbcode + closeTag;
         }
         while( el.firstChild )
             el.removeChild(el.firstChild);
@@ -198,7 +199,7 @@ window.MapBBCode = L.Class.extend({
         if( !mapDiv ) return;
         if( !bbcode ) bbcode = mapDiv.storedBBCode;
         if( !bbcode || typeof bbcode !== 'string' )
-			bbcode = '';
+            bbcode = '';
 
         var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
         map.once('focus', function() { map.scrollWheelZoom.enable(); });

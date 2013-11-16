@@ -101,7 +101,7 @@ window.MapBBCode.include({
 
     _findMapInTextArea: function( textarea ) {
         var openTag = window.MapBBCodeProcessor.getOpenTagSubstring(),
-			closeTag = window.MapBBCodeProcessor.getCloseTagSubstring();
+            closeTag = window.MapBBCodeProcessor.getCloseTag();
         var value = textarea.value,
             pos = 'selectionStart' in textarea ? textarea.selectionStart : value.indexOf(closeTag);
         if( pos >= value.length || value.length < 10 || value.indexOf(closeTag) < 0 )
@@ -297,7 +297,7 @@ window.MapBBCode.include({
         
         var control = {
             _ui: this,
-			editor: true,
+            editor: true,
             map: map,
             close: function() {
                 var finalCode = this.getBBCode();

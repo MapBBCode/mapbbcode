@@ -8,6 +8,13 @@ window.MapBBCodeProcessor = {
         tagParams: false,
     },
 
+    setOptions: function( options ) {
+        for( var i in options ) {
+            if( options.hasOwnProperty(i) )
+                this.options[i] = options[i];
+        }
+    },
+
     _getRegExp: function() {
         var openBr = this.options.brackets.substring(0, 1).replace(/([\[\({])/, '\\$1'),
             closBr = this.options.brackets.substring(1, 2).replace(/([\]\)}])/, '\\$1');
@@ -30,8 +37,18 @@ window.MapBBCodeProcessor = {
         return this.options.brackets.substring(0, 1) + 'map';
     },
 
+    // constructs opening tag, appending extra (either '=z,lat,lon' or 'z="" ll=""')
+    getOpenTagWithPart: function( extra ) {
+        return this.options.brackets.substring(0, 1) + 'map' + (extra && extra.length > 0 ? (this.options.tagParams ? (extra.substring(0, 1) == ' ' ? '' : ' ') : (extra.substring(0, 1) == '=' ? '' : '=')) + extra : '') + this.options.brackets.substring(1, 2);
+    },
+
+    // constructs opening tag for given zoom and coords (optional)
+    getOpenTag: function( zoom, coords ) {
+        return this.options.brackets.substring(0, 1) + 'map' + (zoom || zoom === '0' ? (this.options.tagParams ? ' z="' + zoom + '"' + (coords ? ' ll="' + coords + '"' : '') : '=' + zoom + (coords ? ',' + coords : '')) : '') + this.options.brackets.substring(1, 2);
+    },
+
     // returns longest substring for determining an end of map bbcode, "[/map]" by default
-    getCloseTagSubstring: function() {
+    getCloseTag: function() {
         return this.options.brackets.substring(0, 1) + '/map' + this.options.brackets.substring(1, 2);
     },
 
