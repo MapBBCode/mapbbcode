@@ -136,7 +136,8 @@ window.MapBBCode.include({
         drawn.eachLayer(function(layer) {
             objs.push(this._layerToObject(layer));
         }, this);
-        return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: objs.length ? 0 : map.getZoom(), pos: objs.length ? 0 : map.getCenter() });
+        var needZoomPos = objs.length == 0 || map.wasPositionSet;
+        return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: needZoomPos ? map.getZoom() : 0, pos: needZoomPos ? map.getCenter() : 0 });
     },
 
     // Show editor in element. BBcode can be textarea element. Callback is always called, null parameter means cancel
@@ -164,6 +165,7 @@ window.MapBBCode.include({
             this._makeEditable(this._objectToLayer(objs[i]).addTo(drawn), drawn);
         drawn.addTo(map);
         this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
+        map.wasPositionSet = objs.length > 0 && !(!data.pos);
 
         // now is the time to update leaflet.draw strings
         L.drawLocal.draw.toolbar.actions.text = this.strings.cancel;

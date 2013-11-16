@@ -12,6 +12,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Made LayerList and StaticLayerSwitcher not allow the first layer to be non-OpenStreetMap based one. [#23](https://github.com/MapBBCode/mapbbcode/issues/23)
 * Added `MapBBCodeProcessor.setOptions(options)`.
 * MapBBCodeProcessor's `getCloseTagSubstring` was renamed to `getCloseTag`, added some `getOpenTag*` methods.
+* For codes with objects and explicit zoom/pos, after editing zoom/pos are also explicitly specified.
 
 ### Bugfixes
 
