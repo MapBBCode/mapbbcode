@@ -93,8 +93,9 @@ window.layerList = {
 	isOpenStreetMapLayer: function( layer ) {
 		if( typeof layer === 'string' || layer.substring )
 			return layer.indexOf('openstreetmap.org') > 0;
-		if( layer.options && layer._url )
-			return (layer.options.attribution && layer.options.attribution.indexOf('openstreetmap.org') > 0) || layer._url.indexOf('tile.openstreetmap.') > 0 || layer._url.indexOf('opencyclemap.org') > 0 || layer._url.indexOf('stamen.com') > 0 || layer._url.indexOf('server.arcgisonline.com') > 0;
+		var l = layer.options && layer._url ? layer : (layer.getLayers ? layer.getLayers()[0] : {});
+		if( l.options && l._url )
+			return (l.options.attribution && l.options.attribution.indexOf('openstreetmap.org') > 0) || l._url.indexOf('tile.openstreetmap.') > 0 || l._url.indexOf('opencyclemap.org') > 0 || l._url.indexOf('stamen.com') > 0 || l._url.indexOf('server.arcgisonline.com') > 0;
 		return false;
 	}
 };
