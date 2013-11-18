@@ -1,6 +1,6 @@
 {
   "name": "mapbbcode",
-  "version": "1.1.1",
+  "version": "1.1.2-dev",
   "description": "JavaScript library for [map] BBCode parsing, displaying and editing",
   "devDependencies": {
     "leaflet": "git://github.com/Leaflet/Leaflet.git",

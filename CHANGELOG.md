@@ -4,6 +4,14 @@ Versions are numbered "major.minor.patch", with the `master` branch being "major
 
 All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
+## 1.1.2-dev (master)
+
+### Improvements
+
+### Bugfixes
+
+* Narrow popup icons don't block clicks to underlying objects (by [@tyrasd](https://github.com/tyrasd)).
+
 ## 1.1.1 (2013-11-16)
 
 ### Improvements
