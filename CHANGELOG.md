@@ -11,6 +11,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 ### Bugfixes
 
 * Narrow popup icons don't block clicks to underlying objects (by [@tyrasd](https://github.com/tyrasd)).
+* Forgot to update a proprietary layer in `mapbbcode-window.html`.
 
 ## 1.1.1 (2013-11-16)
 
