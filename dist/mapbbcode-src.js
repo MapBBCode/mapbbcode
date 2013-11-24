@@ -1,6 +1,6 @@
 /*
  JavaScript library for [map] BBCode parsing, displaying and editing.
- Version 1.1.1
+ Version 1.1.2-dev
  https://github.com/MapBBCode/mapbbcode
  (c) 2013, Ilya Zverev
  Licensed WTFPL.
@@ -950,7 +950,7 @@ window.MapBBCode.include({
 			help.on('clicked', function() {
 				var str = '',
 					help = this.strings.helpContents,
-					version = '1.1.1',
+					version = '1.1.2-dev',
 					features = 'resizable,dialog,scrollbars,height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
 				var win = window.open('', 'mapbbcode_help', features);
 				for( var i = 0; i < help.length; i++ ) {
@@ -1421,6 +1421,7 @@ L.PopupIcon = L.Icon.extend({
 		div.style.position = 'absolute';
 		div.style.width = width + 'px';
 		div.style.bottom = '-3px';
+		div.style.pointerEvents = 'none';
 		div.style.left = (-width / 2) + 'px';
 
 		var contentDiv = document.createElement('div');
@@ -1433,6 +1434,7 @@ L.PopupIcon = L.Icon.extend({
 		contentDiv.style.borderRadius = '5px';
 		contentDiv.style.margin = '0 auto';
 		contentDiv.style.display = 'table';
+		contentDiv.style.pointerEvents = 'auto';
 
 		var tipcDiv = document.createElement('div');
 		tipcDiv.className = 'leaflet-popup-tip-container';
