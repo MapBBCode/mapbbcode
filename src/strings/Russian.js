@@ -45,6 +45,10 @@ window.MapBBCode.include({strings: {
 	polygonContinueTooltip: 'Нажмите для продолжения контура',
 	polygonEndTooltip: 'Для замыкания контура нажмите на его начальную точку',
 
+	// Param.Length
+	singleLength: 'Длина этой линии',
+	totalLength: 'Суммарная длина',
+
 	// help: array of html paragraphs, simply joined together. First line is <h1>, start with '#' for <h2>.
 	helpContents: [
 		'Редактор Map BBCode',

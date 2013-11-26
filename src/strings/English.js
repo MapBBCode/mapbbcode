@@ -45,6 +45,10 @@ window.MapBBCode.include({strings: {
 	polygonContinueTooltip: 'Click to continue drawing polygon',
 	polygonEndTooltip: 'Click the last point to close this polygon',
 
+	// Param.Length
+	singleLength: 'Length of this line',
+	totalLength: 'Total length',
+
 	// help: array of html paragraphs, simply joined together. First line is <h1>, start with '#' for <h2>.
 	helpContents: [
 		'Map BBCode Editor',
