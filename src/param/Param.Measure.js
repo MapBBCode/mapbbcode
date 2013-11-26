@@ -6,21 +6,10 @@ if( !('objectParams' in window.MapBBCode) )
 	window.MapBBCode.objectParams = [];
 
 window.MapBBCode.objectParams.push({
-	// nope
-	reKeys: new RegExp('a^'),
-	
 	applicableTo: function( layer ) {
 		return layer instanceof L.Polyline; // includes polygons
 	},
 
-	// not a parameter
-	objectToLayer: function() {
-	},
-	
-	// not a parameter
-	layerToObject: function() {
-	},
-	
 	createEditorPanel: function( layer, ui ) {
 		var title, metric = 'metric' in ui.options ? ui.options.metric : true;
 		if( layer instanceof L.Polygon )

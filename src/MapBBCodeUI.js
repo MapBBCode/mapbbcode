@@ -76,11 +76,14 @@ window.MapBBCode = L.Class.extend({
 		}
 		
 		this._eachParamHandler(function(handler) {
-			var p = [];
-			for( var j = 0; j < obj.params.length; j++ )
-				if( handler.reKeys.test(obj.params[j]) )
-					p.push(obj.params[j]);
-			handler.objectToLayer(m, handler.text ? obj.text : p, this);
+			if( 'objectToLayer' in handler ) {
+				var p = [];
+				if( 'reKeys' in handler )
+					for( var j = 0; j < obj.params.length; j++ )
+						if( handler.reKeys.test(obj.params[j]) )
+							p.push(obj.params[j]);
+				handler.objectToLayer(m, handler.text ? obj.text : p, this);
+			}
 		}, this, m);
 			
 		m._objParams = obj.params;
@@ -264,10 +267,20 @@ window.MapBBCode = L.Class.extend({
 				if( !noZoom )
 					this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 			},
+			eachLayer: function(callback, context) {
+				drawn.eachLayer(function(layer) {
+					callback.call(context || this, layer);
+				}, this);
+			},
 			zoomToData: function() {
 				this._ui._zoomToLayer(map, drawn);
 			}
 		};
+
+		this._eachParamHandler(function(handler) {
+			if( 'panelHook' in handler )
+				handler.panelHook(control, this);
+		});
 
 		if( this.options.panelHook )
 			this.options.panelHook.call(this, control);
