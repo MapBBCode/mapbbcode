@@ -17,7 +17,7 @@
 <script src="../src/param/Param.Length.js"></script>
 <script src="../src/strings/English.js"></script>
 
-<textarea id="code" style="width: 50%; height: 6em;">[map]60,30(OK); 60.01,30.01 60.02,30.015[/map]</textarea>
+<textarea id="code" style="width: 50%; height: 6em;">[map]60,30(OK); 60.01,30.01 60.02,30.015; 60.017,29.992 60.005,30.009(red|)[/map]</textarea>
 <input type="button" value="Update" onclick="javascript:update();">
 <input type="button" value="Edit" onclick="javascript:edit();">
 <div id="edit"></div>
@@ -26,13 +26,7 @@
 var mapBB = new MapBBCode({
     defaultPosition: [59.95, 30.3],
     defaultZoom: 13,
-    createLayers: function(L) { return [
-        MapBBCode.prototype.createOpenStreetMapLayer(),
-        L.tileLayer('http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png', { name: 'CycleMap' }),
-        L.tileLayer('http://129.206.74.245:8001/tms_r.ashx?x={x}&y={y}&z={z}', { name: 'MapSurfer',
-            attribution: 'Map &copy; <a href="http://openstreetmap.org">OSM</a> | Tiles &copy; <a href="http://giscience.uni-hd.de/">GIScience Heidelberg</a>'
-        })
-    ]}
+    measureButton: false
 });
 var show = mapBB.show('test', document.getElementById('code').value);
 function update() {

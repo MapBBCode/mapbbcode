@@ -49,6 +49,7 @@ window.MapBBCode.objectParams.push({
 		var MC = L.Control.extend({
 			options: {
 				position: 'bottomleft',
+				button: false,
 				metric: true,
 				prefixTotal: 'Total length',
 				prefixSingle: 'Length of that line'
@@ -61,23 +62,36 @@ window.MapBBCode.objectParams.push({
 
 			onAdd: function(map) {
 				var container = this._container = document.createElement('div');
-				container.style.background = 'rgba(255, 255, 255, 0.7)';
-				container.style.padding = '0px 5px';
-				container.style.margin = 0;
-				container.style.fontSize = '11px';
+				if( this.options.button ) {
+					container.className = 'leaflet-bar';
+					container.style.background = 'white';
+					container.style.padding = '0px 5px';
+				} else {
+					container.style.background = 'rgba(255, 255, 255, 0.8)';
+					container.style.padding = '0px 5px';
+					container.style.margin = 0;
+					container.style.fontSize = '11px';
+				}
+				var stop = L.DomEvent.stopPropagation;
+				L.DomEvent
+					.on(container, 'click', stop)
+					.on(container, 'mousedown', stop)
+					.on(container, 'dblclick', stop);
 				container.style.visibility = 'hidden';
 				return container;
 			},
 
 			updateLength: function( layer, newLayer, removing ) {
-				var length = layer ? this._getLength(layer) : this._getTotalLength(newLayer, removing);
-				//alert(length);
-				if( length < 0.001 )
+				var len = layer ? this._getLength(layer) : this._getTotalLength(newLayer, removing);
+				if( len < 0.001 )
 					this._container.style.visibility = 'hidden';
 				else {
+					len = L.GeometryUtil.readableDistance(len, metric);
+					var prefix = this.options.button ? '' : this.options[layer ? 'prefixSingle' : 'prefixTotal'] + ': ';
 					this._container.style.visibility = 'visible';
-					this._container.innerHTML = this.options[layer ? 'prefixSingle' : 'prefixTotal'] +
-						': ' + L.GeometryUtil.readableDistance(length, metric);
+					if( this.options.button )
+						this._container.style.fontWeight = layer ? 'bold' : 'normal';
+					this._container.innerHTML = prefix + len;
 				}
 			},
 
@@ -110,6 +124,10 @@ window.MapBBCode.objectParams.push({
 		if( ui.strings.totalLength && ui.strings.singleLength ) {
 			mc.options.prefixTotal = ui.strings.totalLength;
 			mc.options.prefixSingle = ui.strings.singleLength;
+		}
+		if( ui.options.measureButton ) {
+			mc.options.button = true;
+			mc.options.position = 'topleft';
 		}
 		map.addControl(mc);
 		map.on('draw:created', function(e) {
