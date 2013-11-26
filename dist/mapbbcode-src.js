@@ -230,11 +230,14 @@ window.MapBBCode = L.Class.extend({
 		}
 		
 		this._eachParamHandler(function(handler) {
-			var p = [];
-			for( var j = 0; j < obj.params.length; j++ )
-				if( handler.reKeys.test(obj.params[j]) )
-					p.push(obj.params[j]);
-			handler.objectToLayer(m, handler.text ? obj.text : p, this);
+			if( 'objectToLayer' in handler ) {
+				var p = [];
+				if( 'reKeys' in handler )
+					for( var j = 0; j < obj.params.length; j++ )
+						if( handler.reKeys.test(obj.params[j]) )
+							p.push(obj.params[j]);
+				handler.objectToLayer(m, handler.text ? obj.text : p, this);
+			}
 		}, this, m);
 			
 		m._objParams = obj.params;
@@ -418,10 +421,20 @@ window.MapBBCode = L.Class.extend({
 				if( !noZoom )
 					this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 			},
+			eachLayer: function(callback, context) {
+				drawn.eachLayer(function(layer) {
+					callback.call(context || this, layer);
+				}, this);
+			},
 			zoomToData: function() {
 				this._ui._zoomToLayer(map, drawn);
 			}
 		};
+
+		this._eachParamHandler(function(handler) {
+			if( 'panelHook' in handler )
+				handler.panelHook(control, this);
+		});
 
 		if( this.options.panelHook )
 			this.options.panelHook.call(this, control);
@@ -697,16 +710,17 @@ window.MapBBCode.include({
 
 		obj.params = layer._objParams || [];
 		this._eachParamHandler(function(handler) {
-			if( handler.text ) {
+			if( handler.text && 'layerToObject' in handler ) {
 				var text = handler.layerToObject(layer, '', this);
 				if( text )
 					obj.text = text;
-			} else {
+			} else if( 'layerToObject' in handler ) {
 				// remove relevant params
 				var lastParams = [], j;
-				for( j = obj.params.length - 1; j >= 0; j-- )
-					if( handler.reKeys.test(obj.params[j]) )
-						lastParams.unshift(obj.params.splice(j, 1));
+				if( 'reKeys' in handler )
+					for( j = obj.params.length - 1; j >= 0; j-- )
+						if( handler.reKeys.test(obj.params[j]) )
+							lastParams.unshift(obj.params.splice(j, 1));
 				var p = handler.layerToObject(layer, lastParams, this);
 				if( p && p.length > 0 ) {
 					for( j = 0; j < p.length; j++ )
@@ -744,7 +758,7 @@ window.MapBBCode.include({
 			layer.editing.enable();
 
 		this._eachParamHandler(function(handler) {
-			var div = handler.createEditorPanel ? handler.createEditorPanel(layer, this) : null;
+			var div = 'createEditorPanel' in handler ? handler.createEditorPanel(layer, this) : null;
 			if( div )
 				parentDiv.appendChild(div);
 		}, this, layer);
@@ -893,14 +907,14 @@ window.MapBBCode.include({
 			}
 		});
 		this._eachParamHandler(function(handler) {
-			if( handler.initDrawControl )
+			if( 'initDrawControl' in handler )
 				handler.initDrawControl(drawControl);
 		});
 		map.addControl(drawControl);
 		map.on('draw:created', function(e) {
 			var layer = e.layer;
 			this._eachParamHandler(function(handler) {
-				if( handler.initLayer )
+				if( 'initLayer' in handler )
 					handler.initLayer(layer);
 			}, this, layer);
 			this._makeEditable(layer, drawn);
@@ -1000,10 +1014,20 @@ window.MapBBCode.include({
 				if( !noZoom )
 					this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 			},
+			eachLayer: function(callback, context) {
+				drawn.eachLayer(function(layer) {
+					callback.call(context || this, layer);
+				}, this);
+			},
 			zoomToData: function() {
 				this._ui.zoomToLayer(map, drawn);
 			}
 		};
+
+		this._eachParamHandler(function(handler) {
+			if( 'panelHook' in handler )
+				handler.panelHook(control, this);
+		});
 
 		if( this.options.panelHook )
 			this.options.panelHook.call(this, control);
@@ -1826,6 +1850,10 @@ window.MapBBCode.include({strings: {
 	polygonStartTooltip: 'Click to start drawing a polygon',
 	polygonContinueTooltip: 'Click to continue drawing polygon',
 	polygonEndTooltip: 'Click the last point to close this polygon',
+
+	// Param.Length
+	singleLength: 'Length of this line',
+	totalLength: 'Total length',
 
 	// help: array of html paragraphs, simply joined together. First line is <h1>, start with '#' for <h2>.
 	helpContents: [

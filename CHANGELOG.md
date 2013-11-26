@@ -8,6 +8,10 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 ### Improvements
 
+* `panelHook` hook for params, refine params API (no required methods left).
+* New control method: `eachLayer`, iterates over map objects.
+* Length measurement plugin (not included by default). [#20](https://github.com/MapBBCode/mapbbcode/issues/20)
+
 ### Bugfixes
 
 * Narrow popup icons don't block clicks to underlying objects (by [@tyrasd](https://github.com/tyrasd)).

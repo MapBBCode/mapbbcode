@@ -43,6 +43,12 @@ var deps = {
 		noInclude: true
 	},
 
+	ParamLength: {
+		src: ['param/Param.Length.js'],
+		desc: 'Length measurement plugin',
+		noInclude: true
+	},
+
 	LetterIcon: {
 		src: ['LetterIcon.js'],
 		desc: 'Optional LetterIcon',
