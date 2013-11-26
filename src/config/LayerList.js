@@ -18,7 +18,9 @@ window.layerList = {
 		"MapQuest Open": "L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/map/{z}/{x}/{y}.jpeg', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OSM</a> | Tiles &copy; <a href=\"http://www.mapquest.com/\">MapQuest</a>', subdomains: '1234', minZoom: 0, maxZoom: 18 })",
 		"Stamen Toner": "L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OSM</a> | Tiles &copy; <a href=\"http://stamen.com\">Stamen Design</a>', minZoom: 0, maxZoom: 20 })",
 		"Stamen Toner Lite": "L.tileLayer('http://{s}.tile.stamen.com/toner-lite/{z}/{x}/{y}.png', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OSM</a> | Tiles &copy; <a href=\"http://stamen.com\">Stamen Design</a>', minZoom: 0, maxZoom: 20 })",
-		"Stamen Watercolor": "L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OSM</a> | Tiles &copy; <a href=\"http://stamen.com\">Stamen Design</a>', minZoom: 3, maxZoom: 16 })"
+		"Stamen Watercolor": "L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OSM</a> | Tiles &copy; <a href=\"http://stamen.com\">Stamen Design</a>', minZoom: 3, maxZoom: 16 })",
+		"Cloudmade": "L.tileLayer('http://{s}.tile.cloudmade.com/{apiKey}/{styleID}/256/{z}/{x}/{y}.png', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OSM</a> | Tiles &copy; <a href=\"http://cloudmade.com\">CloudMade</a>', apiKey: '{key:http://account.cloudmade.com/register}', styleID: '1', minZoom: 0, maxZoom: 18 })",
+		"MapBox": "L.tileLayer('http://{s}.tiles.mapbox.com/v3/{key:https://www.mapbox.com/#signup}/{z}/{x}/{y}.png', { subdomains: 'abcd', attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a>' })"
 	},
 
 	getSortedKeys: function() {
@@ -37,28 +39,41 @@ window.layerList = {
 	},
 
 	getKeyLink: function( layer ) {
-		var reKeyC = /{key(?::([^}]+))?}/,
+		var reKeyC = /{key:([^}]+)}/,
 			l = this.list[layer],
 			m = l && l.match(reKeyC);
-		return m && m[1] && m[1].length > 0 ? m[1] : '';
+		return m && m.length > 1 && m[1] ? m[1] : '';
+	},
+
+	getLayerName: function( layer ) {
+		if( typeof layer !== 'string' )
+			return '';
+		var p1 = layer.indexOf(':'),
+			p2 = layer.indexOf('|'),
+			p = p1 > p2 && p2 > 0 ? p2 : p1;
+		return p > 0 ? layer.substring(0, p) : layer;
 	},
 
 	getLeafletLayer: function( layerId, LL ) {
 		/* jshint unused: false */
 		var L = LL || window.L,
 			reKeyC = /{key(?::[^}]+)?}/,
-			m = layerId.match(/^(.+?)(?::([^'"]+))?$/);
-		if( m && m[1] && this.list[m[1]] ) {
-			var layer = this.list[m[1]];
-			if( m[2] && m[2].length > 0 )
-				layer = layer.replace(reKeyC, m[2]);
+			m = layerId.match(/^(.+?\|)?(.+?)(?::([^'"]+))?$/);
+		var idx = m && m.length > 2 && m[2] ? m[2] : '',
+			title = m && m.length > 1 && m[1] && m[1].length > 0 ? m[1] : idx,
+			keys = m && m.length > 3 && m[3] ? m[3].split(':') : [];
+		if( this.list[idx] ) {
+			var layer = this.list[idx], keyPos = 0;
+			while( reKeyC.test(layer) && keyPos < keys.length ) {
+				layer = layer.replace(reKeyC, keys[keyPos++]);
+			}
 			if( !reKeyC.test(layer) ) {
 				try {
 					var done = eval(layer);
 					if( done ) {
 						if( !done.options )
 							done.options = {};
-						done.options.name = m[1];
+						done.options.name = title;
 						return done;
 					}
 				} catch(e) {}

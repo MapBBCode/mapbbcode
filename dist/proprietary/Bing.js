@@ -118,12 +118,12 @@ L.BingLayer = L.TileLayer.extend({
 				p.active = false;
 			}
 		}
-        	L.TileLayer.prototype.onRemove.apply(this, [map]);
+			L.TileLayer.prototype.onRemove.apply(this, [map]);
 	}
 });
 
 L.bingLayer = function (key, options) {
-    return new L.BingLayer(key, options);
+	return new L.BingLayer(key, options);
 };
 
 if( window.layerList ) {

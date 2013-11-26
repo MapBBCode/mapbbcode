@@ -185,7 +185,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		div.style.padding = '4px 10px';
 		div.style.color = 'black';
 		div.style.cursor = 'default';
-		var label = layerMeta.id.indexOf(':') < 0 || !layerMeta.fromList ? layerMeta.id : layerMeta.id.substring(0, layerMeta.id.indexOf(':'));
+		var label = !layerMeta.fromList ? layerMeta.id : window.layerList.getLayerName(layerMeta.id);
 		div.appendChild(document.createTextNode(label));
 		if( this.options.editable )
 			div.appendChild(this._createLayerControls(layerMeta.layer));

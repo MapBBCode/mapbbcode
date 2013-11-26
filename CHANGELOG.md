@@ -11,6 +11,8 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * `panelHook` hook for params, refine params API (no required methods left).
 * New control method: `eachLayer`, iterates over map objects.
 * Length measurement plugin (not included by default). [#20](https://github.com/MapBBCode/mapbbcode/issues/20)
+* Custom name for `layerList` layers and multiple keys: "Custom Name|Layer ID:key1:key2".
+* Nokia and 2GIS proprietary layers, MapBox and Cloudmade layers. [#30](https://github.com/MapBBCode/mapbbcode/issues/30)
 
 ### Bugfixes
 
