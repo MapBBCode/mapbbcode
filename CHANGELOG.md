@@ -13,6 +13,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Length measurement plugin (not included by default). [#20](https://github.com/MapBBCode/mapbbcode/issues/20)
 * Custom name for `layerList` layers and multiple keys: "Custom Name|Layer ID:key1:key2".
 * Nokia and 2GIS proprietary layers, MapBox and Cloudmade layers. [#30](https://github.com/MapBBCode/mapbbcode/issues/30)
+* Proprietary layers based on external API do not require adding those API explicitly. [#31](https://github.com/MapBBCode/mapbbcode/issues/31)
 
 ### Bugfixes
 

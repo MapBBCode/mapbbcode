@@ -166,6 +166,13 @@ L.DGis = L.Class.extend({
 	}
 });
 
+(function() {
+	var el = document.createElement('script');
+	el.type = 'text/javascript';
+	el.src = 'http://maps.api.2gis.ru/1.0';
+	document.getElementsByTagName('head')[0].appendChild(el);
+})();
+
 if( window.layerList ) {
 	window.layerList.list["2GIS"] = "new L.DGis()";
 }

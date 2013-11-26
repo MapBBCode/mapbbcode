@@ -1,6 +1,5 @@
 /*
  * L.TileLayer is used for standard xyz-numbered tile layers.
- * Note: you need to include http://api-maps.yandex.ru/2.0/?load=package.map&lang=ru-RU
  *
  * source: https://github.com/shramov/leaflet-plugins/tree/master/layer/tile
  * author: Pavel Shramov
@@ -164,6 +163,13 @@ L.Yandex = L.Class.extend({
 	}
 });
 //})(ymaps, L)
+
+(function() {
+	var el = document.createElement('script');
+	el.type = 'text/javascript';
+	el.src = 'http://api-maps.yandex.ru/2.0/?load=package.map&lang=ru-RU';
+	document.getElementsByTagName('head')[0].appendChild(el);
+})();
 
 if( window.layerList ) {
 	window.layerList.list["Yandex Map"] = "new L.Yandex('map')";

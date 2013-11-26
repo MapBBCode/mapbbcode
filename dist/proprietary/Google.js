@@ -1,6 +1,5 @@
 /*
  * Google layer using Google Maps API
- * Note: you need to include http://maps.google.com/maps/api/js?v=3&sensor=false
  *
  * source: https://github.com/shramov/leaflet-plugins/tree/master/layer/tile
  * author: Pavel Shramov
@@ -202,6 +201,13 @@ L.Google.asyncInitialize = function() {
 	}
 	L.Google.asyncWait = [];
 };
+
+(function() {
+	var el = document.createElement('script');
+	el.type = 'text/javascript';
+	el.src = 'http://maps.google.com/maps/api/js?v=3&sensor=false';
+	document.getElementsByTagName('head')[0].appendChild(el);
+})();
 
 if( window.layerList ) {
 	window.layerList.list["Google Roads"] = "new L.Google('ROADMAP')";

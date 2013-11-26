@@ -111,7 +111,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 					this._layers[0] = tmp;
 				}
 			}
-			if( this._selected >= this._layers.length )
+			if( this._selected >= this._layers.length && this._selected > 0 )
 				this._selected = this._layers.length - 1;
 			this._update();
 			this.fire('layerschanged', { layers: this.getLayerIds() });
