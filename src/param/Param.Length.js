@@ -86,12 +86,12 @@ window.MapBBCode.objectParams.push({
 				if( len < 0.001 )
 					this._container.style.visibility = 'hidden';
 				else {
-					len = L.GeometryUtil.readableDistance(len, metric);
-					var prefix = this.options.button ? '' : this.options[layer ? 'prefixSingle' : 'prefixTotal'] + ': ';
 					this._container.style.visibility = 'visible';
 					if( this.options.button )
 						this._container.style.fontWeight = layer ? 'bold' : 'normal';
-					this._container.innerHTML = prefix + len;
+
+					var prefix = this.options.button ? '' : this.options[layer ? 'prefixSingle' : 'prefixTotal'] + ': ';
+					this._container.innerHTML = prefix + this._readableDistance(len);
 				}
 			},
 
@@ -115,6 +115,37 @@ window.MapBBCode.objectParams.push({
 				if( newLayer && !removing )
 					d += this._getLength(newLayer);
 				return d;
+			},
+
+			_readableDistance: function( distance ) {
+				var precision, suffix, divide = 1;
+
+				if (this.options.metric) {
+					if (distance > 1100) {
+						divide = 1000;
+						suffix = 'km';
+					} else {
+						suffix = 'm';
+					}
+				} else {
+					distance *= 1.09361;
+
+					if (distance > 1760) {
+						divide = 1760;
+						suffix = 'mi';
+					} else {
+						suffix = 'yd';
+					}
+				}
+
+				distance /= divide;
+				if( divide < 100 )
+					precision = distance < 10 ? 1 : 0;
+				else
+					precision = distance < 3 ? 3 : distance < 110 ? 2 : distance < 1100 ? 1 : 0;
+
+				var pow = Math.pow(10, precision);
+				return (Math.round(distance * pow) / pow) + ' ' + suffix;
 			}
 		});
 
