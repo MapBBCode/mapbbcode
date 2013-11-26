@@ -179,6 +179,7 @@ exports.pack = function() {
         'mkdir -p ' + mapbb,
         'cp -r dist/lib/* ' + mapbb,
         'cp -r src/strings ' + mapbb + 'lang',
+        'cp src/param/Param.Length.js ' + mapbb,
         'cp -r dist/proprietary ' + mapbb,
         'cp dist/mapbbcode.js ' + mapbb,
         'cp dist/mapbbcode-config.js ' + mapbb,
