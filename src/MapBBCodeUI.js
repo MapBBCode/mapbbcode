@@ -140,7 +140,7 @@ window.MapBBCode = L.Class.extend({
 		if( layers.length > 1 ) {
 			var control, i;
 			if( !this.options.preferStandardLayerSwitcher && L.StaticLayerSwitcher ) {
-				control = L.staticLayerSwitcher();
+				control = L.staticLayerSwitcher(null, { enforceOSM: true });
 				for( i = 0; i < layers.length; i++ )
 					control.addLayer(layers[i].options.name, layers[i]);
 				map.addControl(control);

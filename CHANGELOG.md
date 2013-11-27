@@ -15,6 +15,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Nokia and 2GIS proprietary layers, MapBox and Cloudmade layers. [#30](https://github.com/MapBBCode/mapbbcode/issues/30)
 * Proprietary layers based on external API do not require adding those API explicitly. [#31](https://github.com/MapBBCode/mapbbcode/issues/31)
 * Added "Edit" link near the OpenStreetMap attribution. [#18](https://github.com/MapBBCode/mapbbcode/issues/18)
+* `enforceOSM` switch in StaticLayerSwitcher for enforcing the first layer to be OSM-based.
 
 ### Bugfixes
 

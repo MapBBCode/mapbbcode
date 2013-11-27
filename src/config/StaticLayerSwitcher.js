@@ -10,6 +10,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		editable: false,
 		bgColor: 'white',
 		selectedColor: '#ddd',
+		enforceOSM: false,
 		maxLayers: 7
 	},
 
@@ -129,7 +130,8 @@ L.StaticLayerSwitcher = L.Control.extend({
 		var pos = this._findLayer(layer),
 			newPos = moveDown ? pos + 1 : pos - 1;
 		if( pos >= 0 && newPos >= 0 && newPos < this._layers.length ) {
-			if( pos + newPos == 1 && window.layerList && !window.layerList.isOpenStreetMapLayer(this._layers[1].layer) ) {
+			if( this.options.enforceOSM && pos + newPos == 1 && window.layerList
+					&& !window.layerList.isOpenStreetMapLayer(this._layers[1].layer) ) {
 				var nextOSM = this._findFirstOSMLayer(1);
 				if( pos === 0 && nextOSM > 1 )
 					newPos = nextOSM;
@@ -149,7 +151,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 	},
 
 	_findFirstOSMLayer: function( start ) {
-		if( !window.layerList )
+		if( !window.layerList || !this.options.enforceOSM )
 			return start || 0;
 		var i = start || 0;
 		while( i < this._layers.length && !window.layerList.isOpenStreetMapLayer(this._layers[i].layer) )
@@ -160,7 +162,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 	},
 
 	_addMandatoryOSMLayer: function() {
-		if( this._layers.length > 0 && this._findFirstOSMLayer() < 0 ) {
+		if( this.options.enforceOSM && this._layers.length > 0 && this._findFirstOSMLayer() < 0 ) {
 			var layer = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a>', minZoom: 0, maxZoom: 19 });
 			if( this._selected < this._layers.length )
 				this._selected++;

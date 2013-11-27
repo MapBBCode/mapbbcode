@@ -170,7 +170,7 @@ window.MapBBCodeConfig = L.Class.extend({
 		map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
 		if( map.attributionControl )
 			map.attributionControl.setPrefix('<a href="http://mapbbcode.org">MapBBCode</a>');
-		var layerSwitcher = L.staticLayerSwitcher(this.options.layers, { editable: true, maxLayers: this.options.maxLayers });
+		var layerSwitcher = L.staticLayerSwitcher(this.options.layers, { editable: true, maxLayers: this.options.maxLayers, enforceOSM: true });
 		map.addControl(layerSwitcher);
 		layerSwitcher.on('layerschanged', function(e) {
 			this.options.layers = e.layers;
