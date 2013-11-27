@@ -9,22 +9,26 @@ window.MapBBCode.objectParams.push({
 		return layer instanceof L.Polyline && !(layer instanceof L.Polygon);
 	},
 
+	_updateLength: function( map, layer, newLayer, removing ) {
+		// The hook is stateful. Since there may be multiple maps per ui,
+		// we add measurement control reference to a map.
+		if( map && map._measureControl )
+			map._measureControl.updateLength(layer, newLayer, removing);
+	},
+
 	_bindMeasurement: function( layer ) {
 		layer.options.clickable = true;
-		var events = L.Browser.touch ? 'mouseover click' : 'mouseover';
-		layer.on(events, function(e) {
-			// The hook is stateful. Since there may be multiple maps per ui,
-			// we add measurement control reference to a map.
-			if( layer._map && layer._map._measureControl )
-				layer._map._measureControl.updateLength(layer);
+		layer.on('mouseover click', function(e) {
+			// display polyline length
+			this._updateLength(layer._map, layer);
 		}, this);
-		layer.on('mouseout edit remove', function(e) {
-			if( layer._map && layer._map._measureControl ) {
-				if( e.type === 'remove' )
-					layer._map._measureControl.updateLength(null, layer, true);
-				else
-					layer._map._measureControl.updateLength();
-			}
+		layer.on('mouseout edit', function(e) {
+			// display total length
+			this._updateLength(layer._map);
+		}, this);
+		layer.on('remove', function(e) {
+			// display total length minus polyline length
+			this._updateLength(layer._map, null, layer, true);
 		}, this);
 	},
 
@@ -40,8 +44,7 @@ window.MapBBCode.objectParams.push({
 		this._bindMeasurement(layer);
 		// this may mean control.updateBBCode() was called, so update displayed length
 		// though this won't work, because layer._map is null
-		if( layer._map && layer._map._measureControl )
-			layer._map._measureControl.updateLength(null, layer);
+		this._updateLength(layer._map, null, layer);
 	},
 
 	// add measuring control
