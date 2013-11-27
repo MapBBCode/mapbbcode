@@ -18,13 +18,14 @@ If you have found problems in any of those browsers, or tested the library with 
 
 ## Included Libraries
 
-Those libraries reside in `dist/lib` directory and should be put together with `mapbbcode*` files in derived projects, otherwise you would have to fix paths in `mapbbcode-window.html`.
+Those libraries reside in `dist/lib` and `dist/proprietary` directories and should be put together with `mapbbcode*` files in derived projects, otherwise you would have to fix paths in `mapbbcode-window.html`.
 
 * [Leaflet](http://leafletjs.com/) (BSD 2-clause)
 * [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw) (MIT)
 * [Bing.js, Google.js, Yandex.js](https://github.com/shramov/leaflet-plugins/tree/master/layer/tile/) (BSD 2-clause)
+* [leaflet-2gis](https://github.com/emikhalev/leaflet-2gis) (MIT)
 
-Thanks to [Vladimir Agafonkin](https://github.com/mourner), [Dave Leaver](https://github.com/danzel), [Jacob Toye](https://github.com/jacobtoye), [Pavel Shramov](https://github.com/shramov) and other contributors to those libraries for the excellent code and functionality that allowed to create MapBBCode so fast.
+Thanks to [Vladimir Agafonkin](https://github.com/mourner), [Dave Leaver](https://github.com/danzel), [Jacob Toye](https://github.com/jacobtoye), [Pavel Shramov](https://github.com/shramov), [Eugene Mikhalev](https://github.com/emikhalev) and other contributors to those libraries for the excellent code and functionality that allowed to create MapBBCode so fast.
 
 ## Authors and License
 
