@@ -9,7 +9,7 @@ window.MapBBCode.objectParams.push({
 		return layer instanceof L.Polyline && !(layer instanceof L.Polygon);
 	},
 
-	_bindMeasurement: function( layer, ui ) {
+	_bindMeasurement: function( layer ) {
 		layer.options.clickable = true;
 		var events = L.Browser.touch ? 'mouseover click' : 'mouseover';
 		layer.on(events, function(e) {
@@ -32,12 +32,12 @@ window.MapBBCode.objectParams.push({
 		draw.options.draw.polyline.showLength = true;
 	},
 
-	createEditorPanel: function( layer, ui ) {
-		this._bindMeasurement(layer, ui);
+	createEditorPanel: function( layer ) {
+		this._bindMeasurement(layer);
 	},
 
-	objectToLayer: function( layer, params, ui ) {
-		this._bindMeasurement(layer, ui);
+	objectToLayer: function( layer ) {
+		this._bindMeasurement(layer);
 		// this may mean control.updateBBCode() was called, so update displayed length
 		// though this won't work, because layer._map is null
 		if( layer._map && layer._map._measureControl )
