@@ -22,14 +22,18 @@ L.DGis = L.Class.extend({
 		// Create map container
 		this._initContainer();
 
-		// Create map object
-		this._initMapObject();
+		// Deferred loading
+		var th = this;
+		DG.load(function() {
+			// Create map object
+			th._initMapObject();
 
-		// Setting events handlers
-		this._setHandlers();
+			// Setting events handlers
+			th._setHandlers();
 
-		map._controlCorners['bottomright'].style.marginBottom = "3em";
-		this._reset();
+			map._controlCorners['bottomright'].style.marginBottom = "3em";
+			th._reset();
+		});
 	},
 	onRemove: function(map) {
 		// Remove map container
@@ -169,7 +173,7 @@ L.DGis = L.Class.extend({
 (function() {
 	var el = document.createElement('script');
 	el.type = 'text/javascript';
-	el.src = 'http://maps.api.2gis.ru/1.0';
+	el.src = 'http://maps.api.2gis.ru/1.0?loadByRequire=1';
 	document.getElementsByTagName('head')[0].appendChild(el);
 })();
 
