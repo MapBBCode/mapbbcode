@@ -33,6 +33,7 @@ window.MapBBCode = L.Class.extend({
 		enablePolygons: true,
 		preferStandardLayerSwitcher: true,
 		hideInsideClasses: [],
+		watchResize: false,
 		panelHook: null, // function({map, getBBCode(), ...})
 
 		externalEndpoint: 'http://share.mapbbcode.org/',
@@ -166,6 +167,19 @@ window.MapBBCode = L.Class.extend({
 					return true;
 		return element.parentNode && this._hideClassPresent(element.parentNode);
 	},
+
+	_checkResize: function(map, drawn) {
+		var size = new L.Point(map.getContainer().clientWidth, map.getContainer().clientHeight);
+		if( size.x && size.y ) {
+			var diff = size.subtract(map.getSize());
+			if( diff.x || diff.y ) {
+				map.invalidateSize();
+				this._zoomToLayer(map, drawn);
+			}
+			if( !this.options.watchResize && map._bbSizePinger )
+				window.clearInterval(map._bbSizePinger);
+		}
+	},
 	
 	_px: function( size ) {
 		return size ? size + 'px' : '100%';
@@ -217,6 +231,9 @@ window.MapBBCode = L.Class.extend({
 		for( var i = 0; i < objs.length; i++ )
 			this._objectToLayer(objs[i]).addTo(drawn);
 		this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
+
+		if( !mapDiv.offsetHeight || this.options.watchResize )
+			map._bbSizePinger = window.setInterval(L.bind(this._checkResize, this, map, drawn), 500);
 
 		if( this.options.fullScreenButton && !this.options.fullFromStart ) {
 			var fs = new L.FunctionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [0, 0], title: this.strings.fullScreenTitle }),

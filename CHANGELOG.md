@@ -16,12 +16,14 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Proprietary layers based on external API do not require adding those API explicitly. [#31](https://github.com/MapBBCode/mapbbcode/issues/31)
 * Added "Edit" link near the OpenStreetMap attribution. [#18](https://github.com/MapBBCode/mapbbcode/issues/18)
 * `enforceOSM` switch in StaticLayerSwitcher for enforcing the first layer to be OSM-based.
+* `watchResize` MapBBCodeUI option for tracking map container size.
 
 ### Bugfixes
 
 * Narrow popup icons don't block clicks to underlying objects (by [@tyrasd](https://github.com/tyrasd)).
 * Forgot to update a proprietary layer in `mapbbcode-window.html`.
 * It was possible to add a single proprietary layer in the configuration panel. [#32](https://github.com/MapBBCode/mapbbcode/issues/32)
+* Expanding initially hidden map now works correctly. [#33](https://github.com/MapBBCode/mapbbcode/issues/33)
 
 ## 1.1.1 (2013-11-16)
 
