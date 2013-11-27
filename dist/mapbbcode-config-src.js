@@ -19,6 +19,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		editable: false,
 		bgColor: 'white',
 		selectedColor: '#ddd',
+		enforceOSM: false,
 		maxLayers: 7
 	},
 
@@ -95,6 +96,8 @@ L.StaticLayerSwitcher = L.Control.extend({
 				this._layers[osmidx] = this._layers[0];
 				this._layers[0] = tmp;
 			}
+			if( this._map )
+				this._addMandatoryOSMLayer();
 			this._update();
 			this.fire('layerschanged', { layers: this.getLayerIds() });
 			if( this._layers.length == 1 )
@@ -122,6 +125,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 			}
 			if( this._selected >= this._layers.length && this._selected > 0 )
 				this._selected = this._layers.length - 1;
+			this._addMandatoryOSMLayer();
 			this._update();
 			this.fire('layerschanged', { layers: this.getLayerIds() });
 			if( removingSelected )
@@ -135,7 +139,8 @@ L.StaticLayerSwitcher = L.Control.extend({
 		var pos = this._findLayer(layer),
 			newPos = moveDown ? pos + 1 : pos - 1;
 		if( pos >= 0 && newPos >= 0 && newPos < this._layers.length ) {
-			if( pos + newPos == 1 && window.layerList && !window.layerList.isOpenStreetMapLayer(this._layers[1].layer) ) {
+			if( this.options.enforceOSM && pos + newPos == 1 && window.layerList &&
+					!window.layerList.isOpenStreetMapLayer(this._layers[1].layer) ) {
 				var nextOSM = this._findFirstOSMLayer(1);
 				if( pos === 0 && nextOSM > 1 )
 					newPos = nextOSM;
@@ -155,7 +160,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 	},
 
 	_findFirstOSMLayer: function( start ) {
-		if( !window.layerList )
+		if( !window.layerList || !this.options.enforceOSM )
 			return start || 0;
 		var i = start || 0;
 		while( i < this._layers.length && !window.layerList.isOpenStreetMapLayer(this._layers[i].layer) )
@@ -163,6 +168,15 @@ L.StaticLayerSwitcher = L.Control.extend({
 		if( i >= this._layers.length )
 			i = -1;
 		return i;
+	},
+
+	_addMandatoryOSMLayer: function() {
+		if( this.options.enforceOSM && this._layers.length > 0 && this._findFirstOSMLayer() < 0 ) {
+			var layer = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a>', minZoom: 0, maxZoom: 19 });
+			if( this._selected < this._layers.length )
+				this._selected++;
+			this._layers.unshift({ id: 'OpenStreetMap', layer: layer, fromList: false });
+		}
 	},
 
 	_findLayer: function( layer ) {
@@ -182,6 +196,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		}
 		this._map = map;
 		this._container = container;
+		this._addMandatoryOSMLayer();
 		this._update();
 		return container;
 	},
@@ -602,7 +617,7 @@ window.MapBBCodeConfig = L.Class.extend({
 		map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
 		if( map.attributionControl )
 			map.attributionControl.setPrefix('<a href="http://mapbbcode.org">MapBBCode</a>');
-		var layerSwitcher = L.staticLayerSwitcher(this.options.layers, { editable: true, maxLayers: this.options.maxLayers });
+		var layerSwitcher = L.staticLayerSwitcher(this.options.layers, { editable: true, maxLayers: this.options.maxLayers, enforceOSM: true });
 		map.addControl(layerSwitcher);
 		layerSwitcher.on('layerschanged', function(e) {
 			this.options.layers = e.layers;

@@ -130,8 +130,8 @@ L.StaticLayerSwitcher = L.Control.extend({
 		var pos = this._findLayer(layer),
 			newPos = moveDown ? pos + 1 : pos - 1;
 		if( pos >= 0 && newPos >= 0 && newPos < this._layers.length ) {
-			if( this.options.enforceOSM && pos + newPos == 1 && window.layerList
-					&& !window.layerList.isOpenStreetMapLayer(this._layers[1].layer) ) {
+			if( this.options.enforceOSM && pos + newPos == 1 && window.layerList &&
+					!window.layerList.isOpenStreetMapLayer(this._layers[1].layer) ) {
 				var nextOSM = this._findFirstOSMLayer(1);
 				if( pos === 0 && nextOSM > 1 )
 					newPos = nextOSM;
