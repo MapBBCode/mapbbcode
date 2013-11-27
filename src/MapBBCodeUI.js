@@ -204,7 +204,7 @@ window.MapBBCode = L.Class.extend({
 		if( !bbcode || typeof bbcode !== 'string' )
 			bbcode = '';
 
-		var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false }, this.options.leafletOptions));
+		var map = L.map(mapDiv, L.extend({}, { scrollWheelZoom: false, zoomControl: false, attributionEditLink: true }, this.options.leafletOptions));
 		map.once('focus', function() { map.scrollWheelZoom.enable(); });
 		map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
 		if( map.attributionControl )
