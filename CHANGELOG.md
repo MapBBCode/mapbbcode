@@ -19,6 +19,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 * Narrow popup icons don't block clicks to underlying objects (by [@tyrasd](https://github.com/tyrasd)).
 * Forgot to update a proprietary layer in `mapbbcode-window.html`.
+* It was possible to add a single proprietary layer in the configuration panel. [#32](https://github.com/MapBBCode/mapbbcode/issues/32)
 
 ## 1.1.1 (2013-11-16)
 

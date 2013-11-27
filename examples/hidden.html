@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../dist/lib/leaflet.css" />
+<script src="../dist/lib/leaflet.js"></script>
+
+<script src="../src/MapBBCode.js"></script>
+<script src="../src/MapBBCodeUI.js"></script>
+<script src="../src/MapBBCodeUI.Share.js"></script>
+<script src="../src/FunctionButton.js"></script>
+<script src="../src/EditorSprites.js"></script>
+<script src="../src/LetterIcon.js"></script>
+<script src="../src/ExportButton.js"></script>
+<script src="../src/param/Param.Text.js"></script>
+<script src="../src/param/Param.Color.js"></script>
+<script src="../src/config/LayerList.js"></script>
+<script src="../src/strings/English.js"></script>
+
+<input type="button" value="Regular" onclick="javascript:document.getElementById('b_regular').style.display='block';document.getElementById('b_shared').style.display = 'none';">
+<input type="button" value="Shared" onclick="javascript:document.getElementById('b_regular').style.display='none';document.getElementById('b_shared').style.display = 'block';">
+<div id="b_shared" style="display: none;"><div id="shared"></div></div>
+<div id="b_regular" style="display: none;"><div id="regular" map="">59.56772,29.10828 60.21526,31.28357</div></div>
+<script>
+var mapBB = new MapBBCode({ layers: 'CycleMap,OpenStreetMap' });
+mapBB.showExternal('shared', 'gkdi');
+mapBB.show('regular');
+</script>

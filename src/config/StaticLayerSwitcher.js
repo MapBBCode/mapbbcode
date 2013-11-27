@@ -86,6 +86,8 @@ L.StaticLayerSwitcher = L.Control.extend({
 				this._layers[osmidx] = this._layers[0];
 				this._layers[0] = tmp;
 			}
+			if( this._map )
+				this._addMandatoryOSMLayer();
 			this._update();
 			this.fire('layerschanged', { layers: this.getLayerIds() });
 			if( this._layers.length == 1 )
@@ -113,6 +115,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 			}
 			if( this._selected >= this._layers.length && this._selected > 0 )
 				this._selected = this._layers.length - 1;
+			this._addMandatoryOSMLayer();
 			this._update();
 			this.fire('layerschanged', { layers: this.getLayerIds() });
 			if( removingSelected )
@@ -156,6 +159,15 @@ L.StaticLayerSwitcher = L.Control.extend({
 		return i;
 	},
 
+	_addMandatoryOSMLayer: function() {
+		if( this._layers.length > 0 && this._findFirstOSMLayer() < 0 ) {
+			var layer = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: 'Map &copy; <a href=\"http://openstreetmap.org\">OpenStreetMap</a>', minZoom: 0, maxZoom: 19 });
+			if( this._selected < this._layers.length )
+				this._selected++;
+			this._layers.unshift({ id: 'OpenStreetMap', layer: layer, fromList: false });
+		}
+	},
+
 	_findLayer: function( layer ) {
 		for( var i = 0; i < this._layers.length; i++ )
 			if( this._layers[i].layer === layer )
@@ -173,6 +185,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		}
 		this._map = map;
 		this._container = container;
+		this._addMandatoryOSMLayer();
 		this._update();
 		return container;
 	},
