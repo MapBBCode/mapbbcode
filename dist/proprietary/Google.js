@@ -205,8 +205,8 @@ L.Google.asyncInitialize = function() {
 (function() {
 	var el = document.createElement('script');
 	el.type = 'text/javascript';
-	el.src = 'http://maps.google.com/maps/api/js?v=3&sensor=false';
-	document.getElementsByTagName('head')[0].appendChild(el);
+	el.src = 'http://maps.google.com/maps/api/js?v=3&sensor=false&callback=L.Google.asyncInitialize';
+	L.DomEvent.on(window, 'load', function() { document.body.appendChild(el); });
 })();
 
 if( window.layerList ) {
