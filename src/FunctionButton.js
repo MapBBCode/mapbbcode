@@ -21,7 +21,7 @@ L.FunctionButtons = L.Control.extend({
 		var container = L.DomUtil.create('div', 'leaflet-bar');
 		for( var i = 0; i < this._content.length; i++ ) {
 			var link = L.DomUtil.create('a', '', container);
-			this._links.push(link);
+			link._buttonIndex = i;
 			link.href = '#';
 			link.style.padding = '0 4px';
 			link.style.width = 'auto';
@@ -30,6 +30,7 @@ L.FunctionButtons = L.Control.extend({
 				link.style.backgroundColor = this.options.bgColor;
 			if( this.options.titles && this.options.titles.length > i )
 				link.title = this.options.titles[i];
+			this._links.push(link);
 			this._updateContent(i);
 
 			var stop = L.DomEvent.stopPropagation;
@@ -86,12 +87,11 @@ L.FunctionButtons = L.Control.extend({
 	},
 
 	clicked: function(e) {
-		var link = (window.event && window.event.srcElement) || e.target || e.srcElement,
-			idx = this._links.length;
-		while( --idx >= 0 )
-			if( link === this._links[idx] )
-				break;
-		this.fire('clicked', {idx: idx});
+		var link = (window.event && window.event.srcElement) || e.target || e.srcElement;
+		while( link instanceof HTMLElement && !('_buttonIndex' in link ) )
+			link = link.parentNode;
+		if( '_buttonIndex' in link )
+			this.fire('clicked', { idx: link._buttonIndex });
 	}
 });
 

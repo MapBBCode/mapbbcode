@@ -217,7 +217,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 
 	_createLayerControls: function( layer ) {
 		var upClick = document.createElement('span');
-		upClick.innerHTML ='&utrif;';
+		upClick.innerHTML ='&#x25B4;'; // &utrif;
 		upClick.style.cursor = 'pointer';
 		this._addHoverStyle(upClick, 'color', '#aaa');
 		L.DomEvent.on(upClick, 'click', function() {
@@ -225,7 +225,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		}, this);
 
 		var downClick = document.createElement('span');
-		downClick.innerHTML ='&dtrif;';
+		downClick.innerHTML ='&#x25BE;'; // &dtrif;
 		downClick.style.cursor = 'pointer';
 		downClick.style.marginLeft = '6px';
 		this._addHoverStyle(downClick, 'color', '#aaa');
@@ -234,7 +234,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		}, this);
 
 		var xClick = document.createElement('span');
-		xClick.innerHTML ='&Cross;';
+		xClick.innerHTML ='&#x2A2F;'; // &Cross;
 		xClick.style.cursor = 'pointer';
 		xClick.style.marginLeft = '6px';
 		this._addHoverStyle(xClick, 'color', '#aaa');

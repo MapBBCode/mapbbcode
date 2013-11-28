@@ -190,8 +190,8 @@ window.MapBBCodeConfig = L.Class.extend({
 
 		var fs = new L.FunctionButton('full', { position: 'topright' });
 		var modeButton = new L.FunctionButton('mode', { position: 'topright' });
-		var widthButton = new L.FunctionButtons(['&ltrif;', '&rtrif;'], { position: 'bottomright', titles: [this.strings.shrinkTitle, this.strings.growTitle] });
-		var heightButton = new L.FunctionButtons(['&utrif;', '&dtrif;'], { position: 'bottomleft', titles: [this.strings.shrinkTitle, this.strings.growTitle] });
+		var widthButton = new L.FunctionButtons(['<span style="font-size: 14pt;">&#x25C2;</span>', '<span style="font-size: 14pt;">&#x25B8;</span>'], { position: 'bottomright', titles: [this.strings.shrinkTitle, this.strings.growTitle] });
+		var heightButton = new L.FunctionButtons(['<span style="font-size: 14pt;">&#x25B4;</span>', '<span style="font-size: 14pt;">&#x25BE;</span>'], { position: 'bottomleft', titles: [this.strings.shrinkTitle, this.strings.growTitle] });
 
 		var toggleWidthButton = function() {
 			var isFull = this._mode === 'view' ? this.options.fullFromStart : !this.options.editorInWindow;
