@@ -124,7 +124,7 @@ exports.build = function (compsBase32, buildName) {
 	console.log('Concatenating ' + files.length + ' files...');
 
 	var copy = fs.readFileSync('src/copyright.js', 'utf8'),
-	    intro = '(function (window, document, undefined) {\nL = window.L;\n',
+	    intro = '(function (window, document, undefined) {\nvar L = window.L;\n',
 	    outro = '}(window, document));',
 	    newSrc = copy + intro + combineFiles(files) + outro,
 	    newSrc = newSrc.replace(/\$\$VERSION\$\$/g, exports.version || 'dev'),
