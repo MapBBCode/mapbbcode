@@ -59,7 +59,7 @@ window.MapBBCode.objectParams.push({
 			},
 
 			initialize: function(control, options) {
-				L.Control.prototype.initialize(this, options);
+				L.setOptions(this, options);
 				this._control = control;
 			},
 
@@ -131,13 +131,13 @@ window.MapBBCode.objectParams.push({
 						suffix = 'm';
 					}
 				} else {
-					distance *= 1.09361;
+					distance *= 0.3048;
 
-					if (distance > 1760) {
-						divide = 1760;
+					if (distance > 2000) {
+						divide = 5280;
 						suffix = 'mi';
 					} else {
-						suffix = 'yd';
+						suffix = 'ft';
 					}
 				}
 

@@ -26,7 +26,8 @@
 var mapBB = new MapBBCode({
     defaultPosition: [59.95, 30.3],
     defaultZoom: 13,
-    measureButton: false
+    measureButton: false,
+    metric: true
 });
 var show = mapBB.show('test', document.getElementById('code').value);
 function update() {
