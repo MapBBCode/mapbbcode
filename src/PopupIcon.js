@@ -4,12 +4,19 @@
 
 L.PopupIcon = L.Icon.extend({
 	options: {
+		selectable: false,
 		width: 150
 	},
 	
-	initialize: function( text, options ){
+	initialize: function( text, options ) {
 		L.Icon.prototype.initialize.call(this, options);
 		this._text = text;
+	},
+
+	bindTo: function( marker ) {
+		this._marker = marker;
+		marker.setIcon(this);
+		return marker;
 	},
 
 	createIcon: function() {
@@ -35,6 +42,14 @@ L.PopupIcon = L.Icon.extend({
 		contentDiv.style.margin = '0 auto';
 		contentDiv.style.display = 'table';
 		contentDiv.style.pointerEvents = 'auto';
+
+		if( this.options.selectable && (!this._marker || (!this._marker.options.clickable && !this._marker.options.draggable)) ) {
+			var stop = L.DomEvent.stopPropagation;
+			L.DomEvent
+				.on(contentDiv, 'click', stop)
+				.on(contentDiv, 'mousedown', stop)
+				.on(contentDiv, 'dblclick', stop);
+		}
 
 		var tipcDiv = document.createElement('div');
 		tipcDiv.className = 'leaflet-popup-tip-container';

@@ -23,6 +23,10 @@ window.MapBBCode.objectParams.unshift({
 			if( icon ) {
 				layer.setIcon(icon);
 				layer.options.clickable = false;
+				if( L.PopupIcon && icon instanceof L.PopupIcon ) {
+					icon.options.selectable = true;
+					icon.bindTo(layer);
+				}
 			} else {
 				layer.bindPopup(text.replace(new RegExp('<(?!/?(' + ui.options.allowedHTML + ')[ >])', 'g'), '&lt;'));
 			}

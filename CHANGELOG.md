@@ -24,6 +24,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Forgot to update a proprietary layer in `mapbbcode-window.html`.
 * It was possible to add a single proprietary layer in the configuration panel. [#32](https://github.com/MapBBCode/mapbbcode/issues/32)
 * Expanding initially hidden map now works correctly. [#33](https://github.com/MapBBCode/mapbbcode/issues/33)
+* Text on non-editable PopupIcon can be selected. [#6](https://github.com/MapBBCode/mapbbcode/issues/6)
 
 ## 1.1.1 (2013-11-16)
 
