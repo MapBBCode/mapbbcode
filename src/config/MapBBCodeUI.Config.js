@@ -53,6 +53,8 @@ window.MapBBCodeConfig = L.Class.extend({
 		} else if( mode === 'window' ) {
 			width = this.options.windowWidth || this.options.viewWidth;
 			height = this.options.windowHeight || this.options.editorHeight;
+			if( width ) width += 'px';
+			if( height) height += 'px';
 		}
 		el.style.width = width;
 		el.style.height = height;
