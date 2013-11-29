@@ -112,6 +112,8 @@ window.MapBBCodeProcessor = {
 
 		var markers = [], paths = [], objs = data.objs || [];
 		for( var i = 0; i < objs.length; i++ ) {
+			if( !objs[i] || !('coords' in objs[i]) )
+				continue;
 			var coords = objs[i].coords, str = '';
 			for( var j = 0; j < coords.length; j++ ) {
 				if( j > 0 )

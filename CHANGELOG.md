@@ -18,6 +18,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Added "Edit" link near the OpenStreetMap attribution. [#18](https://github.com/MapBBCode/mapbbcode/issues/18)
 * `enforceOSM` switch in StaticLayerSwitcher for enforcing the first layer to be OSM-based.
 * `watchResize` MapBBCodeUI option for tracking map container size.
+* `objectToLayer` and `layerToObject` methods of MapBBCode were made public.
 
 ### Bugfixes
 

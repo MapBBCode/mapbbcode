@@ -64,7 +64,7 @@ window.MapBBCode = L.Class.extend({
 		}
 	},
 
-	_objectToLayer: function( obj ) {
+	objectToLayer: function( obj ) {
 		var m;
 			
 		if( obj.coords.length == 1 ) {
@@ -234,7 +234,7 @@ window.MapBBCode = L.Class.extend({
 		drawn.addTo(map);
 		var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
 		for( var i = 0; i < objs.length; i++ )
-			this._objectToLayer(objs[i]).addTo(drawn);
+			this.objectToLayer(objs[i]).addTo(drawn);
 		this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 
 		if( !mapDiv.offsetHeight || this.options.watchResize )
@@ -285,7 +285,7 @@ window.MapBBCode = L.Class.extend({
 				var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
 				drawn.clearLayers();
 				for( var i = 0; i < objs.length; i++ )
-					this._ui._objectToLayer(objs[i]).addTo(drawn);
+					this._ui.objectToLayer(objs[i]).addTo(drawn);
 				if( !noZoom )
 					this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 			},

@@ -3,11 +3,11 @@
  * See editor() and editorWindow() methods.
  */
 window.MapBBCode.include({
-	_layerToObject: function( layer ) {
+	layerToObject: function( layer ) {
 		var obj = {};
 		if( layer instanceof L.Marker ) {
 			obj.coords = [layer.getLatLng()];
-		} else {
+		} else if( layer.getLatLngs ) {
 			var llngs = layer.getLatLngs(), len=llngs.length, coords = [], i;
 			for( i = 0; i < len; i++ )
 				coords.push(llngs[i]);
@@ -135,7 +135,7 @@ window.MapBBCode.include({
 	_getBBCode: function( map, drawn ) {
 		var objs = [];
 		drawn.eachLayer(function(layer) {
-			objs.push(this._layerToObject(layer));
+			objs.push(this.layerToObject(layer));
 		}, this);
 		var needZoomPos = !objs.length || map.wasPositionSet;
 		return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: needZoomPos ? map.getZoom() : 0, pos: needZoomPos ? map.getCenter() : 0 });
@@ -163,7 +163,7 @@ window.MapBBCode.include({
 		var drawn = new L.FeatureGroup();
 		var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
 		for( var i = 0; i < objs.length; i++ )
-			this._makeEditable(this._objectToLayer(objs[i]).addTo(drawn), drawn);
+			this._makeEditable(this.objectToLayer(objs[i]).addTo(drawn), drawn);
 		drawn.addTo(map);
 		this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 		map.wasPositionSet = objs.length > 0 && !(!data.pos);
@@ -317,7 +317,7 @@ window.MapBBCode.include({
 				drawn.clearLayers();
 				map.removeLayer(drawn); // so options set after object creation could be set
 				for( var i = 0; i < objs.length; i++ )
-					this._ui._makeEditable(this._ui._objectToLayer(objs[i]).addTo(drawn), drawn);
+					this._ui._makeEditable(this._ui.objectToLayer(objs[i]).addTo(drawn), drawn);
 				map.addLayer(drawn);
 				if( !noZoom )
 					this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
