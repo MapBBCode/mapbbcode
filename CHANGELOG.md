@@ -27,6 +27,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Text on non-editable PopupIcon can be selected. [#6](https://github.com/MapBBCode/mapbbcode/issues/6)
 * HTML entities in the configuration panel were replaced with hex codes for IE compatibility.
 * Window width in configuration panel sometimes stuck to 100%.
+* Some IE8 fixes.
 
 ## 1.1.1 (2013-11-16)
 
