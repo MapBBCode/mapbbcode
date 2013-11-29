@@ -8,7 +8,7 @@ var deps = {
 		src: ['MapBBCodeUI.js',
 		      'FunctionButton.js',
 		      'EditorSprites.js',
-		      'param/Param.Text.js'],
+		      'handlers/Handler.Text.js'],
 		desc: 'User Interface: displaying and editing map bbcode',
 		deps: ['Core']
 	},
@@ -25,26 +25,26 @@ var deps = {
 		deps: ['UI']
 	},
 
-	ParamColor: {
-		src: ['param/Param.Color.js'],
-		desc: 'Color',
-		heading: 'Object Parameter Handlers'
+	HandlerColor: {
+		src: ['handlers/Handler.Color.js'],
+		desc: 'Color parameter',
+		heading: 'Handlers'
 	},
 
-	ParamWidth: {
-		src: ['param/Param.Width.js'],
-		desc: 'Width',
+	HandlerWidth: {
+		src: ['handlers/Handler.Width.js'],
+		desc: 'Width parameter',
 		noInclude: true
 	},
 
-	ParamMeasure: {
-		src: ['param/Param.Measure.js'],
-		desc: 'Length and Area (not a parameter)',
+	HandlerMeasure: {
+		src: ['handlers/Handler.Measure.js'],
+		desc: 'Length and Area measurement',
 		noInclude: true
 	},
 
-	ParamLength: {
-		src: ['param/Param.Length.js'],
+	HandlerLength: {
+		src: ['handlers/Handler.Length.js'],
 		desc: 'Length measurement plugin',
 		noInclude: true
 	},

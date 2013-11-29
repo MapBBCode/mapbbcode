@@ -8,7 +8,8 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 ### Improvements
 
-* `panelHook` hook for params, refine params API (no required methods left).
+* All "params" were renamed to handlers (somewhat breaking change, which should not affect users at the moment).
+* `panelHook` hook for handlers, refine handler API (no required methods left).
 * New control method: `eachLayer`, iterates over map objects.
 * Length measurement plugin (not included by default). [#20](https://github.com/MapBBCode/mapbbcode/issues/20)
 * Custom name for `layerList` layers and multiple keys: "Custom Name|Layer ID:key1:key2".
