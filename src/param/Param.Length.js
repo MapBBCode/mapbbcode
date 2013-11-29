@@ -1,10 +1,11 @@
 /*
  * Distance plugin for MapBBCode
  */
-if( !('objectParams' in window.MapBBCode) )
-	window.MapBBCode.objectParams = [];
 
-window.MapBBCode.objectParams.push({
+if( !('mapBBCodeHandlers' in window) )
+	window.mapBBCodeHandlers = [];
+
+window.mapBBCodeHandlers.push({
 	applicableTo: function( layer ) {
 		return layer instanceof L.Polyline && !(layer instanceof L.Polygon);
 	},

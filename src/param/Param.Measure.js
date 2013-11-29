@@ -2,10 +2,10 @@
  * Measurements in a popup. An example of non-parameter plugin.
  */
 
-if( !('objectParams' in window.MapBBCode) )
-	window.MapBBCode.objectParams = [];
+if( !('mapBBCodeHandlers' in window) )
+	window.mapBBCodeHandlers = [];
 
-window.MapBBCode.objectParams.push({
+window.mapBBCodeHandlers.push({
 	applicableTo: function( layer ) {
 		return layer instanceof L.Polyline; // includes polygons
 	},

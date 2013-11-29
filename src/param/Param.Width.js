@@ -2,10 +2,10 @@
  * Width parameter. Just an example.
  */
 
-if( !('objectParams' in window.MapBBCode) )
-	window.MapBBCode.objectParams = [];
+if( !('mapBBCodeHandlers' in window) )
+	window.mapBBCodeHandlers = [];
 
-window.MapBBCode.objectParams.push({
+window.mapBBCodeHandlers.push({
 	widths: [3, 5, 7, 10],
 	defaultWidth: 5,
 

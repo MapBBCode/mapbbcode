@@ -53,12 +53,12 @@ window.MapBBCode = L.Class.extend({
 		this.strings = L.extend({}, this.strings, strings);
 	},
 
-	_eachParamHandler: function( callback, context, layer ) {
-		var paramHandlers = window.MapBBCode.objectParams;
-		if( paramHandlers ) {
-			for( var i = 0; i < paramHandlers.length; i++ ) {
-				if( !layer || paramHandlers[i].applicableTo(layer) ) {
-					callback.call(context || this, paramHandlers[i]);
+	_eachHandler: function( callback, context, layer ) {
+		var handlers = window.mapBBCodeHandlers;
+		if( handlers ) {
+			for( var i = 0; i < handlers.length; i++ ) {
+				if( !layer || handlers[i].applicableTo(layer) ) {
+					callback.call(context || this, handlers[i]);
 				}
 			}
 		}
@@ -76,7 +76,7 @@ window.MapBBCode = L.Class.extend({
 			m = L.polyline(obj.coords, { weight: 5, opacity: 0.7 });
 		}
 		
-		this._eachParamHandler(function(handler) {
+		this._eachHandler(function(handler) {
 			if( 'objectToLayer' in handler ) {
 				var p = [];
 				if( 'reKeys' in handler )
@@ -299,7 +299,7 @@ window.MapBBCode = L.Class.extend({
 			}
 		};
 
-		this._eachParamHandler(function(handler) {
+		this._eachHandler(function(handler) {
 			if( 'panelHook' in handler )
 				handler.panelHook(control, this);
 		});

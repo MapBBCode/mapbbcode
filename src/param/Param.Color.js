@@ -2,10 +2,10 @@
  * Support for color params.
  */
 
-if( !('objectParams' in window.MapBBCode) )
-	window.MapBBCode.objectParams = [];
+if( !('mapBBCodeHandlers' in window) )
+	window.mapBBCodeHandlers = [];
 
-window.MapBBCode.objectParams.push({
+window.mapBBCodeHandlers.push({
 	lineColors: {
 		def: '#0022dd',
 		blue: '#0022dd',

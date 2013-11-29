@@ -17,7 +17,7 @@ window.MapBBCode.include({
 		}
 
 		obj.params = layer._objParams || [];
-		this._eachParamHandler(function(handler) {
+		this._eachHandler(function(handler) {
 			if( handler.text && 'layerToObject' in handler ) {
 				var text = handler.layerToObject(layer, '', this);
 				if( text )
@@ -65,7 +65,7 @@ window.MapBBCode.include({
 		if( layer instanceof L.Polyline || layer instanceof L.Polygon )
 			layer.editing.enable();
 
-		this._eachParamHandler(function(handler) {
+		this._eachHandler(function(handler) {
 			var div = 'createEditorPanel' in handler ? handler.createEditorPanel(layer, this) : null;
 			if( div )
 				parentDiv.appendChild(div);
@@ -214,14 +214,14 @@ window.MapBBCode.include({
 				remove: false
 			}
 		});
-		this._eachParamHandler(function(handler) {
+		this._eachHandler(function(handler) {
 			if( 'initDrawControl' in handler )
 				handler.initDrawControl(drawControl);
 		});
 		map.addControl(drawControl);
 		map.on('draw:created', function(e) {
 			var layer = e.layer;
-			this._eachParamHandler(function(handler) {
+			this._eachHandler(function(handler) {
 				if( 'initLayer' in handler )
 					handler.initLayer(layer);
 			}, this, layer);
@@ -332,7 +332,7 @@ window.MapBBCode.include({
 			}
 		};
 
-		this._eachParamHandler(function(handler) {
+		this._eachHandler(function(handler) {
 			if( 'panelHook' in handler )
 				handler.panelHook(control, this);
 		});

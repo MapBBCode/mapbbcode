@@ -2,10 +2,10 @@
  * Text labels. Editing only for markers.
  */
 
-if( !('objectParams' in window.MapBBCode) )
-	window.MapBBCode.objectParams = [];
+if( !('mapBBCodeHandlers' in window) )
+	window.mapBBCodeHandlers = [];
 
-window.MapBBCode.objectParams.unshift({
+window.mapBBCodeHandlers.unshift({
 	text: true,
 
 	// this regex always fails
