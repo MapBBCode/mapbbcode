@@ -6,7 +6,7 @@
  Licensed WTFPL.
 */
 (function (window, document, undefined) {
-L = window.L;
+var L = window.L;
 /*
  * Map BBCode parser and producer. See BBCODE.md for description.
  */
@@ -484,7 +484,7 @@ L.FunctionButtons = L.Control.extend({
 		var container = L.DomUtil.create('div', 'leaflet-bar');
 		for( var i = 0; i < this._content.length; i++ ) {
 			var link = L.DomUtil.create('a', '', container);
-			this._links.push(link);
+			link._buttonIndex = i;
 			link.href = '#';
 			link.style.padding = '0 4px';
 			link.style.width = 'auto';
@@ -493,6 +493,7 @@ L.FunctionButtons = L.Control.extend({
 				link.style.backgroundColor = this.options.bgColor;
 			if( this.options.titles && this.options.titles.length > i )
 				link.title = this.options.titles[i];
+			this._links.push(link);
 			this._updateContent(i);
 
 			var stop = L.DomEvent.stopPropagation;
@@ -549,12 +550,11 @@ L.FunctionButtons = L.Control.extend({
 	},
 
 	clicked: function(e) {
-		var link = (window.event && window.event.srcElement) || e.target || e.srcElement,
-			idx = this._links.length;
-		while( --idx >= 0 )
-			if( link === this._links[idx] )
-				break;
-		this.fire('clicked', {idx: idx});
+		var link = (window.event && window.event.srcElement) || e.target || e.srcElement;
+		while( link instanceof HTMLElement && !('_buttonIndex' in link ) )
+			link = link.parentNode;
+		if( '_buttonIndex' in link )
+			this.fire('clicked', { idx: link._buttonIndex });
 	}
 });
 
@@ -648,6 +648,10 @@ window.MapBBCode.objectParams.unshift({
 			if( icon ) {
 				layer.setIcon(icon);
 				layer.options.clickable = false;
+				if( L.PopupIcon && icon instanceof L.PopupIcon ) {
+					icon.options.selectable = true;
+					icon.bindTo(layer);
+				}
 			} else {
 				layer.bindPopup(text.replace(new RegExp('<(?!/?(' + ui.options.allowedHTML + ')[ >])', 'g'), '&lt;'));
 			}
@@ -1445,12 +1449,19 @@ L.letterIcon = function(letter, options) {
 
 L.PopupIcon = L.Icon.extend({
 	options: {
+		selectable: false,
 		width: 150
 	},
 	
-	initialize: function( text, options ){
+	initialize: function( text, options ) {
 		L.Icon.prototype.initialize.call(this, options);
 		this._text = text;
+	},
+
+	bindTo: function( marker ) {
+		this._marker = marker;
+		marker.setIcon(this);
+		return marker;
 	},
 
 	createIcon: function() {
@@ -1476,6 +1487,14 @@ L.PopupIcon = L.Icon.extend({
 		contentDiv.style.margin = '0 auto';
 		contentDiv.style.display = 'table';
 		contentDiv.style.pointerEvents = 'auto';
+
+		if( this.options.selectable && (!this._marker || (!this._marker.options.clickable && !this._marker.options.draggable)) ) {
+			var stop = L.DomEvent.stopPropagation;
+			L.DomEvent
+				.on(contentDiv, 'click', stop)
+				.on(contentDiv, 'mousedown', stop)
+				.on(contentDiv, 'dblclick', stop);
+		}
 
 		var tipcDiv = document.createElement('div');
 		tipcDiv.className = 'leaflet-popup-tip-container';

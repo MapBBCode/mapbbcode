@@ -26,6 +26,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Expanding initially hidden map now works correctly. [#33](https://github.com/MapBBCode/mapbbcode/issues/33)
 * Text on non-editable PopupIcon can be selected. [#6](https://github.com/MapBBCode/mapbbcode/issues/6)
 * HTML entities in the configuration panel were replaced with hex codes for IE compatibility.
+* Window width in configuration panel sometimes stuck to 100%.
 
 ## 1.1.1 (2013-11-16)
 

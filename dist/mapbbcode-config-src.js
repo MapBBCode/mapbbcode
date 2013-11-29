@@ -6,7 +6,7 @@
  Licensed WTFPL.
 */
 (function (window, document, undefined) {
-L = window.L;
+var L = window.L;
 /*
  * Layer switcher control that isn't a popup button.
  * Does not support overlay layers.
@@ -226,7 +226,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 
 	_createLayerControls: function( layer ) {
 		var upClick = document.createElement('span');
-		upClick.innerHTML ='&utrif;';
+		upClick.innerHTML ='&#x25B4;'; // &utrif;
 		upClick.style.cursor = 'pointer';
 		this._addHoverStyle(upClick, 'color', '#aaa');
 		L.DomEvent.on(upClick, 'click', function() {
@@ -234,7 +234,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		}, this);
 
 		var downClick = document.createElement('span');
-		downClick.innerHTML ='&dtrif;';
+		downClick.innerHTML ='&#x25BE;'; // &dtrif;
 		downClick.style.cursor = 'pointer';
 		downClick.style.marginLeft = '6px';
 		this._addHoverStyle(downClick, 'color', '#aaa');
@@ -243,7 +243,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		}, this);
 
 		var xClick = document.createElement('span');
-		xClick.innerHTML ='&Cross;';
+		xClick.innerHTML ='&#x2A2F;'; // &Cross;
 		xClick.style.cursor = 'pointer';
 		xClick.style.marginLeft = '6px';
 		this._addHoverStyle(xClick, 'color', '#aaa');
@@ -500,6 +500,8 @@ window.MapBBCodeConfig = L.Class.extend({
 		} else if( mode === 'window' ) {
 			width = this.options.windowWidth || this.options.viewWidth;
 			height = this.options.windowHeight || this.options.editorHeight;
+			if( width ) width += 'px';
+			if( height) height += 'px';
 		}
 		el.style.width = width;
 		el.style.height = height;
@@ -637,8 +639,8 @@ window.MapBBCodeConfig = L.Class.extend({
 
 		var fs = new L.FunctionButton('full', { position: 'topright' });
 		var modeButton = new L.FunctionButton('mode', { position: 'topright' });
-		var widthButton = new L.FunctionButtons(['&ltrif;', '&rtrif;'], { position: 'bottomright', titles: [this.strings.shrinkTitle, this.strings.growTitle] });
-		var heightButton = new L.FunctionButtons(['&utrif;', '&dtrif;'], { position: 'bottomleft', titles: [this.strings.shrinkTitle, this.strings.growTitle] });
+		var widthButton = new L.FunctionButtons(['<span style="font-size: 14pt;">&#x25C2;</span>', '<span style="font-size: 14pt;">&#x25B8;</span>'], { position: 'bottomright', titles: [this.strings.shrinkTitle, this.strings.growTitle] });
+		var heightButton = new L.FunctionButtons(['<span style="font-size: 14pt;">&#x25B4;</span>', '<span style="font-size: 14pt;">&#x25BE;</span>'], { position: 'bottomleft', titles: [this.strings.shrinkTitle, this.strings.growTitle] });
 
 		var toggleWidthButton = function() {
 			var isFull = this._mode === 'view' ? this.options.fullFromStart : !this.options.editorInWindow;
@@ -758,7 +760,7 @@ L.FunctionButtons = L.Control.extend({
 		var container = L.DomUtil.create('div', 'leaflet-bar');
 		for( var i = 0; i < this._content.length; i++ ) {
 			var link = L.DomUtil.create('a', '', container);
-			this._links.push(link);
+			link._buttonIndex = i;
 			link.href = '#';
 			link.style.padding = '0 4px';
 			link.style.width = 'auto';
@@ -767,6 +769,7 @@ L.FunctionButtons = L.Control.extend({
 				link.style.backgroundColor = this.options.bgColor;
 			if( this.options.titles && this.options.titles.length > i )
 				link.title = this.options.titles[i];
+			this._links.push(link);
 			this._updateContent(i);
 
 			var stop = L.DomEvent.stopPropagation;
@@ -823,12 +826,11 @@ L.FunctionButtons = L.Control.extend({
 	},
 
 	clicked: function(e) {
-		var link = (window.event && window.event.srcElement) || e.target || e.srcElement,
-			idx = this._links.length;
-		while( --idx >= 0 )
-			if( link === this._links[idx] )
-				break;
-		this.fire('clicked', {idx: idx});
+		var link = (window.event && window.event.srcElement) || e.target || e.srcElement;
+		while( link instanceof HTMLElement && !('_buttonIndex' in link ) )
+			link = link.parentNode;
+		if( '_buttonIndex' in link )
+			this.fire('clicked', { idx: link._buttonIndex });
 	}
 });
 
