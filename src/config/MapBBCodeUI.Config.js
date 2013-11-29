@@ -99,7 +99,8 @@ window.MapBBCodeConfig = L.Class.extend({
 			addButton.value = this.strings.addLayer;
 			
 		var onSelectChange = function(e) {
-			var layer = e.target.value;
+			var target = (window.event && window.event.srcElement) || e.target || e.srcElement,
+				layer = target.value;
 			var link = layer ? window.layerList.getKeyLink(layer) : '';
 			if( link ) {
 				keyTitle.innerHTML = this.strings.keyNeeded.replace('%s', link);
@@ -129,9 +130,12 @@ window.MapBBCodeConfig = L.Class.extend({
 			opt.innerHTML = this.strings.selectLayer + '...';
 			select.appendChild(opt);
 			for( i = 0; i < layerKeys.length; i++ ) {
-				if( layers0.indexOf(layerKeys[i]) >= 0 ) {
+				var j, found = false;
+				for( j = 0; j < layers0.length; j++ )
+					if( layers0[j] == layerKeys[i] )
+						found = true;
+				if( found )
 					continue;
-				}
 				opt = document.createElement('option');
 				opt.innerHTML = layerKeys[i];
 				opt.value = layerKeys[i];
@@ -145,7 +149,7 @@ window.MapBBCodeConfig = L.Class.extend({
 			if( !layer )
 				return;
 			var needKey = window.layerList.requiresKey(layer),
-				key = keyValue.value.trim();
+				key = keyValue.value.replace(/^\s+|\s+$/g, '');
 			if( needKey && !key.length ) {
 				window.alert(this.strings.keyNeededAlert);
 			} else {

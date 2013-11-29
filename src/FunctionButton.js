@@ -88,7 +88,7 @@ L.FunctionButtons = L.Control.extend({
 
 	clicked: function(e) {
 		var link = (window.event && window.event.srcElement) || e.target || e.srcElement;
-		while( link instanceof HTMLElement && !('_buttonIndex' in link ) )
+		while( link && 'tagName' in link && link.tagName !== 'A' && !('_buttonIndex' in link ) )
 			link = link.parentNode;
 		if( '_buttonIndex' in link )
 			this.fire('clicked', { idx: link._buttonIndex });

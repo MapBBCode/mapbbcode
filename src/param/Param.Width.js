@@ -41,7 +41,7 @@ window.MapBBCode.objectParams.push({
 		colorDiv.style.width = 10 + 24 * this.widths.length + 'px';
 		colorDiv.textAlign = 'center';
 		var colOnclick = function(e) {
-			var targetFix = e.target || e.srcElement || window.event.srcElement,
+			var targetFix = (window.event && window.event.srcElement) || e.target || e.srcElement,
 				target = targetFix._width ? targetFix : targetFix.parentNode,
 				width = target._width;
 			if( target.style.borderColor == 'white' ) {

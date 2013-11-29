@@ -5,7 +5,7 @@ window.MapBBCodeProcessor = {
 	options: {
 		decimalDigits: 5,
 		brackets: '[]',
-		tagParams: false,
+		tagParams: false
 	},
 
 	setOptions: function( options ) {

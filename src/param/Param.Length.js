@@ -70,7 +70,11 @@ window.MapBBCode.objectParams.push({
 					container.style.background = 'white';
 					container.style.padding = '0px 5px';
 				} else {
-					container.style.background = 'rgba(255, 255, 255, 0.8)';
+					try {
+						container.style.background = 'rgba(255, 255, 255, 0.8)';
+					} catch( err ) { // invalid value in IE8
+						container.style.background = 'white';
+					}
 					container.style.padding = '0px 5px';
 					container.style.margin = 0;
 					container.style.fontSize = '11px';

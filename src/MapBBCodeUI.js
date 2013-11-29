@@ -169,10 +169,15 @@ window.MapBBCode = L.Class.extend({
 	},
 
 	_checkResize: function(map, drawn) {
-		var size = new L.Point(map.getContainer().clientWidth, map.getContainer().clientHeight);
+		var size = new L.Point(map.getContainer().clientWidth, map.getContainer().clientHeight),
+			ie8 = L.Browser.ielt9;
+		if( ie8 && !('_oldSize' in map) )
+			map._oldSize = size;
 		if( size.x && size.y ) {
-			var diff = size.subtract(map.getSize());
+			var diff = size.subtract(ie8 ? map._oldSize : map.getSize());
 			if( diff.x || diff.y ) {
+				if( ie8 )
+					map._oldSize = size;
 				map.invalidateSize();
 				this._zoomToLayer(map, drawn);
 			}
