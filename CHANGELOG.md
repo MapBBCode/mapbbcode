@@ -4,7 +4,7 @@ Versions are numbered "major.minor.patch", with the `master` branch being "major
 
 All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
-## 1.1.2-dev (master)
+## 1.1.2 (2013-11-29)
 
 ### Improvements
 

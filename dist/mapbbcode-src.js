@@ -1,6 +1,6 @@
 /*
  JavaScript library for [map] BBCode parsing, displaying and editing.
- Version 1.1.2-dev
+ Version 1.1.2
  https://github.com/MapBBCode/mapbbcode
  (c) 2013, Ilya Zverev
  Licensed WTFPL.
@@ -14,7 +14,7 @@ window.MapBBCodeProcessor = {
 	options: {
 		decimalDigits: 5,
 		brackets: '[]',
-		tagParams: false,
+		tagParams: false
 	},
 
 	setOptions: function( options ) {
@@ -121,6 +121,8 @@ window.MapBBCodeProcessor = {
 
 		var markers = [], paths = [], objs = data.objs || [];
 		for( var i = 0; i < objs.length; i++ ) {
+			if( !objs[i] || !('coords' in objs[i]) )
+				continue;
 			var coords = objs[i].coords, str = '';
 			for( var j = 0; j < coords.length; j++ ) {
 				if( j > 0 )
@@ -207,18 +209,18 @@ window.MapBBCode = L.Class.extend({
 		this.strings = L.extend({}, this.strings, strings);
 	},
 
-	_eachParamHandler: function( callback, context, layer ) {
-		var paramHandlers = window.MapBBCode.objectParams;
-		if( paramHandlers ) {
-			for( var i = 0; i < paramHandlers.length; i++ ) {
-				if( !layer || paramHandlers[i].applicableTo(layer) ) {
-					callback.call(context || this, paramHandlers[i]);
+	_eachHandler: function( callback, context, layer ) {
+		var handlers = window.mapBBCodeHandlers;
+		if( handlers ) {
+			for( var i = 0; i < handlers.length; i++ ) {
+				if( !layer || handlers[i].applicableTo(layer) ) {
+					callback.call(context || this, handlers[i]);
 				}
 			}
 		}
 	},
 
-	_objectToLayer: function( obj ) {
+	objectToLayer: function( obj ) {
 		var m;
 			
 		if( obj.coords.length == 1 ) {
@@ -230,7 +232,7 @@ window.MapBBCode = L.Class.extend({
 			m = L.polyline(obj.coords, { weight: 5, opacity: 0.7 });
 		}
 		
-		this._eachParamHandler(function(handler) {
+		this._eachHandler(function(handler) {
 			if( 'objectToLayer' in handler ) {
 				var p = [];
 				if( 'reKeys' in handler )
@@ -323,10 +325,15 @@ window.MapBBCode = L.Class.extend({
 	},
 
 	_checkResize: function(map, drawn) {
-		var size = new L.Point(map.getContainer().clientWidth, map.getContainer().clientHeight);
+		var size = new L.Point(map.getContainer().clientWidth, map.getContainer().clientHeight),
+			ie8 = L.Browser.ielt9;
+		if( ie8 && !('_oldSize' in map) )
+			map._oldSize = size;
 		if( size.x && size.y ) {
-			var diff = size.subtract(map.getSize());
+			var diff = size.subtract(ie8 ? map._oldSize : map.getSize());
 			if( diff.x || diff.y ) {
+				if( ie8 )
+					map._oldSize = size;
 				map.invalidateSize();
 				this._zoomToLayer(map, drawn);
 			}
@@ -383,7 +390,7 @@ window.MapBBCode = L.Class.extend({
 		drawn.addTo(map);
 		var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
 		for( var i = 0; i < objs.length; i++ )
-			this._objectToLayer(objs[i]).addTo(drawn);
+			this.objectToLayer(objs[i]).addTo(drawn);
 		this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 
 		if( !mapDiv.offsetHeight || this.options.watchResize )
@@ -434,7 +441,7 @@ window.MapBBCode = L.Class.extend({
 				var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
 				drawn.clearLayers();
 				for( var i = 0; i < objs.length; i++ )
-					this._ui._objectToLayer(objs[i]).addTo(drawn);
+					this._ui.objectToLayer(objs[i]).addTo(drawn);
 				if( !noZoom )
 					this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 			},
@@ -448,7 +455,7 @@ window.MapBBCode = L.Class.extend({
 			}
 		};
 
-		this._eachParamHandler(function(handler) {
+		this._eachHandler(function(handler) {
 			if( 'panelHook' in handler )
 				handler.panelHook(control, this);
 		});
@@ -551,7 +558,7 @@ L.FunctionButtons = L.Control.extend({
 
 	clicked: function(e) {
 		var link = (window.event && window.event.srcElement) || e.target || e.srcElement;
-		while( link instanceof HTMLElement && !('_buttonIndex' in link ) )
+		while( link && 'tagName' in link && link.tagName !== 'A' && !('_buttonIndex' in link ) )
 			link = link.parentNode;
 		if( '_buttonIndex' in link )
 			this.fire('clicked', { idx: link._buttonIndex });
@@ -627,10 +634,10 @@ window.MapBBCode.buttonsImage = 'data:image/png;base64,'
  * Text labels. Editing only for markers.
  */
 
-if( !('objectParams' in window.MapBBCode) )
-	window.MapBBCode.objectParams = [];
+if( !('mapBBCodeHandlers' in window) )
+	window.mapBBCodeHandlers = [];
 
-window.MapBBCode.objectParams.unshift({
+window.mapBBCodeHandlers.unshift({
 	text: true,
 
 	// this regex always fails
@@ -716,11 +723,11 @@ window.MapBBCode.objectParams.unshift({
  * See editor() and editorWindow() methods.
  */
 window.MapBBCode.include({
-	_layerToObject: function( layer ) {
+	layerToObject: function( layer ) {
 		var obj = {};
 		if( layer instanceof L.Marker ) {
 			obj.coords = [layer.getLatLng()];
-		} else {
+		} else if( layer.getLatLngs ) {
 			var llngs = layer.getLatLngs(), len=llngs.length, coords = [], i;
 			for( i = 0; i < len; i++ )
 				coords.push(llngs[i]);
@@ -730,7 +737,7 @@ window.MapBBCode.include({
 		}
 
 		obj.params = layer._objParams || [];
-		this._eachParamHandler(function(handler) {
+		this._eachHandler(function(handler) {
 			if( handler.text && 'layerToObject' in handler ) {
 				var text = handler.layerToObject(layer, '', this);
 				if( text )
@@ -778,7 +785,7 @@ window.MapBBCode.include({
 		if( layer instanceof L.Polyline || layer instanceof L.Polygon )
 			layer.editing.enable();
 
-		this._eachParamHandler(function(handler) {
+		this._eachHandler(function(handler) {
 			var div = 'createEditorPanel' in handler ? handler.createEditorPanel(layer, this) : null;
 			if( div )
 				parentDiv.appendChild(div);
@@ -848,7 +855,7 @@ window.MapBBCode.include({
 	_getBBCode: function( map, drawn ) {
 		var objs = [];
 		drawn.eachLayer(function(layer) {
-			objs.push(this._layerToObject(layer));
+			objs.push(this.layerToObject(layer));
 		}, this);
 		var needZoomPos = !objs.length || map.wasPositionSet;
 		return window.MapBBCodeProcessor.objectsToString({ objs: objs, zoom: needZoomPos ? map.getZoom() : 0, pos: needZoomPos ? map.getCenter() : 0 });
@@ -876,7 +883,7 @@ window.MapBBCode.include({
 		var drawn = new L.FeatureGroup();
 		var data = window.MapBBCodeProcessor.stringToObjects(bbcode), objs = data.objs;
 		for( var i = 0; i < objs.length; i++ )
-			this._makeEditable(this._objectToLayer(objs[i]).addTo(drawn), drawn);
+			this._makeEditable(this.objectToLayer(objs[i]).addTo(drawn), drawn);
 		drawn.addTo(map);
 		this._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 		map.wasPositionSet = objs.length > 0 && !(!data.pos);
@@ -927,14 +934,14 @@ window.MapBBCode.include({
 				remove: false
 			}
 		});
-		this._eachParamHandler(function(handler) {
+		this._eachHandler(function(handler) {
 			if( 'initDrawControl' in handler )
 				handler.initDrawControl(drawControl);
 		});
 		map.addControl(drawControl);
 		map.on('draw:created', function(e) {
 			var layer = e.layer;
-			this._eachParamHandler(function(handler) {
+			this._eachHandler(function(handler) {
 				if( 'initLayer' in handler )
 					handler.initLayer(layer);
 			}, this, layer);
@@ -985,7 +992,7 @@ window.MapBBCode.include({
 			help.on('clicked', function() {
 				var str = '',
 					help = this.strings.helpContents,
-					version = '1.1.2-dev',
+					version = '1.1.2',
 					features = 'resizable,dialog,scrollbars,height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
 				var win = window.open('', 'mapbbcode_help', features);
 				for( var i = 0; i < help.length; i++ ) {
@@ -1030,7 +1037,7 @@ window.MapBBCode.include({
 				drawn.clearLayers();
 				map.removeLayer(drawn); // so options set after object creation could be set
 				for( var i = 0; i < objs.length; i++ )
-					this._ui._makeEditable(this._ui._objectToLayer(objs[i]).addTo(drawn), drawn);
+					this._ui._makeEditable(this._ui.objectToLayer(objs[i]).addTo(drawn), drawn);
 				map.addLayer(drawn);
 				if( !noZoom )
 					this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
@@ -1045,7 +1052,7 @@ window.MapBBCode.include({
 			}
 		};
 
-		this._eachParamHandler(function(handler) {
+		this._eachHandler(function(handler) {
 			if( 'panelHook' in handler )
 				handler.panelHook(control, this);
 		});
@@ -1304,10 +1311,10 @@ window.MapBBCode.include({
  * Support for color params.
  */
 
-if( !('objectParams' in window.MapBBCode) )
-	window.MapBBCode.objectParams = [];
+if( !('mapBBCodeHandlers' in window) )
+	window.mapBBCodeHandlers = [];
 
-window.MapBBCode.objectParams.push({
+window.mapBBCodeHandlers.push({
 	lineColors: {
 		def: '#0022dd',
 		blue: '#0022dd',
