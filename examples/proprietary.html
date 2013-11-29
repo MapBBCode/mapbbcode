@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <link rel="stylesheet" href="../dist/lib/leaflet.css" />
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="../dist/lib/leaflet.ie.css" />
+<![endif]-->
 <script src="../dist/lib/leaflet.js"></script>
 <script src="../src/config/LayerList.js"></script>
 <script src="../src/config/StaticLayerSwitcher.js"></script>
@@ -13,6 +16,8 @@
 <style>html, body, #map { margin: 0; height: 100%; }</style>
 <div id="map"></div>
 <script>
+L.DomEvent.on(window, 'load', function() {
 var map = L.map('map').setView([59.9, 30.3], 13);
 map.addControl(L.staticLayerSwitcher(['Zverik\'s|MapBox:zverik.map-p0ooyt47', 'National Geographic', 'Google Roads', 'Google Hybrid', 'Yandex Map', 'Yandex People\'s Map', '2GIS', 'Nokia Map:key1:key2'], { maxLayers: 15 }));
+});
 </script>

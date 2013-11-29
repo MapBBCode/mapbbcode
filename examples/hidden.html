@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <link rel="stylesheet" href="../dist/lib/leaflet.css" />
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="../dist/lib/leaflet.ie.css" />
+<![endif]-->
 <script src="../dist/lib/leaflet.js"></script>
 
 <script src="../src/MapBBCode.js"></script>
@@ -20,7 +23,9 @@
 <div id="b_shared" style="display: none;"><div id="shared"></div></div>
 <div id="b_regular" style="display: none;"><div id="regular" map="">59.56772,29.10828 60.21526,31.28357</div></div>
 <script>
+L.DomEvent.on(window, 'load', function() {
 var mapBB = new MapBBCode({ layers: 'CycleMap,OpenStreetMap' });
 mapBB.showExternal('shared', 'gkdi');
 mapBB.show('regular');
+});
 </script>
