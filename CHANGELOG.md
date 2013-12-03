@@ -4,6 +4,17 @@ Versions are numbered "major.minor.patch", with the `master` branch being "major
 
 All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
+## 1.2-dev (master)
+
+### Improvements
+
+* Proprietary layers and `LayerList.js` were moved to `src/layers` (no changes in the distribution). [#38](https://github.com/MapBBCode/mapbbcode/issues/38)
+* Proprietary layers can be added before LayerList is initialized.
+* StaticLayerSwitcher is now included in `mapbbcode.js`.
+* LayerList is included in the distribution, now do not include `mapbbcode-config.js` if all you need is LayerList.
+
+### Bugfixes
+
 ## 1.1.2 (2013-11-29)
 
 ### Improvements
