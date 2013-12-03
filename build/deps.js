@@ -76,24 +76,61 @@ var deps = {
 	},
 
 	LayerSwitcher: {
-		src: ['config/StaticLayerSwitcher.js'],
-		desc: 'Layer switcher that is not a single button',
-		config: true
+		src: ['StaticLayerSwitcher.js'],
+		desc: 'Layer switcher that is not a single button'
 	},
 
 	LayerList: {
-		src: ['config/LayerList.js'],
+		src: ['layers/LayerList.js'],
 		desc: 'List of layers to simplify configuration',
+		heading: 'Layers',
 		config: true
+	},
+
+	LayerBing: {
+		src: ['layers/Bing.js'],
+		desc: 'Bing layer',
+		noInclude: true
+	},
+
+	LayerGoogle: {
+		src: ['layers/Google.js'],
+		desc: 'Google layer',
+		noInclude: true
+	},
+
+	LayerYandex: {
+		src: ['layers/Yandex.js'],
+		desc: 'Yandex layer',
+		noInclude: true
+	},
+
+	LayerEsri: {
+		src: ['layers/Esri.js'],
+		desc: 'Esri layer',
+		noInclude: true
+	},
+
+	LayerNokia: {
+		src: ['layers/Nokia.js'],
+		desc: 'Nokia layer',
+		noInclude: true
+	},
+
+	Layer2GIS: {
+		src: ['layers/2GIS.js'],
+		desc: '2GIS layer',
+		noInclude: true
 	},
 
 	Configuration: {
 		src: ['config/MapBBCodeUI.Config.js',
+			  'StaticLayerSwitcher.js',
 		      'FunctionButton.js'],
 		desc: 'MapBBCode UI configuration module',
 		heading: 'Configuration',
 		config: true,
-		deps: ['LayerSwitcher', 'LayerList']
+		deps: ['LayerList']
 	},
 
 	StringsEnglish: {
