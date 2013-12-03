@@ -1,6 +1,8 @@
 /*
  * List of public-use layers.
  */
+window._tempLL = window.layerList;
+
 window.layerList = {
 	// some entries in this list were adapted from the https://github.com/leaflet-extras/leaflet-providers list (it has BSD 2-clause license)
 	list: {
@@ -115,3 +117,15 @@ window.layerList = {
 		return false;
 	}
 };
+
+// merge layerList entries that were added before this script was loaded
+if( window._tempLL ) {
+	if( window._tempLL.list ) {
+		var i;
+		for( i in window._tempLL.list ) {
+			if( window._tempLL.list.hasOwnProperty(i) )
+				window.layerList.list[i] = window._tempLL.list[i];
+		}
+	}
+	delete window._tempLL;
+}

@@ -176,6 +176,6 @@ L.DGis = L.Class.extend({
 	document.getElementsByTagName('head')[0].appendChild(el);
 })();
 
-if( window.layerList ) {
-	window.layerList.list["2GIS"] = "new L.DGis()";
-}
+if( !('layerList' in window) )
+	window.layerList = { list: {} };
+window.layerList.list["2GIS"] = "new L.DGis()";

@@ -167,11 +167,11 @@ L.Yandex = L.Class.extend({
 	document.getElementsByTagName('head')[0].appendChild(el);
 })();
 
-if( window.layerList ) {
-	window.layerList.list["Yandex Map"] = "new L.Yandex('map')";
-	window.layerList.list["Yandex Traffic Map"] = "new L.Yandex('map', {traffic: true})";
-	window.layerList.list["Yandex Satellite"] = "new L.Yandex('satellite')";
-	window.layerList.list["Yandex Hybrid"] = "new L.Yandex('hybrid')";
-	window.layerList.list["Yandex People's Map"] = "new L.Yandex('publicMap')";
-	window.layerList.list["Yandex People's Hybrid"] = "new L.Yandex('publicMapHybrid')";
-}
+if( !('layerList' in window) )
+	window.layerList = { list: {} };
+window.layerList.list["Yandex Map"] = "new L.Yandex('map')";
+window.layerList.list["Yandex Traffic Map"] = "new L.Yandex('map', {traffic: true})";
+window.layerList.list["Yandex Satellite"] = "new L.Yandex('satellite')";
+window.layerList.list["Yandex Hybrid"] = "new L.Yandex('hybrid')";
+window.layerList.list["Yandex People's Map"] = "new L.Yandex('publicMap')";
+window.layerList.list["Yandex People's Hybrid"] = "new L.Yandex('publicMapHybrid')";

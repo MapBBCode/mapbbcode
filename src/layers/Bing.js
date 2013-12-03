@@ -127,6 +127,6 @@ L.bingLayer = function (key, options) {
 	return new L.BingLayer(key, options);
 };
 
-if( window.layerList ) {
-	window.layerList.list["Bing Satellite"] = "new L.BingLayer('{key:http://msdn.microsoft.com/en-us/library/ff428642.aspx}')";
-}
+if( !('layerList' in window) )
+	window.layerList = { list: {} };
+window.layerList.list["Bing Satellite"] = "new L.BingLayer('{key:http://msdn.microsoft.com/en-us/library/ff428642.aspx}')";

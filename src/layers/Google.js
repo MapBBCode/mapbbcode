@@ -209,9 +209,9 @@ L.Google.asyncInitialize = function() {
 	L.DomEvent.on(window, 'load', function() { document.body.appendChild(el); });
 })();
 
-if( window.layerList ) {
-	window.layerList.list["Google Roads"] = "new L.Google('ROADMAP')";
-	window.layerList.list["Google Satellite"] = "new L.Google('SATELLITE')";
-	window.layerList.list["Google Hybrid"] = "new L.Google('HYBRID')";
-	window.layerList.list["Google Terrain"] = "new L.Google('TERRAIN')";
-}
+if( !('layerList' in window) )
+	window.layerList = { list: {} };
+window.layerList.list["Google Roads"] = "new L.Google('ROADMAP')";
+window.layerList.list["Google Satellite"] = "new L.Google('SATELLITE')";
+window.layerList.list["Google Hybrid"] = "new L.Google('HYBRID')";
+window.layerList.list["Google Terrain"] = "new L.Google('TERRAIN')";
