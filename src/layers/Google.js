@@ -27,7 +27,7 @@ L.Google = L.Class.extend({
 	initialize: function(type, options) {
 		L.Util.setOptions(this, options);
 
-		this._ready = typeof google !== 'undefined' && google.maps.Map != undefined;
+		this._ready = window.google !== undefined && window.google.maps.Map !== undefined;
 		if (!this._ready) L.Google.asyncWait.push(this);
 
 		this._type = type || 'SATELLITE';
@@ -50,7 +50,7 @@ L.Google = L.Class.extend({
 		map.on('zoomanim', this._handleZoomAnim, this);
 
 		//20px instead of 1em to avoid a slight overlap with google's attribution
-		map._controlCorners['bottomright'].style.marginBottom = "20px";
+		map._controlCorners.bottomright.style.marginBottom = "20px";
 
 		this._reset();
 		this._update();
@@ -66,7 +66,7 @@ L.Google = L.Class.extend({
 
 		this._map.off('zoomanim', this._handleZoomAnim, this);
 
-		map._controlCorners['bottomright'].style.marginBottom = "0em";
+		map._controlCorners.bottomright.style.marginBottom = "0em";
 		//this._map.off('moveend', this._update, this);
 	},
 
@@ -106,12 +106,12 @@ L.Google = L.Class.extend({
 
 	_initMapObject: function() {
 		if (!this._ready) return;
-		this._google_center = new google.maps.LatLng(0, 0);
-		var map = new google.maps.Map(this._container, {
-			center: this._google_center,
+		this._googleCenter = new window.google.maps.LatLng(0, 0);
+		var map = new window.google.maps.Map(this._container, {
+			center: this._googleCenter,
 			zoom: 0,
 			tilt: 0,
-			mapTypeId: google.maps.MapTypeId[this._type],
+			mapTypeId: window.google.maps.MapTypeId[this._type],
 			disableDefaultUI: true,
 			keyboardShortcuts: false,
 			draggable: false,
@@ -123,11 +123,11 @@ L.Google = L.Class.extend({
 		});
 
 		var _this = this;
-		this._reposition = google.maps.event.addListenerOnce(map, "center_changed",
+		this._reposition = window.google.maps.event.addListenerOnce(map, "center_changed",
 			function() { _this.onReposition(); });
 		this._google = map;
 
-		google.maps.event.addListenerOnce(map, "idle",
+		window.google.maps.event.addListenerOnce(map, "idle",
 			function() { _this._checkZoomLevels(); });
 	},
 
@@ -154,7 +154,7 @@ L.Google = L.Class.extend({
 		this._resize();
 
 		var center = e && e.latlng ? e.latlng : this._map.getCenter();
-		var _center = new google.maps.LatLng(center.lat, center.lng);
+		var _center = new window.google.maps.LatLng(center.lat, center.lng);
 
 		this._google.setCenter(_center);
 		this._google.setZoom(this._map.getZoom());
@@ -175,7 +175,7 @@ L.Google = L.Class.extend({
 
 	_handleZoomAnim: function (e) {
 		var center = e.center;
-		var _center = new google.maps.LatLng(center.lat, center.lng);
+		var _center = new window.google.maps.LatLng(center.lat, center.lng);
 
 		this._google.setCenter(_center);
 		this._google.setZoom(e.zoom);
@@ -184,7 +184,7 @@ L.Google = L.Class.extend({
 
 	onReposition: function() {
 		if (!this._google) return;
-		google.maps.event.trigger(this._google, "resize");
+		window.google.maps.event.trigger(this._google, "resize");
 	}
 });
 

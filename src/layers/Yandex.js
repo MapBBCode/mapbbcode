@@ -5,8 +5,6 @@
  * author: Pavel Shramov
  * license: BSD 2-clause
  */
-//(function (ymaps, L) {
-
 L.Yandex = L.Class.extend({
 	includes: L.Mixin.Events,
 
@@ -39,7 +37,7 @@ L.Yandex = L.Class.extend({
 		this._limitedUpdate = L.Util.limitExecByInterval(this._update, 150, this);
 		map.on('move', this._update, this);
 
-		map._controlCorners['bottomright'].style.marginBottom = "3em";
+		map._controlCorners.bottomright.style.marginBottom = "3em";
 
 		this._reset();
 		this._update(true);
@@ -52,7 +50,7 @@ L.Yandex = L.Class.extend({
 
 		this._map.off('move', this._update, this);
 
-		map._controlCorners['bottomright'].style.marginBottom = "0em";
+		map._controlCorners.bottomright.style.marginBottom = "0em";
 	},
 
 	getAttribution: function() {
@@ -98,31 +96,31 @@ L.Yandex = L.Class.extend({
 		if (this._yandex) return;
 
 		// Check that ymaps.Map is ready
-		if (ymaps.Map === undefined) {
+		if (window.ymaps.Map === undefined) {
 			if (console) {
 				console.debug("L.Yandex: Waiting on ymaps.load('package.map')");
 			}
-			return ymaps.load(["package.map"], this._initMapObject, this);
+			return window.ymaps.load(["package.map"], this._initMapObject, this);
 		}
 
 		// If traffic layer is requested check if control.TrafficControl is ready
 		if (this.options.traffic)
-			if (ymaps.control === undefined ||
-					ymaps.control.TrafficControl === undefined) {
+			if (window.ymaps.control === undefined ||
+					window.ymaps.control.TrafficControl === undefined) {
 				if (console) {
 					console.debug("L.Yandex: loading traffic and controls");
 				}
-				return ymaps.load(["package.traffic", "package.controls"],
+				return window.ymaps.load(["package.traffic", "package.controls"],
 					this._initMapObject, this);
 			}
 
-		var map = new ymaps.Map(this._container, {center: [0,0], zoom: 0, behaviors: []});
+		var map = new window.ymaps.Map(this._container, {center: [0,0], zoom: 0, behaviors: []});
 
 		if (this.options.traffic)
-			map.controls.add(new ymaps.control.TrafficControl({shown: true}));
+			map.controls.add(new window.ymaps.control.TrafficControl({shown: true}));
 
 		if (this._type == "yandex#null") {
-			this._type = new ymaps.MapType("null", []);
+			this._type = new window.ymaps.MapType("null", []);
 			map.container.getElement().style.background = "transparent";
 		}
 		map.setType(this._type);
@@ -154,15 +152,13 @@ L.Yandex = L.Class.extend({
 
 	_resize: function(force) {
 		var size = this._map.getSize(), style = this._container.style;
-		if (style.width == size.x + "px" &&
-				style.height == size.y + "px")
-			if (force != true) return;
+		if (style.width == size.x + "px" && style.height == size.y + "px" && !force)
+			return;
 		this.setElementSize(this._container, size);
-		var b = this._map.getBounds(), sw = b.getSouthWest(), ne = b.getNorthEast();
+		//var b = this._map.getBounds(), sw = b.getSouthWest(), ne = b.getNorthEast();
 		this._yandex.container.fitToViewport();
 	}
 });
-//})(ymaps, L)
 
 (function() {
 	var el = document.createElement('script');

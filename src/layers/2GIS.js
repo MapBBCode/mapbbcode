@@ -1,4 +1,4 @@
-﻿// source: https://github.com/emikhalev/leaflet-2gis
+// source: https://github.com/emikhalev/leaflet-2gis
 // author: Eugene Mikhalev
 // license: MIT
 L.DGis = L.Class.extend({
@@ -24,14 +24,14 @@ L.DGis = L.Class.extend({
 
 		// Deferred loading
 		var th = this;
-		DG.load(function() {
+		window.DG.load(function() {
 			// Create map object
 			th._initMapObject();
 
 			// Setting events handlers
 			th._setHandlers();
 
-			map._controlCorners['bottomright'].style.marginBottom = "3em";
+			map._controlCorners.bottomright.style.marginBottom = "3em";
 			th._reset();
 		});
 	},
@@ -40,7 +40,7 @@ L.DGis = L.Class.extend({
 		this._map._container.removeChild(this._container);
 		// Unset events handlers
 		this._unsetHandlers();
-		this._map._controlCorners['bottomright'].style.marginBottom = "0em";
+		this._map._controlCorners.bottomright.style.marginBottom = "0em";
 	},
 
 	// Methods
@@ -90,7 +90,7 @@ L.DGis = L.Class.extend({
 			return;
 		}
 		if (typeof this._dg == "undefined") {
-			this._dg = new DG.Map(this._container);
+			this._dg = new window.DG.Map(this._container);
 			this._dg.fullscreen.disable();
 			this._dg.geoclicker.disable();
 		}
@@ -104,7 +104,7 @@ L.DGis = L.Class.extend({
 
 	_setCenter: function(){
 		var center = this._map.getCenter();
-		this._dg.setCenter(new DG.GeoPoint(center.lng, center.lat) );
+		this._dg.setCenter(new window.DG.GeoPoint(center.lng, center.lat) );
 	},
 
 	_setHandlers: function(){
@@ -161,11 +161,10 @@ L.DGis = L.Class.extend({
 			return;
 		}
 		var size = this._map.getSize(), style = this._container.style;
-		if (style.width == size.x + "px" &&
-			style.height == size.y + "px")
-			if (force != true) return;
+		if (style.width == size.x + "px" && style.height == size.y + "px" && !force)
+			return;
 		this.setElementSize(this._container, size);
-		var b = this._map.getBounds(), sw = b.getSouthWest(), ne = b.getNorthEast();
+		//var b = this._map.getBounds(), sw = b.getSouthWest(), ne = b.getNorthEast();
 		this._dg.redraw();
 	}
 });

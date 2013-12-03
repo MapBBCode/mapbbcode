@@ -19,18 +19,19 @@ L.BingLayer = L.TileLayer.extend({
 	},
 
 	tile2quad: function(x, y, z) {
+		/* jshint bitwise: false */
 		var quad = '';
 		for (var i = z; i > 0; i--) {
 			var digit = 0;
 			var mask = 1 << (i - 1);
-			if ((x & mask) != 0) digit += 1;
-			if ((y & mask) != 0) digit += 2;
+			if ((x & mask) !== 0) digit += 1;
+			if ((y & mask) !== 0) digit += 2;
 			quad = quad + digit;
 		}
 		return quad;
 	},
 
-	getTileUrl: function(p, z) {
+	getTileUrl: function(p) {
 		var z = this._getZoomForUrl();
 		var subdomains = this.options.subdomains,
 			s = this.options.subdomains[Math.abs((p.x + p.y) % subdomains.length)];
@@ -49,7 +50,7 @@ L.BingLayer = L.TileLayer.extend({
 			var e = document.getElementById(cbid);
 			e.parentNode.removeChild(e);
 			if (meta.errorDetails) {
-				alert("Got metadata" + meta.errorDetails);
+				window.alert("Got metadata" + meta.errorDetails);
 				return;
 			}
 			_this.initMetadata();
@@ -87,12 +88,12 @@ L.BingLayer = L.TileLayer.extend({
 	},
 
 	_update: function() {
-		if (this._url == null || !this._map) return;
-		this._update_attribution();
+		if (!this._url || !this._map) return;
+		this._updateAttribution();
 		L.TileLayer.prototype._update.apply(this, []);
 	},
 
-	_update_attribution: function() {
+	_updateAttribution: function() {
 		var bounds = this._map.getBounds();
 		var zoom = this._map.getZoom();
 		for (var i = 0; i < this._providers.length; i++) {
@@ -118,7 +119,7 @@ L.BingLayer = L.TileLayer.extend({
 				p.active = false;
 			}
 		}
-			L.TileLayer.prototype.onRemove.apply(this, [map]);
+		L.TileLayer.prototype.onRemove.apply(this, [map]);
 	}
 });
 
