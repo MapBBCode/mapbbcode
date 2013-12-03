@@ -178,6 +178,8 @@ exports.layers = function () {
 	for( i = 0; i < files.length; i++ ) {
 		if( !/\.js$/.test(files[i]) )
 			continue;
+		if( files[i] == 'LayerList.js' )
+			continue;
 		var source = loadSilently(path + '/' + files[i]),
 			dest = 'dist/' + (files[i] == 'LayerList.js' ? '' : 'proprietary/') + files[i],
 			oldSource = loadSilently(dest);
@@ -198,6 +200,8 @@ exports.layersCompress = function () {
 
 	for( i = 0; i < files.length; i++ ) {
 		if( !/\.js$/.test(files[i]) )
+			continue;
+		if( files[i] == 'LayerList.js' )
 			continue;
 		var source = loadSilently(path + '/' + files[i]),
 			dest = 'dist/' + (files[i] == 'LayerList.js' ? '' : 'proprietary/') + files[i],
@@ -224,10 +228,10 @@ exports.pack = function() {
         'cp -r src/strings ' + mapbb + 'lang',
         'cp -r dist/proprietary ' + mapbb,
         'cp src/handlers/Handler.Length.js ' + mapbb,
+        'cp src/layers/LayerList.js ' + mapbb,
         'cp dist/mapbbcode.js ' + mapbb,
         'cp dist/mapbbcode-config.js ' + mapbb,
         'cp dist/mapbbcode-window.html ' + mapbb,
-        'cp dist/LayerList.js ' + mapbb,
         'rm -f dist/' + archive,
         'cd ' + target + '; zip -r ../' + archive + ' *',
         'rm -r ' + target

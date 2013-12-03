@@ -1,3 +1,6 @@
+/*
+ * Export button that connects to MapBBCode Share.
+ */
 L.ExportControl = L.Control.extend({
 	includes: L.Mixin.Events,
 
