@@ -169,21 +169,65 @@ exports.cfg = function (compsBase32, buildName) {
     exports.build(compsBase32, 'config');
 };
 
+exports.layers = function () {
+	console.log('Copying layers...');
+
+	var path = 'src/layers',
+		files = fs.readdirSync(path), i;
+
+	for( i = 0; i < files.length; i++ ) {
+		if( !/\.js$/.test(files[i]) )
+			continue;
+		var source = loadSilently(path + '/' + files[i]),
+			dest = 'dist/' + (files[i] == 'LayerList.js' ? '' : 'proprietary/') + files[i],
+			oldSource = loadSilently(dest);
+		if( oldSource !== source ) {
+			fs.writeFileSync(dest, source);
+			console.log('Updated ' + files[i] + ' (' + getSizeDelta(source, oldSource) + ' bytes)');
+		}
+	}
+};
+
+// by compressing we only save 1k per file - not much enough
+exports.layersCompress = function () {
+	console.log('Compressing layers...');
+
+	var copy = fs.readFileSync('src/copyright.js', 'utf8'),
+		path = 'src/layers',
+		files = fs.readdirSync(path), i, delta = 0;
+
+	for( i = 0; i < files.length; i++ ) {
+		if( !/\.js$/.test(files[i]) )
+			continue;
+		var source = loadSilently(path + '/' + files[i]),
+			dest = 'dist/' + (files[i] == 'LayerList.js' ? '' : 'proprietary/') + files[i],
+			oldCompressed = loadSilently(dest),
+			compressed = copy + UglifyJS.minify(source, {
+				warnings: true,
+				fromString: true
+			}).code;
+		if( oldCompressed !== compressed ) {
+			fs.writeFileSync(dest, compressed);
+			console.log('Updated ' + files[i] + ' (' + getSizeDelta(compressed, oldCompressed) + ' bytes)');
+		}
+	}
+};
+
 exports.pack = function() {
     var jake = require('jake'),
         target = 'dist/target/',
         mapbb = target + 'mapbbcode/',
         archive = 'mapbbcode-latest.zip';
-        //archive = 'mapbbcode-'+(exports.version||'dev')+'.zip';
     var commands = [
         'mkdir -p ' + mapbb,
         'cp -r dist/lib/* ' + mapbb,
         'cp -r src/strings ' + mapbb + 'lang',
-        'cp src/handlers/Handler.Length.js ' + mapbb,
         'cp -r dist/proprietary ' + mapbb,
+        'cp src/handlers/Handler.Length.js ' + mapbb,
         'cp dist/mapbbcode.js ' + mapbb,
         'cp dist/mapbbcode-config.js ' + mapbb,
         'cp dist/mapbbcode-window.html ' + mapbb,
+        'cp dist/LayerList.js ' + mapbb,
         'rm -f dist/' + archive,
         'cd ' + target + '; zip -r ../' + archive + ' *',
         'rm -r ' + target
