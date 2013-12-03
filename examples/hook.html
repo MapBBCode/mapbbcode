@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../dist/lib/leaflet.css" />
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="../dist/lib/leaflet.ie.css" />
+<![endif]-->
+<script src="../dist/lib/leaflet.js"></script>
+
+<script src="../src/MapBBCode.js"></script>
+<script src="../src/MapBBCodeUI.js"></script>
+<script src="../src/FunctionButton.js"></script>
+<script src="../src/EditorSprites.js"></script>
+<script src="../src/PopupIcon.js"></script>
+<script src="../src/param/Param.Text.js"></script>
+<script src="../src/strings/English.js"></script>
+
+<div id="test">[map]60.01,30(OK)[/map]</div>
+<script>
+window.onload = function() {
+var mapBB = new MapBBCode({
+	panelHook: function(c) {
+		var f = L.functionButton('Edit in JOSM', {position: 'topleft'});
+		f.on('clicked', function() {
+			var bounds = c.map.getBounds(),
+				url = 'http://127.0.0.1:8111/load_and_zoom' + L.Util.getParamString({
+					left: bounds.getWest(),
+					right: bounds.getEast(),
+					top: bounds.getNorth(),
+					bottom: bounds.getSouth()
+				}),
+				w = window.open(url);
+			window.setTimeout(function() { w.close(); }, 1000);
+		});
+		c.map.addControl(f);
+	}
+});
+mapBB.show('test');
+}
+</script>

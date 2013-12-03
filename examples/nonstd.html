@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../dist/lib/leaflet.css" />
+<!--[if lte IE 8]>
+    <link rel="stylesheet" href="../dist/lib/leaflet.ie.css" />
+<![endif]-->
+<script src="../dist/lib/leaflet.js"></script>
+
+<script src="../src/MapBBCode.js"></script>
+<script src="../src/MapBBCodeUI.js"></script>
+<script src="../src/FunctionButton.js"></script>
+<script src="../src/EditorSprites.js"></script>
+<script src="../src/LetterIcon.js"></script>
+<script src="../src/param/Param.Text.js"></script>
+<script src="../src/strings/English.js"></script>
+
+<div id="test"><map z="11">60,30(OK); 60.01,30.01 60.02,30.015</map></div>
+<div id="test2" map=" z=&quot;11&quot;">60,30(OK); 60.01,30.01 60.02,30.015</div>
+<script>
+window.onload = function() {
+window.MapBBCodeProcessor.setOptions({
+	brackets: '<>',
+	tagParams: true
+});
+var mapBB = new MapBBCode({
+    defaultPosition: [59.95, 30.3],
+    defaultZoom: 13
+});
+mapBB.show('test');
+mapBB.show('test2');
+}
+</script>
