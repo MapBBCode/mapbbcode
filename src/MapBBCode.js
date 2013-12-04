@@ -22,12 +22,14 @@ window.MapBBCodeProcessor = {
 			reParams = '\\((?:([a-zA-Z0-9,]*)\\|)?(|[\\s\\S]*?[^\\\\])\\)',
 			reMapElement = reCoord + '(?:' + reCoord + ')*(?:\\s*' + reParams + ')?',
 			reMapOpeningTag = openBr + 'map(?:' + (this.options.tagParams ? '\\s+z=[\'"]([12]?\\d)[\'"](?:\\s+ll=[\'"]' + reCoord + '[\'"])?' : '=([12]?\\d)(?:,' + reCoord + ')?') + ')?' + closBr,
+			reMapEmpty = openBr + 'map' + closBr + '\\s*' + openBr + '/map' + closBr,
 			reMap = reMapOpeningTag + '(' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*' + openBr + '/map' + closBr;
 		return {
 			coord: reCoord,
 			params: reParams,
 			mapElement: reMapElement,
 			map: reMap,
+			mapEmptyCompiled: new RegExp(reMapEmpty, 'i'),
 			mapCompiled: new RegExp(reMap, 'i')
 		};
 	},
@@ -52,18 +54,20 @@ window.MapBBCodeProcessor = {
 		return this.options.brackets.substring(0, 1) + '/map' + this.options.brackets.substring(1, 2);
 	},
 
+	// returns compiled regular expression for correct map code (used in isValid())
+	getBBCodeRegExp: function() {
+		return this._getRegExp().mapCompiled;
+	},
+
 	// Checks that bbcode string is a valid map bbcode
 	isValid: function( bbcode ) {
 		return this._getRegExp().mapCompiled.test(bbcode);
 	},
 
-	// Check that bbcode is either no a map bbcode, or it is empty
+	// Check that bbcode is either not valid or empty
 	isEmpty: function( bbcode ) {
-		var openBr = this.options.brackets.substring(0, 1).replace(/([\[\({])/, '\\$1'),
-			closBr = this.options.brackets.substring(1, 2).replace(/([\]\)}])/, '\\$1'),
-			reEmptyC = new RegExp(openBr + 'map' + closBr + '\\s*' + openBr + '/map' + closBr, 'i'),
-			re = this._getRegExp();
-		return !re.mapCompiled.test(bbcode) || reEmptyC.test(bbcode);
+		var re = this._getRegExp();
+		return !re.mapCompiled.test(bbcode) || re.mapEmptyCompiled.test(bbcode);
 	},
 
 	// Converts bbcode string to an array of features and metadata
