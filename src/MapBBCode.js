@@ -64,10 +64,9 @@ window.MapBBCodeProcessor = {
 		return this._getRegExp().mapCompiled.test(bbcode);
 	},
 
-	// Check that bbcode is either not valid or empty
+	// Check that bbcode is either valid and empty (use isValid() for validation)
 	isEmpty: function( bbcode ) {
-		var re = this._getRegExp();
-		return !re.mapCompiled.test(bbcode) || re.mapEmptyCompiled.test(bbcode);
+		return this._getRegExp().mapEmptyCompiled.test(bbcode);
 	},
 
 	// Converts bbcode string to an array of features and metadata
