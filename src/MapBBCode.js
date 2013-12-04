@@ -57,6 +57,15 @@ window.MapBBCodeProcessor = {
 		return this._getRegExp().mapCompiled.test(bbcode);
 	},
 
+	// Check that bbcode is either no a map bbcode, or it is empty
+	isEmpty: function( bbcode ) {
+		var openBr = this.options.brackets.substring(0, 1).replace(/([\[\({])/, '\\$1'),
+			closBr = this.options.brackets.substring(1, 2).replace(/([\]\)}])/, '\\$1'),
+			reEmptyC = new RegExp(openBr + 'map' + closBr + '\\s*' + openBr + '/map' + closBr, 'i'),
+			re = this._getRegExp();
+		return !re.mapCompiled.test(bbcode) || reEmptyC.test(bbcode);
+	},
+
 	// Converts bbcode string to an array of features and metadata
 	stringToObjects: function( bbcode ) {
 		var regExp = this._getRegExp(),
@@ -103,11 +112,11 @@ window.MapBBCodeProcessor = {
 
 	// Takes an object like stringToObjects() produces and returns map bbcode
 	objectsToString: function( data ) {
-		var mapData = '';
+		var mapData = '', zoom, pos;
 		if( data.zoom > 0 ) {
-			mapData = this.options.tagParams ? ' z="' + data.zoom + '"' : '=' + data.zoom;
+			zoom = data.zoom;
 			if( data.pos )
-				mapData += this.options.tagParams ? ' ll="' + this._latLngToString(data.pos) + '"' : ',' + this._latLngToString(data.pos);
+				pos = this._latLngToString(data.pos);
 		}
 
 		var markers = [], paths = [], objs = data.objs || [];
@@ -133,9 +142,7 @@ window.MapBBCodeProcessor = {
 			}
 		}
 
-		var openBr = this.options.brackets.substring(0, 1),
-			closBr = this.options.brackets.substring(1, 2);
-		return markers.length || paths.length || mapData.length ? openBr + 'map' + mapData + closBr + markers.concat(paths).join('; ') + openBr + '/map' + closBr : '';
+		return markers.length || paths.length || mapData.length ? this.getOpenTag(zoom, pos) + markers.concat(paths).join('; ') + this.getCloseTag() : '';
 	},
 
 	_latLngToString: function( latlng ) {

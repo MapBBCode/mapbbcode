@@ -12,6 +12,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Proprietary layers can be added before LayerList is initialized.
 * StaticLayerSwitcher is now included in `mapbbcode.js`.
 * LayerList is included in the distribution, now do not include `mapbbcode-config.js` if all you need is LayerList.
+* `isEmpty()` method in MapBBCodeProcessor.
 
 ### Bugfixes
 
