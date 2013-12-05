@@ -22,13 +22,13 @@ task('build', ['lint'], build.build);
 desc('Combine and compress MapBBCode configuration tool source files');
 task('cfg', ['lint'], build.cfg);
 
-desc('Compress MapBBCode layerList and proprietary layers sources');
-task('layers', ['lint'], build.layers);
+//desc('Compress MapBBCode layerList and proprietary layers sources');
+//task('layers', ['lint'], build.layers);
 
 //desc('Run PhantomJS tests');
 //task('test', ['lint'], build.test);
 
 desc('Create archived package of MapBBCode and all dependencies');
-task('pack', ['build', 'layers', 'cfg'], build.pack);
+task('pack', ['build', 'cfg'], build.pack);
 
-task('default', ['build', 'layers', 'cfg']);
+task('default', ['build', 'cfg']);
