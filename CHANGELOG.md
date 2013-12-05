@@ -16,6 +16,8 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 ### Bugfixes
 
+* Fixed loading Google scripts after window has finished loading.
+
 ## 1.1.2 (2013-11-29)
 
 ### Improvements
