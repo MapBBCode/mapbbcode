@@ -31,12 +31,14 @@ window.MapBBCodeProcessor = {
 			reParams = '\\((?:([a-zA-Z0-9,]*)\\|)?(|[\\s\\S]*?[^\\\\])\\)',
 			reMapElement = reCoord + '(?:' + reCoord + ')*(?:\\s*' + reParams + ')?',
 			reMapOpeningTag = openBr + 'map(?:' + (this.options.tagParams ? '\\s+z=[\'"]([12]?\\d)[\'"](?:\\s+ll=[\'"]' + reCoord + '[\'"])?' : '=([12]?\\d)(?:,' + reCoord + ')?') + ')?' + closBr,
+			reMapEmpty = openBr + 'map' + closBr + '\\s*' + openBr + '/map' + closBr,
 			reMap = reMapOpeningTag + '(' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*' + openBr + '/map' + closBr;
 		return {
 			coord: reCoord,
 			params: reParams,
 			mapElement: reMapElement,
 			map: reMap,
+			mapEmptyCompiled: new RegExp(reMapEmpty, 'i'),
 			mapCompiled: new RegExp(reMap, 'i')
 		};
 	},
@@ -61,9 +63,19 @@ window.MapBBCodeProcessor = {
 		return this.options.brackets.substring(0, 1) + '/map' + this.options.brackets.substring(1, 2);
 	},
 
+	// returns compiled regular expression for correct map code (used in isValid())
+	getBBCodeRegExp: function() {
+		return this._getRegExp().mapCompiled;
+	},
+
 	// Checks that bbcode string is a valid map bbcode
 	isValid: function( bbcode ) {
 		return this._getRegExp().mapCompiled.test(bbcode);
+	},
+
+	// Check that bbcode is either valid and empty (use isValid() for validation)
+	isEmpty: function( bbcode ) {
+		return this._getRegExp().mapEmptyCompiled.test(bbcode);
 	},
 
 	// Converts bbcode string to an array of features and metadata
@@ -112,11 +124,11 @@ window.MapBBCodeProcessor = {
 
 	// Takes an object like stringToObjects() produces and returns map bbcode
 	objectsToString: function( data ) {
-		var mapData = '';
+		var mapData = '', zoom, pos;
 		if( data.zoom > 0 ) {
-			mapData = this.options.tagParams ? ' z="' + data.zoom + '"' : '=' + data.zoom;
+			zoom = data.zoom;
 			if( data.pos )
-				mapData += this.options.tagParams ? ' ll="' + this._latLngToString(data.pos) + '"' : ',' + this._latLngToString(data.pos);
+				pos = this._latLngToString(data.pos);
 		}
 
 		var markers = [], paths = [], objs = data.objs || [];
@@ -142,9 +154,7 @@ window.MapBBCodeProcessor = {
 			}
 		}
 
-		var openBr = this.options.brackets.substring(0, 1),
-			closBr = this.options.brackets.substring(1, 2);
-		return markers.length || paths.length || mapData.length ? openBr + 'map' + mapData + closBr + markers.concat(paths).join('; ') + openBr + '/map' + closBr : '';
+		return markers.length || paths.length || mapData.length ? this.getOpenTag(zoom, pos) + markers.concat(paths).join('; ') + this.getCloseTag() : '';
 	},
 
 	_latLngToString: function( latlng ) {
