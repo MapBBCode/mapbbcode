@@ -126,8 +126,9 @@ exports.build = function (compsBase32, buildName) {
 	var copy = fs.readFileSync('src/copyright.js', 'utf8'),
 	    intro = '(function (window, document, undefined) {\nvar L = window.L;\n',
 	    outro = '}(window, document));',
+		pjson = require('../package.json'),
 	    newSrc = copy + intro + combineFiles(files) + outro,
-	    newSrc = newSrc.replace(/\$\$VERSION\$\$/g, exports.version || 'dev'),
+	    newSrc = newSrc.replace(/\$\$VERSION\$\$/g, pjson.version || 'dev'),
 
 	    pathPart = 'dist/mapbbcode' + (buildName ? '-' + buildName : ''),
 	    srcPath = pathPart + '-src.js',
@@ -152,7 +153,7 @@ exports.build = function (compsBase32, buildName) {
 	        warnings: true,
 	        fromString: true
 	    }).code,
-	    newCompressed = newCompressed.replace(/\$\$VERSION\$\$/g, exports.version || 'dev'),
+	    newCompressed = newCompressed.replace(/\$\$VERSION\$\$/g, pjson.version || 'dev'),
 	    delta = getSizeDelta(newCompressed, oldCompressed);
 
 	console.log('\tCompressed size: ' + newCompressed.length + ' bytes (' + delta + ')');
