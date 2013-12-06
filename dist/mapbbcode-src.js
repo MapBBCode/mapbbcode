@@ -14,7 +14,8 @@ window.MapBBCodeProcessor = {
 	options: {
 		decimalDigits: 5,
 		brackets: '[]',
-		tagParams: false
+		tagParams: false,
+		shareTag: 'mapid'
 	},
 
 	setOptions: function( options ) {
@@ -30,7 +31,7 @@ window.MapBBCodeProcessor = {
 		var reCoord = '\\s*(-?\\d+(?:\\.\\d+)?)\\s*,\\s*(-?\\d+(?:\\.\\d+)?)',
 			reParams = '\\((?:([a-zA-Z0-9,]*)\\|)?(|[\\s\\S]*?[^\\\\])\\)',
 			reMapElement = reCoord + '(?:' + reCoord + ')*(?:\\s*' + reParams + ')?',
-			reMapOpeningTag = openBr + 'map(?:' + (this.options.tagParams ? '\\s+z=[\'"]([12]?\\d)[\'"](?:\\s+ll=[\'"]' + reCoord + '[\'"])?' : '=([12]?\\d)(?:,' + reCoord + ')?') + ')?' + closBr,
+			reMapOpeningTag = openBr + 'map(?:' + (this.options.tagParams ? '\\s+z=[\'"]([12]?\\d)[\'"](?:\\s+ll=[\'"]' + reCoord + '[\'"])?' : '=[\'"]?([12]?\\d)(?:,' + reCoord + ')?') + ')?[\'"]?' + closBr,
 			reMapEmpty = openBr + 'map' + closBr + '\\s*' + openBr + '/map' + closBr,
 			reMap = reMapOpeningTag + '(' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*' + openBr + '/map' + closBr;
 		return {
@@ -61,6 +62,14 @@ window.MapBBCodeProcessor = {
 	// returns longest substring for determining an end of map bbcode, "[/map]" by default
 	getCloseTag: function() {
 		return this.options.brackets.substring(0, 1) + '/map' + this.options.brackets.substring(1, 2);
+	},
+
+	// construct mapid sequence, or get '[mapid]' substring for searching
+	getShareTag: function( id ) {
+		var openBr = this.options.brackets.substring(0, 1),
+			closBr = this.options.brackets.substring(1, 2),
+			mapid = this.options.shareTag || 'mapid';
+		return id ? openBr + mapid + closBr + id + openBr + '/' + mapid + closBr : openBr + mapid + closBr;
 	},
 
 	// returns compiled regular expression for correct map code (used in isValid())
@@ -124,7 +133,7 @@ window.MapBBCodeProcessor = {
 
 	// Takes an object like stringToObjects() produces and returns map bbcode
 	objectsToString: function( data ) {
-		var mapData = '', zoom, pos;
+		var zoom, pos;
 		if( data.zoom > 0 ) {
 			zoom = data.zoom;
 			if( data.pos )
@@ -154,7 +163,7 @@ window.MapBBCodeProcessor = {
 			}
 		}
 
-		return markers.length || paths.length || mapData.length ? this.getOpenTag(zoom, pos) + markers.concat(paths).join('; ') + this.getCloseTag() : '';
+		return markers.length || paths.length || zoom ? this.getOpenTag(zoom, pos) + markers.concat(paths).join('; ') + this.getCloseTag() : '';
 	},
 
 	_latLngToString: function( latlng ) {
@@ -203,8 +212,7 @@ window.MapBBCode = L.Class.extend({
 		panelHook: null, // function({map, getBBCode(), ...})
 
 		externalEndpoint: 'http://share.mapbbcode.org/',
-		uploadButton: false,
-		shareTag: 'mapid'
+		uploadButton: false
 	},
 
 	strings: {},
@@ -973,12 +981,12 @@ window.MapBBCode.include({
 			}, this);
 			map.addControl(apply);
 
-			if( this.options.shareTag && this.options.uploadButton && this._upload ) {
+			if( this.options.uploadButton && this._upload ) {
 				var upload = L.functionButton(this.strings.upload, { position: 'topleft', title: this.strings.uploadTitle });
 				upload.on('clicked', function() {
 					this._upload(mapDiv, drawn.getLayers().length ? this._getBBCode(map, drawn) : false, function(codeid) {
 						mapDiv.close();
-						var newCode = '[' + this.options.shareTag + ']' + codeid + '[/' + this.options.shareTag + ']';
+						var newCode = window.MapBBCodeProcessor.getShareTag(codeid);
 						if( textArea )
 							this._updateMapInTextArea(textArea, bbcode, newCode);
 						if( callback )
@@ -1136,7 +1144,7 @@ window.MapBBCode.include({
 
 	showExternal: function( element, id, callback, context ) {
 		var endpoint = this._getEndpoint();
-		if( !this.options.shareTag || !endpoint || !id )
+		if( !endpoint || !id )
 			return;
 
 		var errorDiv = this._createMapPanel(element);
