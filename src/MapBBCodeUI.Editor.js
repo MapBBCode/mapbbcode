@@ -243,12 +243,12 @@ window.MapBBCode.include({
 			}, this);
 			map.addControl(apply);
 
-			if( this.options.shareTag && this.options.uploadButton && this._upload ) {
+			if( this.options.uploadButton && this._upload ) {
 				var upload = L.functionButton(this.strings.upload, { position: 'topleft', title: this.strings.uploadTitle });
 				upload.on('clicked', function() {
 					this._upload(mapDiv, drawn.getLayers().length ? this._getBBCode(map, drawn) : false, function(codeid) {
 						mapDiv.close();
-						var newCode = '[' + this.options.shareTag + ']' + codeid + '[/' + this.options.shareTag + ']';
+						var newCode = window.MapBBCodeProcessor.getShareTag(codeid);
 						if( textArea )
 							this._updateMapInTextArea(textArea, bbcode, newCode);
 						if( callback )

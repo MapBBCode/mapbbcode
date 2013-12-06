@@ -5,7 +5,8 @@ window.MapBBCodeProcessor = {
 	options: {
 		decimalDigits: 5,
 		brackets: '[]',
-		tagParams: false
+		tagParams: false,
+		shareTag: 'mapid'
 	},
 
 	setOptions: function( options ) {
@@ -52,6 +53,14 @@ window.MapBBCodeProcessor = {
 	// returns longest substring for determining an end of map bbcode, "[/map]" by default
 	getCloseTag: function() {
 		return this.options.brackets.substring(0, 1) + '/map' + this.options.brackets.substring(1, 2);
+	},
+
+	// construct mapid sequence, or get '[mapid]' substring for searching
+	getShareTag: function( id ) {
+		var openBr = this.options.brackets.substring(0, 1),
+			closBr = this.options.brackets.substring(1, 2),
+			mapid = this.options.shareTag || 'mapid';
+		return id ? openBr + mapid + closBr + id + openBr + '/' + mapid + closBr : openBr + mapid + closBr;
 	},
 
 	// returns compiled regular expression for correct map code (used in isValid())

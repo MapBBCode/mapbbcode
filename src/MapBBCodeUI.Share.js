@@ -42,7 +42,7 @@ window.MapBBCode.include({
 
 	showExternal: function( element, id, callback, context ) {
 		var endpoint = this._getEndpoint();
-		if( !this.options.shareTag || !endpoint || !id )
+		if( !endpoint || !id )
 			return;
 
 		var errorDiv = this._createMapPanel(element);
