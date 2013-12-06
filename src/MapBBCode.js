@@ -115,7 +115,7 @@ window.MapBBCodeProcessor = {
 
 	// Takes an object like stringToObjects() produces and returns map bbcode
 	objectsToString: function( data ) {
-		var mapData = '', zoom, pos;
+		var zoom, pos;
 		if( data.zoom > 0 ) {
 			zoom = data.zoom;
 			if( data.pos )
@@ -145,7 +145,7 @@ window.MapBBCodeProcessor = {
 			}
 		}
 
-		return markers.length || paths.length || mapData.length ? this.getOpenTag(zoom, pos) + markers.concat(paths).join('; ') + this.getCloseTag() : '';
+		return markers.length || paths.length || zoom ? this.getOpenTag(zoom, pos) + markers.concat(paths).join('; ') + this.getCloseTag() : '';
 	},
 
 	_latLngToString: function( latlng ) {
