@@ -120,8 +120,9 @@ window.MapBBCode = L.Class.extend({
 			map.on('load', applyZoom, this);
 	},
 
-	createOpenStreetMapLayer: function() {
-		return L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	createOpenStreetMapLayer: function(L1) {
+		var LL = L1 || L;
+		return LL.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			name: 'OpenStreetMap',
 			attribution: 'Map &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>',
 			minZoom: 2,
@@ -134,7 +135,7 @@ window.MapBBCode = L.Class.extend({
 		if( (!layers || !layers.length) && window.layerList && this.options.layers )
 			layers = window.layerList.getLeafletLayers(this.options.layers, L);
 		if( !layers || !layers.length )
-			layers = [this.createOpenStreetMapLayer()];
+			layers = [this.createOpenStreetMapLayer(L)];
 		map.addLayer(layers[0]);
 		
 		if( layers.length > 1 ) {
