@@ -18,6 +18,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		L.setOptions(this, options);
 		this._layers = [];
 		this._selected = 0;
+		this._layerList = window.layerList && 'isOpenStreetMapLayer' in window.layerList;
 		if( layers ) {
 			if( 'push' in layers && 'splice' in layers ) { // in IE arrays can be [object Object]
 				for( var i = 0; i < layers.length; i++ )
@@ -58,7 +59,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 			l.id = id;
 			if( l.fromList ) {
 				var onMap = this._map && this._map.hasLayer(layer),
-					newLayer = window.layerList.getLeafletLayer(id);
+					newLayer = this._layerList ? window.layerList.getLeafletLayer(id) : null;
 				if( onMap )
 					this._map.removeLayer(layer);
 				if( newLayer ) {
@@ -78,7 +79,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 	addLayer: function( id, layer ) {
 		if( this._layers.length >= this.options.maxLayers )
 			return;
-		var l = layer || (window.layerList && window.layerList.getLeafletLayer(id));
+		var l = layer || (this._layerList && window.layerList.getLeafletLayer(id));
 		if( l ) {
 			this._layers.push({ id: id, layer: l, fromList: !layer });
 			var osmidx = this._findFirstOSMLayer();
@@ -130,7 +131,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		var pos = this._findLayer(layer),
 			newPos = moveDown ? pos + 1 : pos - 1;
 		if( pos >= 0 && newPos >= 0 && newPos < this._layers.length ) {
-			if( this.options.enforceOSM && pos + newPos == 1 && window.layerList &&
+			if( this.options.enforceOSM && pos + newPos == 1 && this._layerList &&
 					!window.layerList.isOpenStreetMapLayer(this._layers[1].layer) ) {
 				var nextOSM = this._findFirstOSMLayer(1);
 				if( pos === 0 && nextOSM > 1 )
@@ -151,7 +152,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 	},
 
 	_findFirstOSMLayer: function( start ) {
-		if( !window.layerList || !this.options.enforceOSM )
+		if( !this._layerList || !this.options.enforceOSM )
 			return start || 0;
 		var i = start || 0;
 		while( i < this._layers.length && !window.layerList.isOpenStreetMapLayer(this._layers[i].layer) )
@@ -200,7 +201,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		div.style.padding = '4px 10px';
 		div.style.color = 'black';
 		div.style.cursor = 'default';
-		var label = !layerMeta.fromList ? layerMeta.id : window.layerList.getLayerName(layerMeta.id);
+		var label = !layerMeta.fromList ? layerMeta.id : (this._layerList ? window.layerList.getLayerName(layerMeta.id) : 'Layer');
 		div.appendChild(document.createTextNode(label));
 		if( this.options.editable )
 			div.appendChild(this._createLayerControls(layerMeta.layer));
