@@ -93,14 +93,14 @@ window.layerList = {
 			if( layer ) {
 				result.push(layer);
 				if( osmidx < 0 && this.isOpenStreetMapLayer(layer) )
-					osmidx = i;
+					osmidx = result.length - 1;
 			}
 		}
 
 		if( osmidx > 0 ) {
-			var tmp = l[i];
-			l[i] = l[0];
-			l[0] = tmp;
+			var tmp = result[osmidx];
+			result[osmidx] = result[0];
+			result[0] = tmp;
 		} else if( osmidx < 0 && result.length > 0 ) {
 			result.unshift(this.getLeafletLayer('OpenStreetMap', LL));
 		}

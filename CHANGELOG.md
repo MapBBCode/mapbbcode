@@ -17,6 +17,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 ### Bugfixes
 
 * Fixed loading Google scripts after window has finished loading.
+* MapBBCodeProcessor.getLeafletLayers() did not move proprietary layers down. [#43](https://github.com/MapBBCode/mapbbcode/issues/43)
 
 ## 1.1.2 (2013-11-29)
 
