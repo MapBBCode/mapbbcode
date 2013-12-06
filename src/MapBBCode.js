@@ -21,7 +21,7 @@ window.MapBBCodeProcessor = {
 		var reCoord = '\\s*(-?\\d+(?:\\.\\d+)?)\\s*,\\s*(-?\\d+(?:\\.\\d+)?)',
 			reParams = '\\((?:([a-zA-Z0-9,]*)\\|)?(|[\\s\\S]*?[^\\\\])\\)',
 			reMapElement = reCoord + '(?:' + reCoord + ')*(?:\\s*' + reParams + ')?',
-			reMapOpeningTag = openBr + 'map(?:' + (this.options.tagParams ? '\\s+z=[\'"]([12]?\\d)[\'"](?:\\s+ll=[\'"]' + reCoord + '[\'"])?' : '=([12]?\\d)(?:,' + reCoord + ')?') + ')?' + closBr,
+			reMapOpeningTag = openBr + 'map(?:' + (this.options.tagParams ? '\\s+z=[\'"]([12]?\\d)[\'"](?:\\s+ll=[\'"]' + reCoord + '[\'"])?' : '=[\'"]?([12]?\\d)(?:,' + reCoord + ')?') + ')?[\'"]?' + closBr,
 			reMapEmpty = openBr + 'map' + closBr + '\\s*' + openBr + '/map' + closBr,
 			reMap = reMapOpeningTag + '(' + reMapElement + '(?:\\s*;' + reMapElement + ')*)?\\s*' + openBr + '/map' + closBr;
 		return {
