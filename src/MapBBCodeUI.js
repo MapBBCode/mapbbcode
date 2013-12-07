@@ -179,6 +179,7 @@ window.MapBBCode = L.Class.extend({
 				if( ie8 )
 					map._oldSize = size;
 				map.invalidateSize();
+				map._sizeChanged = true; // fix my own leaflet bug
 				this._zoomToLayer(map, drawn);
 			}
 			if( !this.options.watchResize && map._bbSizePinger )
