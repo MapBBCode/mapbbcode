@@ -8,6 +8,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 ### Improvements
 
+* Leaflet 0.7.1, Leaflet.draw 0.2.3. [#28](https://github.com/MapBBCode/mapbbcode/issues/28)
 * Proprietary layers and `LayerList.js` were moved to `src/layers` (no changes in the distribution). [#38](https://github.com/MapBBCode/mapbbcode/issues/38)
 * Proprietary layers can be added before LayerList is initialized.
 * StaticLayerSwitcher is now included in `mapbbcode.js`.
