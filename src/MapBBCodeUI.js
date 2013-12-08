@@ -169,17 +169,14 @@ window.MapBBCode = L.Class.extend({
 	},
 
 	_checkResize: function(map, drawn) {
-		var size = new L.Point(map.getContainer().clientWidth, map.getContainer().clientHeight),
-			ie8 = L.Browser.ielt9;
-		if( ie8 && !('_oldSize' in map) )
+		var size = new L.Point(map.getContainer().clientWidth, map.getContainer().clientHeight);
+		if( !('_oldSize' in map) )
 			map._oldSize = size;
 		if( size.x && size.y ) {
-			var diff = size.subtract(ie8 ? map._oldSize : map.getSize());
+			var diff = size.subtract(map._oldSize);
 			if( diff.x || diff.y ) {
-				if( ie8 )
-					map._oldSize = size;
-				map.invalidateSize();
-				map._sizeChanged = true; // fix my own leaflet bug
+				map._oldSize = size;
+				map._sizeChanged = true; // fix my own leaflet bug, to remove for leaflet 0.7.2
 				this._zoomToLayer(map, drawn);
 			}
 			if( !this.options.watchResize && map._bbSizePinger )
