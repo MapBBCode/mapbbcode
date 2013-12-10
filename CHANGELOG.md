@@ -15,7 +15,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * LayerList is included in the distribution, now do not include `mapbbcode-config.js` if all you need is LayerList.
 * `isEmpty()` and `getBBCodeRegExp()` methods in MapBBCodeProcessor.
 * Allow quotes as in `[map="15,42.45,18.54"]`. [#45](https://github.com/MapBBCode/mapbbcode/issues/45)
-* Bing layer is no longer included by default in `mapbbcode-window.html`.
+* Bing layer is no longer included by default in `mapbbcode-window.html`, and editor close buttons are always enabled in it.
 
 ### Bugfixes
 
@@ -23,6 +23,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * MapBBCodeProcessor.getLeafletLayers() did not move proprietary layers down. [#43](https://github.com/MapBBCode/mapbbcode/issues/43)
 * `shareTag` option was moved from MapBBCodeUI to MapBBCodeProcessor, allowing for non-standard brackets around `mapid`. [#42](https://github.com/MapBBCode/mapbbcode/issues/42)
 * Added `L` parameter for `createOpenStreetMapLayer(L)`, fixes occasional disappearance of OSM layer. [#44](https://github.com/MapBBCode/mapbbcode/issues/44)
+* Style fixes and utf-8 charset in `mapbbcode-window.html`.
 
 ## 1.1.2 (2013-11-29)
 
