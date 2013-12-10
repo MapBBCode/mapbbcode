@@ -15,6 +15,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * LayerList is included in the distribution, now do not include `mapbbcode-config.js` if all you need is LayerList.
 * `isEmpty()` and `getBBCodeRegExp()` methods in MapBBCodeProcessor.
 * Allow quotes as in `[map="15,42.45,18.54"]`. [#45](https://github.com/MapBBCode/mapbbcode/issues/45)
+* Bing layer is no longer included by default in `mapbbcode-window.html`.
 
 ### Bugfixes
 
