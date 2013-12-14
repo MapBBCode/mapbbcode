@@ -4,6 +4,8 @@ This JavaScript library allows easy integration of [map] bbcode into forums and 
 
 Documentation for this library and its use is published on [the official website](http://mapbbcode.org). Also check out [examples](examples) that demonstrate various aspects of the library.
 
+Translations are managed with [Transifex](https://www.transifex.com/projects/p/mapbbcode/), please help us with your language.
+
 ## Supported Browsers
 
 The library (examples, forum modules and [share.mapbbcode.org](http://share.mapbbcode.org/)) was tested and found to be working good enough in the following browsers:
@@ -18,7 +20,7 @@ If you have found problems in any of those browsers, or tested the library with 
 
 ## Included Libraries
 
-Those libraries reside in `dist/lib` and `dist/proprietary` directories and should be put together with `mapbbcode*` files in derived projects, otherwise you would have to fix paths in `mapbbcode-window.html`.
+Those libraries reside in `dist/lib` and `src/layers` directories and should be put together with `mapbbcode*` files in derived projects, otherwise you would have to fix paths in `mapbbcode-window.html`.
 
 * [Leaflet](http://leafletjs.com/) (BSD 2-clause)
 * [Leaflet.draw](https://github.com/Leaflet/Leaflet.draw) (MIT)

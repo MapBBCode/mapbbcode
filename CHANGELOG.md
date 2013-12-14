@@ -16,6 +16,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * `isEmpty()` and `getBBCodeRegExp()` methods in MapBBCodeProcessor.
 * Allow quotes as in `[map="15,42.45,18.54"]`. [#45](https://github.com/MapBBCode/mapbbcode/issues/45)
 * Bing layer is no longer included by default in `mapbbcode-window.html`, and editor close buttons are always enabled in it.
+* Translations are now managed with Transifex, files were renamed to `{en|ru|...}.js` and `{en|ru|...}.config.js`. [#22](https://github.com/MapBBCode/mapbbcode/issues/22)
 
 ### Bugfixes
 
