@@ -6,17 +6,21 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 ## 1.2-dev (master)
 
+### Notable Changes
+
+* Translations are now managed with Transifex, files were renamed to `{en|ru|...}.js` and `{en|ru|...}.config.js`. [#22](https://github.com/MapBBCode/mapbbcode/issues/22)
+* `LayerList.js` is included in the distribution, now do not include `mapbbcode-config.js` if all you need is LayerList.
+* StaticLayerSwitcher plugin is now included in `mapbbcode.js`.
+* Bing layer is no longer included by default in `mapbbcode-window.html`.
+
 ### Improvements
 
 * Leaflet 0.7.1, Leaflet.draw 0.2.3. [#28](https://github.com/MapBBCode/mapbbcode/issues/28)
 * Proprietary layers and `LayerList.js` were moved to `src/layers` (no changes in the distribution). [#38](https://github.com/MapBBCode/mapbbcode/issues/38)
 * Proprietary layers can be added before LayerList is initialized.
-* StaticLayerSwitcher is now included in `mapbbcode.js`.
-* LayerList is included in the distribution, now do not include `mapbbcode-config.js` if all you need is LayerList.
 * `isEmpty()` and `getBBCodeRegExp()` methods in MapBBCodeProcessor.
 * Allow quotes as in `[map="15,42.45,18.54"]`. [#45](https://github.com/MapBBCode/mapbbcode/issues/45)
-* Bing layer is no longer included by default in `mapbbcode-window.html`, and editor close buttons are always enabled in it.
-* Translations are now managed with Transifex, files were renamed to `{en|ru|...}.js` and `{en|ru|...}.config.js`. [#22](https://github.com/MapBBCode/mapbbcode/issues/22)
+* Made editor close buttons always enabled in `mapbbcode-window.html`.
 
 ### Bugfixes
 
