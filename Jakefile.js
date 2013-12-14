@@ -10,7 +10,8 @@ To check the code for errors and build MapBBCode from source, run "jake".
 To run the tests, run "jake test".
 */
 
-var build = require('./build/build.js');
+var build = require('./build/build.js'),
+    langs = require('./build/update_locales.js');
 
 desc('Check MapBBCode source for errors with JSHint');
 task('lint', build.lint);
@@ -21,6 +22,9 @@ task('build', ['lint'], build.build);
 desc('Combine and compress MapBBCode configuration tool source files');
 task('cfg', ['lint'], build.cfg);
 
+desc('Update locales from Transifex');
+task('lang', langs.languages);
+
 //desc('Compress MapBBCode layerList and proprietary layers sources');
 //task('layers', ['lint'], build.layers);
 
@@ -28,6 +32,6 @@ task('cfg', ['lint'], build.cfg);
 //task('test', ['lint'], build.test);
 
 desc('Create archived package of MapBBCode and all dependencies');
-task('pack', ['build', 'cfg'], build.pack);
+task('pack', ['lang', 'build', 'cfg'], build.pack);
 
 task('default', ['build', 'cfg']);

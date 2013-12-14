@@ -140,28 +140,11 @@ var deps = {
 		deps: ['UI']
 	},
 
-	StringsRussian: {
-		src: ['strings/Russian.js'],
-		desc: 'Russian',
-		deps: ['UI'],
-		noInclude: true,
-		onlyIn: ['russian']
-	},
-
 	StringsEnglishC: {
 		src: ['strings/English.Config.js'],
 		desc: 'English for Configuration',
 		deps: ['Configuration'],
 		config: true
-	},
-
-	StringsRussianC: {
-		src: ['strings/Russian.Config.js'],
-		desc: 'Russian for Configuration',
-		deps: ['Configuration'],
-		noInclude: true,
-		config: true,
-		onlyIn: ['russian']
 	}
 };
 

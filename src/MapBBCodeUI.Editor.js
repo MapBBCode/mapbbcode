@@ -271,7 +271,7 @@ window.MapBBCode.include({
 			var help = L.functionButton('<span style="font-size: 18px; font-weight: bold;">?</span>', { position: 'topright', title: this.strings.helpTitle });
 			help.on('clicked', function() {
 				var str = '',
-					help = this.strings.helpContents,
+					help = this.strings.helpContents.split(/\n+/),
 					version = '$$VERSION$$',
 					features = 'resizable,dialog,scrollbars,height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
 				var win = window.open('', 'mapbbcode_help', features);
