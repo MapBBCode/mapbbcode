@@ -34,6 +34,8 @@ function getResource(res) {
             if (err) return callback(err);
 
             results.forEach(function(result, j) {
+				if( !Object.keys(result).length )
+					return;
 				var lang = codes[j];
 				var fn = 'dist/lang/' + lang + (res === 'core' ? '' : '.' + res) + '.js';
 				var strings = JSON.stringify(result, null, 4);
