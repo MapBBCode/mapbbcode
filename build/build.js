@@ -226,7 +226,7 @@ exports.pack = function() {
     var commands = [
         'mkdir -p ' + mapbb,
         'cp -r dist/lib/* ' + mapbb,
-        'cp -r src/strings ' + mapbb + 'lang',
+        'cp -r dist/lang ' + mapbb,
         'cp -r src/layers ' + mapbb + 'proprietary',
         'mv ' + mapbb + 'proprietary/LayerList.js ' + mapbb,
         'cp src/handlers/Handler.Length.js ' + mapbb,
@@ -237,5 +237,6 @@ exports.pack = function() {
         'cd ' + target + '; zip -r ../' + archive + ' *',
         'rm -r ' + target
     ];
+	console.log('Creating ' + archive + '...');
     jake.exec(commands);
 };

@@ -1,6 +1,6 @@
 /*
  JavaScript library for [map] BBCode parsing, displaying and editing.
- Version 1.2-dev
+ Version 1.2.0-dev
  https://github.com/MapBBCode/mapbbcode
  (c) 2013, Ilya Zverev
  Licensed WTFPL.
@@ -884,28 +884,27 @@ L.functionButton = function( content, options ) {
 };
 
 
-window.MapBBCodeConfig.include({strings: {
-	view: 'View',
-	editor: 'Editor',
-	editInWindow: 'Window',
-	editInPanel: 'Panel',
-	viewNormal: 'Normal',
-	viewFull: 'Full width only',
-	viewTitle: 'Adjusting browsing panel',
-	editorTitle: 'Adjusting editor panel or window',
-	editInWindowTitle: 'Editor will be opened in a popup window',
-	editInPanelTitle: 'Editor will appear inside a page',
-	viewNormalTitle: 'Map panel will have "fullscreen" button',
-	viewFullTitle: 'Map panel will always have maximum size',
-	growTitle: 'Click to grow the panel',
-	shrinkTitle: 'Click to shrink the panel',
-	zoomInTitle: 'Zoom in',
-	zoomOutTitle: 'Zoom out',
-	selectLayer: 'Select layer',
-	addLayer: 'Add layer',
-	keyNeeded: 'This layer needs a developer key (<a href="%s" target="devkey">how to get it</a>)',
-	keyNeededAlert: 'This layer needs a developer key'
+window.MapBBCodeConfig.include({ strings: {
+    "view": "View",
+    "editor": "Editor",
+    "editInWindow": "Window",
+    "editInPanel": "Panel",
+    "viewNormal": "Normal",
+    "viewFull": "Full width only",
+    "viewTitle": "Adjusting browsing panel",
+    "editorTitle": "Adjusting editor panel or window",
+    "editInWindowTitle": "Editor will be opened in a popup window",
+    "editInPanelTitle": "Editor will appear inside a page",
+    "viewNormalTitle": "Map panel will have \"fullscreen\" button",
+    "viewFullTitle": "Map panel will always have maximum size",
+    "growTitle": "Click to grow the panel",
+    "shrinkTitle": "Click to shrink the panel",
+    "zoomInTitle": "Zoom in",
+    "zoomOutTitle": "Zoom out",
+    "selectLayer": "Select layer",
+    "addLayer": "Add layer",
+    "keyNeeded": "This layer needs a developer key (<a href=\"%s\" target=\"devkey\">how to get it</a>)",
+    "keyNeededAlert": "This layer needs a developer key"
 }});
-
 
 }(window, document));

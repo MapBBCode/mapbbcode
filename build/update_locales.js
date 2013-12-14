@@ -11,8 +11,17 @@ var resources = ['core', 'config'],
 	auth = JSON.parse(fs.readFileSync('build/transifex.auth', 'utf8'));
 
 exports.languages = function() {
+	console.log('Fetching translations...');
 	for( var i = 0; i < resources.length; i++ ) {
 		getResource(resources[i]);
+	}
+}
+
+function loadSilently(path) {
+	try {
+		return fs.readFileSync(path, 'utf8');
+	} catch (e) {
+		return null;
 	}
 }
 
@@ -26,11 +35,14 @@ function getResource(res) {
 
             results.forEach(function(result, j) {
 				var lang = codes[j];
-				console.log(res + ' ' + lang);
 				var fn = 'dist/lang/' + lang + (res === 'core' ? '' : '.' + res) + '.js';
 				var strings = JSON.stringify(result, null, 4);
 				strings = 'window.' + classes[res] + '.include({ strings: ' + strings + '});';
-				fs.writeFileSync(fn, strings);
+				var oldLang = loadSilently(fn);
+				if( oldLang !== strings ) {
+					console.log(res + ' ' + lang);
+					fs.writeFileSync(fn, strings);
+				}
 				if( lang === 'en' ) {
 					var fn2 = 'src/strings/English' + (res === 'core' ? '' : '.Config') + '.js';
 					fs.writeFileSync(fn2, strings);
