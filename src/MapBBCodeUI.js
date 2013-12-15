@@ -143,14 +143,15 @@ window.MapBBCode = L.Class.extend({
 			if( !this.options.preferStandardLayerSwitcher && L.StaticLayerSwitcher ) {
 				control = L.staticLayerSwitcher(null, { enforceOSM: true });
 				for( i = 0; i < layers.length; i++ )
-					control.addLayer(layers[i].options.name, layers[i]);
-				map.addControl(control);
+					if( layers[i] && 'options' in layers[i] )
+						control.addLayer(layers[i].options.name, layers[i]);
 			} else {
 				control = L.control.layers();
 				for( i = 0; i < layers.length; i++ )
-					control.addBaseLayer(layers[i], layers[i].options.name);
-				map.addControl(control);
+					if( layers[i] && 'options' in layers[i] )
+						control.addBaseLayer(layers[i], layers[i].options.name);
 			}
+			map.addControl(control);
 		}
 	},
 
