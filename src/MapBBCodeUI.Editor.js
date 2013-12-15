@@ -298,14 +298,11 @@ window.MapBBCode.include({
 		if( this.options.confirmFormSubmit )
 			this._addSubmitHandler(map, drawn);
 		
-		var control = {
-			_ui: this,
+		return this._createControlAndCallHooks(map, drawn, {
 			editor: true,
-			map: map,
 			close: function() {
 				var finalCode = this.getBBCode();
-				this.map = null;
-				this._ui = null;
+				this.map = this._ui = null;
 				this.getBBCode = function() { return finalCode; };
 				mapDiv.close();
 			},
@@ -321,26 +318,8 @@ window.MapBBCode.include({
 				map.addLayer(drawn);
 				if( !noZoom )
 					this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
-			},
-			eachLayer: function(callback, context) {
-				drawn.eachLayer(function(layer) {
-					callback.call(context || this, layer);
-				}, this);
-			},
-			zoomToData: function() {
-				this._ui.zoomToLayer(map, drawn);
 			}
-		};
-
-		this._eachHandler(function(handler) {
-			if( 'panelHook' in handler )
-				handler.panelHook(control, this);
 		});
-
-		if( this.options.panelHook )
-			this.options.panelHook.call(this, control);
-
-		return control;
 	},
 
 	// Opens editor window. Requires options.windowPath to be correct

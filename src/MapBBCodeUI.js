@@ -169,7 +169,7 @@ window.MapBBCode = L.Class.extend({
 		return element.parentNode && this._hideClassPresent(element.parentNode);
 	},
 
-	_checkResize: function(map, drawn) {
+	_checkResize: function( map, drawn ) {
 		var size = new L.Point(map.getContainer().clientWidth, map.getContainer().clientHeight);
 		if( !('_oldSize' in map) )
 			map._oldSize = size;
@@ -183,6 +183,37 @@ window.MapBBCode = L.Class.extend({
 			if( !this.options.watchResize && map._bbSizePinger )
 				window.clearInterval(map._bbSizePinger);
 		}
+	},
+
+	_createControlAndCallHooks: function( map, drawn, extra ) {
+		var control = {
+			_ui: this,
+			map: map,
+			close: function() {
+				this.map = this._ui = null;
+				mapDiv.close();
+			},
+			eachLayer: function(callback, context) {
+				drawn.eachLayer(function(layer) {
+					callback.call(context || this, layer);
+				}, this);
+			},
+			zoomToData: function() {
+				this._ui._zoomToLayer(map, drawn);
+			}
+		};
+
+		control = L.extend(control, extra);
+
+		this._eachHandler(function(handler) {
+			if( 'panelHook' in handler )
+				handler.panelHook(control, this);
+		});
+
+		if( this.options.panelHook )
+			this.options.panelHook.call(this, control);
+
+		return control;
 	},
 	
 	_px: function( size ) {
@@ -267,15 +298,8 @@ window.MapBBCode = L.Class.extend({
 			map.addControl(outer);
 		}
 
-		var control = {
-			_ui: this,
+		return this._createControlAndCallHooks(map, drawn, {
 			editor: false,
-			map: map,
-			close: function() {
-				this.map = null;
-				this._ui = null;
-				mapDiv.close();
-			},
 			getBBCode: function() {
 				return bbcode;
 			},
@@ -287,25 +311,7 @@ window.MapBBCode = L.Class.extend({
 					this._ui.objectToLayer(objs[i]).addTo(drawn);
 				if( !noZoom )
 					this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
-			},
-			eachLayer: function(callback, context) {
-				drawn.eachLayer(function(layer) {
-					callback.call(context || this, layer);
-				}, this);
-			},
-			zoomToData: function() {
-				this._ui._zoomToLayer(map, drawn);
 			}
-		};
-
-		this._eachHandler(function(handler) {
-			if( 'panelHook' in handler )
-				handler.panelHook(control, this);
 		});
-
-		if( this.options.panelHook )
-			this.options.panelHook.call(this, control);
-
-		return control;
 	}
 });

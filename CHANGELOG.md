@@ -21,6 +21,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * `isEmpty()` and `getBBCodeRegExp()` methods in MapBBCodeProcessor.
 * Allow quotes as in `[map="15,42.45,18.54"]`. [#45](https://github.com/MapBBCode/mapbbcode/issues/45)
 * Made editor close buttons always enabled in `mapbbcode-window.html`.
+* Map control creation and hooks calling were merged for `show()` and `editor()` methods.
 
 ### Bugfixes
 
