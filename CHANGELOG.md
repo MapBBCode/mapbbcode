@@ -16,10 +16,12 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 ### Improvements
 
 * Leaflet 0.7.1, Leaflet.draw 0.2.3. [#28](https://github.com/MapBBCode/mapbbcode/issues/28)
+* "Delete last point" button when drawing a polyline/polygon. [Leaflet.draw#242](https://github.com/Leaflet/Leaflet.draw/pull/242)
 * Proprietary layers and `LayerList.js` were moved to `src/layers` (no changes in the distribution). [#38](https://github.com/MapBBCode/mapbbcode/issues/38)
 * Proprietary layers can be added before LayerList is initialized.
 * `isEmpty()` and `getBBCodeRegExp()` methods in MapBBCodeProcessor.
 * Allow quotes as in `[map="15,42.45,18.54"]`. [#45](https://github.com/MapBBCode/mapbbcode/issues/45)
+* `shareTag` option was moved from MapBBCodeUI to MapBBCodeProcessor, allowing for non-standard brackets around `mapid`. [#42](https://github.com/MapBBCode/mapbbcode/issues/42)
 * Made editor close buttons always enabled in `mapbbcode-window.html`.
 * Map control creation and hooks calling were merged for `show()` and `editor()` methods.
 
@@ -27,9 +29,8 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
 * Fixed loading Google scripts after window has finished loading.
 * MapBBCodeProcessor.getLeafletLayers() did not move proprietary layers down. [#43](https://github.com/MapBBCode/mapbbcode/issues/43)
-* `shareTag` option was moved from MapBBCodeUI to MapBBCodeProcessor, allowing for non-standard brackets around `mapid`. [#42](https://github.com/MapBBCode/mapbbcode/issues/42)
 * Added `L` parameter for `createOpenStreetMapLayer(L)`, fixes occasional disappearance of OSM layer. [#44](https://github.com/MapBBCode/mapbbcode/issues/44)
-* Style fixes and utf-8 charset in `mapbbcode-window.html`.
+* Style fixes and UTF-8 charset in `mapbbcode-window.html`.
 * Downloading shared maps now works without warnings in IE8/9. [#8](https://github.com/MapBBCode/mapbbcode/issues/8)
 
 ## 1.1.2 (2013-11-29)
