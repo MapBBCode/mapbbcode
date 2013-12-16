@@ -289,12 +289,17 @@ window.MapBBCode = L.Class.extend({
 		}
 
 		if( this.options.outerLinkTemplate && this.options.outerLinkTemplate.substring(0, 4) == 'http' ) {
-			var outer = L.functionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle });
-			outer.on('clicked', function() {
-				var template = this.options.outerLinkTemplate;
-				template = template.replace('{zoom}', map.getZoom()).replace('{lat}', map.getCenter().lat).replace('{lon}', map.getCenter().lng);
-				window.open(template, 'mapbbcode_outer');
-			}, this);
+			var outer = L.functionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle, href: 'about:blank' });
+			var template = this.options.outerLinkTemplate;
+			function updateOuterLink() {
+				outer.setHref(template
+					.replace('{zoom}', map.getZoom())
+					.replace('{lat}', L.Util.formatNum(map.getCenter().lat, 4))
+					.replace('{lon}', L.Util.formatNum(map.getCenter().lng, 4))
+				);
+			}
+			updateOuterLink();
+			map.on('move', updateOuterLink);
 			map.addControl(outer);
 		}
 

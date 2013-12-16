@@ -89,12 +89,12 @@ window.MapBBCode.include({
 				if( show ) {
 					var map = show.map;
 					if( !this.options.outerLinkTemplate ) {
-						var outer = L.functionButton(window.MapBBCode.buttonsImage,
-								{ position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle });
-						outer.on('clicked', function() {
-							window.open(endpoint + id, 'mapbbcode_outer');
-						}, this);
-						map.addControl(outer);
+						map.addControl(L.functionButton(window.MapBBCode.buttonsImage, {
+							position: 'topright',
+							bgPos: [52, 0],
+							title: this.strings.outerTitle,
+							href: endpoint + id 
+						}));
 					}
 					if( L.ExportControl ) {
 						var ec = new L.ExportControl({

@@ -24,6 +24,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * `shareTag` option was moved from MapBBCodeUI to MapBBCodeProcessor, allowing for non-standard brackets around `mapid`. [#42](https://github.com/MapBBCode/mapbbcode/issues/42)
 * Made editor close buttons always enabled in `mapbbcode-window.html`.
 * Map control creation and hooks calling were merged for `show()` and `editor()` methods.
+* FunctionButtons for outer links are now regular links, without onclick handlers.
 
 ### Bugfixes
 

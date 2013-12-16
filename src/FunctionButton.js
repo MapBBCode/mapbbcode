@@ -22,7 +22,9 @@ L.FunctionButtons = L.Control.extend({
 		for( var i = 0; i < this._content.length; i++ ) {
 			var link = L.DomUtil.create('a', '', container);
 			link._buttonIndex = i;
-			link.href = '#';
+			link.href = this.options.href || '#';
+			if( this.options.href )
+				link.target = 'funcbtn';
 			link.style.padding = '0 4px';
 			link.style.width = 'auto';
 			link.style.minWidth = '20px';
@@ -37,9 +39,11 @@ L.FunctionButtons = L.Control.extend({
 			L.DomEvent
 				.on(link, 'click', stop)
 				.on(link, 'mousedown', stop)
-				.on(link, 'dblclick', stop)
-				.on(link, 'click', L.DomEvent.preventDefault)
-				.on(link, 'click', this.clicked, this);
+				.on(link, 'dblclick', stop);
+			if( !this.options.href )
+				L.DomEvent
+					.on(link, 'click', L.DomEvent.preventDefault)
+					.on(link, 'click', this.clicked, this);
 		}
 
 		return container;
@@ -118,6 +122,14 @@ L.FunctionButton = L.FunctionButtons.extend({
 	
 	setBgPos: function( bgPos ) {
 		L.FunctionButtons.prototype.setBgPos.call(this, 0, bgPos);
+	},
+	
+	// this is quick and dirty hack, but it's ok
+	setHref: function( href ) {
+		if( this._links && this._links.length > 0 )
+			this._links[0].href = href;
+		else
+			this.options.href = href;
 	}
 });
 
