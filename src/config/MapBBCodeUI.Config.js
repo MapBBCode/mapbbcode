@@ -194,10 +194,10 @@ window.MapBBCodeConfig = L.Class.extend({
 			this.fire('change', this.options);
 		}, this);
 
-		var fs = new L.FunctionButton('full', { position: 'topright' });
-		var modeButton = new L.FunctionButton('mode', { position: 'topright' });
-		var widthButton = new L.FunctionButtons(['<span style="font-size: 14pt;">&#x25C2;</span>', '<span style="font-size: 14pt;">&#x25B8;</span>'], { position: 'bottomright', titles: [this.strings.shrinkTitle, this.strings.growTitle] });
-		var heightButton = new L.FunctionButtons(['<span style="font-size: 14pt;">&#x25B4;</span>', '<span style="font-size: 14pt;">&#x25BE;</span>'], { position: 'bottomleft', titles: [this.strings.shrinkTitle, this.strings.growTitle] });
+		var fs = L.functionButtons([{ content: 'full' }], { position: 'topright' });
+		var modeButton = L.functionButtons([{ content: 'mode' }], { position: 'topright' });
+		var widthButton = L.functionButtons([{ content: '<span style="font-size: 14pt;">&#x25C2;</span>', title: this.strings.shrinkTitle }, { content: '<span style="font-size: 14pt;">&#x25B8;</span>', title: this.strings.growTitle }], { position: 'bottomright' });
+		var heightButton = L.functionButtons([{ content: '<span style="font-size: 14pt;">&#x25B4;</span>', title: this.strings.shrinkTitle }, { content: '<span style="font-size: 14pt;">&#x25BE;</span>', title: this.strings.growTitle }], { position: 'bottomleft' });
 
 		var toggleWidthButton = function() {
 			var isFull = this._mode === 'view' ? this.options.fullFromStart : !this.options.editorInWindow;

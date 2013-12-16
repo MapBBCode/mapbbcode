@@ -16,8 +16,7 @@
 window.onload = function() {
 var mapBB = new MapBBCode({
 	panelHook: function(c) {
-		var f = L.functionButton('Edit in JOSM', {position: 'topleft'});
-		f.on('clicked', function() {
+		c.map.addControl(L.functionButtons({ content: 'Edit in JOSM', callback: function() {
 			var bounds = c.map.getBounds(),
 				url = 'http://127.0.0.1:8111/load_and_zoom' + L.Util.getParamString({
 					left: bounds.getWest(),
@@ -27,8 +26,7 @@ var mapBB = new MapBBCode({
 				}),
 				w = window.open(url);
 			window.setTimeout(function() { w.close(); }, 1000);
-		});
-		c.map.addControl(f);
+		}}, { position: 'topleft' }));
 	}
 });
 mapBB.show('test');

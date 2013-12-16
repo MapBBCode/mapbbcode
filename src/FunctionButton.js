@@ -4,13 +4,12 @@
 L.FunctionButtons = L.Control.extend({
 	includes: L.Mixin.Events,
 
-	initialize: function( content, options ) {
-		this._content = content;
-		if( !options.titles )
-			options.titles = [];
-		if( options.titles.length < content.length )
-			for( var i = options.titles.length; i < content.length; i++ )
-				options.titles.push('');
+	initialize: function( buttons, options ) {
+		if( !('push' in buttons && 'splice' in buttons) )
+			buttons = [buttons];
+		this._buttons = buttons;
+		if( !options && buttons.length > 0 && 'position' in buttons[0] )
+			options = { position: buttons[0].position };
 		L.Control.prototype.initialize.call(this, options);
 	},
 
@@ -19,20 +18,21 @@ L.FunctionButtons = L.Control.extend({
 		this._links = [];
 
 		var container = L.DomUtil.create('div', 'leaflet-bar');
-		for( var i = 0; i < this._content.length; i++ ) {
-			var link = L.DomUtil.create('a', '', container);
-			link._buttonIndex = i;
-			link.href = this.options.href || '#';
-			if( this.options.href )
+		for( var i = 0; i < this._buttons.length; i++ ) {
+			var button = this._buttons[i],
+				link = L.DomUtil.create('a', '', container);
+			link._buttonIndex = i; // todo: remove?
+			link.href = button.href || '#';
+			if( button.href )
 				link.target = 'funcbtn';
 			link.style.padding = '0 4px';
 			link.style.width = 'auto';
 			link.style.minWidth = '20px';
-			if( this.options.bgColor )
-				link.style.backgroundColor = this.options.bgColor;
-			if( this.options.titles && this.options.titles.length > i )
-				link.title = this.options.titles[i];
-			this._links.push(link);
+			if( button.bgColor )
+				link.style.backgroundColor = button.bgColor;
+			if( button.title )
+				link.title = button.title;
+			button.link = link;
 			this._updateContent(i);
 
 			var stop = L.DomEvent.stopPropagation;
@@ -40,7 +40,7 @@ L.FunctionButtons = L.Control.extend({
 				.on(link, 'click', stop)
 				.on(link, 'mousedown', stop)
 				.on(link, 'dblclick', stop);
-			if( !this.options.href )
+			if( !button.href )
 				L.DomEvent
 					.on(link, 'click', L.DomEvent.preventDefault)
 					.on(link, 'click', this.clicked, this);
@@ -50,20 +50,23 @@ L.FunctionButtons = L.Control.extend({
 	},
 
 	_updateContent: function( n ) {
-		if( n >= this._content.length )
+		if( n >= this._buttons.length )
 			return;
-		var link = this._links[n],
-			content = this._content[n];
+		var button = this._buttons[n],
+			link = button.link,
+			content = button.content;
+		if( !link )
+			return;
 		if( typeof content === 'string' ) {
 			var ext = content.length < 4 ? '' : content.substring(content.length - 4),
 				isData = content.substring(0, 11) === 'data:image/';
 			if( ext === '.png' || ext === '.gif' || ext === '.jpg' || isData ) {
-				link.style.width = '' + (this.options.imageSize || 26) + 'px';
-				link.style.height = '' + (this.options.imageSize || 26) + 'px';
+				link.style.width = '' + (button.imageSize || 26) + 'px';
+				link.style.height = '' + (button.imageSize || 26) + 'px';
 				link.style.padding = '0';
 				link.style.backgroundImage = 'url(' + content + ')';
 				link.style.backgroundRepeat = 'no-repeat';
-				link.style.backgroundPosition = this.options.bgPos && this.options.bgPos.length > n && this.options.bgPos[n] ? (-this.options.bgPos[n][0]) + 'px ' + (-this.options.bgPos[n][1]) + 'px' : '0px 0px';
+				link.style.backgroundPosition = button.bgPos ? (-button.bgPos[0]) + 'px ' + (-button.bgPos[1]) + 'px' : '0px 0px';
 			} else
 				link.innerHTML = content;
 		} else {
@@ -74,65 +77,81 @@ L.FunctionButtons = L.Control.extend({
 	},
 
 	setContent: function( n, content ) {
-		if( n >= this._content.length )
-			return;
-		this._content[n] = content;
-		this._updateContent(n);
+		if( content === undefined ) {
+			content = n;
+			n = 0;
+		}
+		if( n < this._buttons.length ) {
+			this._buttons[n].content = content;
+			this._updateContent(n);
+		}
 	},
 
 	setTitle: function( n, title ) {
-		this.options.titles[n] = title;
-		this._links[n].title = title;
+		if( title === undefined ) {
+			title = n;
+			n = 0;
+		}
+		if( n < this._buttons.length ) {
+			var button = this._buttons[n];
+			button.title = title;
+			if( button.link )
+				button.link.title = title;
+		}
 	},
 
 	setBgPos: function( n, bgPos ) {
-		this.options.bgPos[n] = bgPos;
-		this._links[n].style.backgroundPosition = bgPos ? (-bgPos[0]) + 'px ' + (-bgPos[1]) + 'px' : '0px 0px';
+		if( bgPos === undefined ) {
+			bgPos = n;
+			n = 0;
+		}
+		if( n < this._buttons.length ) {
+			var button = this._buttons[n];
+			button.bgPos = bgPos;
+			if( button.link )
+				button.link.style.backgroundPosition = bgPos ? (-bgPos[0]) + 'px ' + (-bgPos[1]) + 'px' : '0px 0px';
+		}
+	},
+
+	setHref: function( n, href ) {
+		if( href === undefined ) {
+			href = n;
+			n = 0;
+		}
+		if( n < this._buttons.length ) {
+			var button = this._buttons[n];
+			button.href = href;
+			if( button.link )
+				button.link.href = href;
+		}
 	},
 
 	clicked: function(e) {
 		var link = (window.event && window.event.srcElement) || e.target || e.srcElement;
 		while( link && 'tagName' in link && link.tagName !== 'A' && !('_buttonIndex' in link ) )
 			link = link.parentNode;
-		if( '_buttonIndex' in link )
-			this.fire('clicked', { idx: link._buttonIndex });
+		if( '_buttonIndex' in link ) {
+			var button = this._buttons[link._buttonIndex];
+			if( button ) {
+				if( 'callback' in button )
+					button.callback.call(button.context);
+				this.fire('clicked', { idx: link._buttonIndex });
+			}
+		}
 	}
 });
 
-L.functionButtons = function( content, options ) {
-	return new L.FunctionButtons(content, options);
+L.functionButtons = function( buttons, options ) {
+	return new L.FunctionButtons(buttons, options);
 };
 
-L.FunctionButton = L.FunctionButtons.extend({
-	initialize: function( content, options ) {
-		if( options.title )
-			options.titles = [options.title];
-		if( options.bgPos )
-			options.bgPos = [options.bgPos];
-		L.FunctionButtons.prototype.initialize.call(this, [content], options);
-	},
-
-	setContent: function( content ) {
-		L.FunctionButtons.prototype.setContent.call(this, 0, content);
-	},
-
-	setTitle: function( title ) {
-		L.FunctionButtons.prototype.setTitle.call(this, 0, title);
-	},
-	
-	setBgPos: function( bgPos ) {
-		L.FunctionButtons.prototype.setBgPos.call(this, 0, bgPos);
-	},
-	
-	// this is quick and dirty hack, but it's ok
-	setHref: function( href ) {
-		if( this._links && this._links.length > 0 )
-			this._links[0].href = href;
-		else
-			this.options.href = href;
-	}
-});
-
-L.functionButton = function( content, options ) {
-	return new L.FunctionButton(content, options);
-};
+/*
+ * Helper method from the old class. It is not recommended to use it, please use L.functionButtons().
+ */
+L.functionButton = function( content, button, options ) {
+	if( button )
+		button.content = content;
+	else
+		button = { content: content };
+	return L.functionButtons([button], options);
+}

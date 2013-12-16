@@ -271,7 +271,7 @@ window.MapBBCode = L.Class.extend({
 			map._bbSizePinger = window.setInterval(L.bind(this._checkResize, this, map, drawn), 500);
 
 		if( this.options.fullScreenButton && !this.options.fullFromStart ) {
-			var fs = new L.FunctionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [0, 0], title: this.strings.fullScreenTitle }),
+			var fs = L.functionButtons([{ content: window.MapBBCode.buttonsImage, bgPos: [0, 0], title: this.strings.fullScreenTitle }], { position: 'topright' }),
 				isFull = false, oldSize;
 			map.addControl(fs);
 			fs.on('clicked', function() {
@@ -289,7 +289,7 @@ window.MapBBCode = L.Class.extend({
 		}
 
 		if( this.options.outerLinkTemplate && this.options.outerLinkTemplate.substring(0, 4) == 'http' ) {
-			var outer = L.functionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle, href: 'about:blank' });
+			var outer = L.functionButtons([{ content: window.MapBBCode.buttonsImage, bgPos: [52, 0], title: this.strings.outerTitle, href: 'about:blank' }], { position: 'topright' });
 			var template = this.options.outerLinkTemplate;
 			function updateOuterLink() {
 				outer.setHref(template

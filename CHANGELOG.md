@@ -12,6 +12,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * `LayerList.js` is included in the distribution, now do not include `mapbbcode-config.js` if all you need is LayerList.
 * StaticLayerSwitcher plugin is now included in `mapbbcode.js`.
 * Bing layer is no longer included by default in `mapbbcode-window.html`.
+* L.FunctionButtons plugin has changed API, single L.FunctionButton is now obsolete.
 
 ### Improvements
 
