@@ -298,7 +298,7 @@ window.MapBBCode.include({
 		if( this.options.confirmFormSubmit )
 			this._addSubmitHandler(map, drawn);
 		
-		return this._createControlAndCallHooks(map, drawn, {
+		return this._createControlAndCallHooks(mapDiv, map, drawn, {
 			editor: true,
 			close: function() {
 				var finalCode = this.getBBCode();

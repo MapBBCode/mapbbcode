@@ -56,7 +56,7 @@ window.MapBBCode = L.Class.extend({
 		var handlers = window.mapBBCodeHandlers;
 		if( handlers ) {
 			for( var i = 0; i < handlers.length; i++ ) {
-				if( !layer || handlers[i].applicableTo(layer) ) {
+				if( !layer || ('applicableTo' in handlers[i] && handlers[i].applicableTo(layer)) ) {
 					callback.call(context || this, handlers[i]);
 				}
 			}
@@ -185,7 +185,7 @@ window.MapBBCode = L.Class.extend({
 		}
 	},
 
-	_createControlAndCallHooks: function( map, drawn, extra ) {
+	_createControlAndCallHooks: function( mapDiv, map, drawn, extra ) {
 		var control = {
 			_ui: this,
 			map: map,
@@ -298,7 +298,7 @@ window.MapBBCode = L.Class.extend({
 			map.addControl(outer);
 		}
 
-		return this._createControlAndCallHooks(map, drawn, {
+		return this._createControlAndCallHooks(mapDiv, map, drawn, {
 			editor: false,
 			getBBCode: function() {
 				return bbcode;
@@ -311,6 +311,15 @@ window.MapBBCode = L.Class.extend({
 					this._ui.objectToLayer(objs[i]).addTo(drawn);
 				if( !noZoom )
 					this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
+			},
+			toggleObjects: function( newState ) {
+				if( newState === undefined )
+					newState = !map.hasLayer(drawn);
+				if( newState )
+					map.addLayer(drawn);
+				else
+					map.removeLayer(drawn);
+				return newState;
 			}
 		});
 	}
