@@ -16,15 +16,26 @@ window.MapBBCode.include({
 		var http;
 		if (window.XMLHttpRequest) {
 			http = new window.XMLHttpRequest();
-		} else if (window.ActiveXObject) { // Older IE.
-			http = new window.ActiveXObject("MSXML2.XMLHTTP.3.0");
+		}
+		if( window.XDomainRequest && (!http || !('withCredentials' in http)) ) {
+			// older IE that does not support CORS
+			http = new XDomainRequest();
 		}
 		if( !http )
 			return;
-		http.onreadystatechange = function() {
-			if( http.readyState == 4 )
-				callback.call(context, http.status == 200 ? false : (http.status || 499), http.responseText);
-		};
+
+		function respond() {
+			var st = http.status;
+			callback.call(context,
+				(!st && http.responseText) || (st >= 200 && st < 300) ? false : (st || 499),
+				http.responseText);
+		}
+
+		if( 'onload' in http )
+			http.onload = http.onerror = respond;
+		else
+			http.onreadystatechange = function() { if( http.readyState == 4 ) respond(); };
+
 		try {
 			if( post ) {
 				http.open('POST', url, true);
@@ -78,17 +89,18 @@ window.MapBBCode.include({
 				if( show ) {
 					var map = show.map;
 					if( !this.options.outerLinkTemplate ) {
-						var outer = L.functionButton(window.MapBBCode.buttonsImage,
-								{ position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle });
-						outer.on('clicked', function() {
-							window.open(endpoint + id, 'mapbbcode_outer');
-						}, this);
-						map.addControl(outer);
+						map.addControl(L.functionButtons([{
+							content: window.MapBBCode.buttonsImage,
+							bgPos: [52, 0],
+							title: this.strings.outerTitle,
+							href: endpoint + id 
+						}], { position: 'topright' }));
 					}
 					if( L.ExportControl ) {
 						var ec = new L.ExportControl({
 							name: this.strings.exportName,
 							title: this.strings.exportTitle,
+							filter: typeof this.options.exportTypes === 'string' && this.options.exportTypes.length > 0 ? this.options.exportTypes.split(',') : this.options.exportTypes,
 							endpoint: endpoint,
 							codeid: id
 						});

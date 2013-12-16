@@ -232,7 +232,7 @@ window.MapBBCode.include({
 		}, this);
 
 		if( this.options.editorCloseButtons ) {
-			var apply = L.functionButton('<b>'+this.strings.apply+'</b>', { position: 'topleft', title: this.strings.applyTitle });
+			var apply = L.functionButtons([{ content: '<b>'+this.strings.apply+'</b>', title: this.strings.applyTitle }], { position: 'topleft' });
 			apply.on('clicked', function() {
 				var newCode = this._getBBCode(map, drawn);
 				mapDiv.close();
@@ -244,7 +244,7 @@ window.MapBBCode.include({
 			map.addControl(apply);
 
 			if( this.options.uploadButton && this._upload ) {
-				var upload = L.functionButton(this.strings.upload, { position: 'topleft', title: this.strings.uploadTitle });
+				var upload = L.functionButtons([{ content: this.strings.upload, title: this.strings.uploadTitle }], { position: 'topleft' });
 				upload.on('clicked', function() {
 					this._upload(mapDiv, drawn.getLayers().length ? this._getBBCode(map, drawn) : false, function(codeid) {
 						mapDiv.close();
@@ -258,7 +258,7 @@ window.MapBBCode.include({
 				map.addControl(upload);
 			}
 
-			var cancel = L.functionButton(this.strings.cancel, { position: 'topright', title: this.strings.cancelTitle });
+			var cancel = L.functionButtons([{ content: this.strings.cancel, title: this.strings.cancelTitle }], { position: 'topright' });
 			cancel.on('clicked', function() {
 				mapDiv.close();
 				if( callback )
@@ -268,7 +268,7 @@ window.MapBBCode.include({
 		}
 
 		if( this.options.helpButton ) {
-			var help = L.functionButton('<span style="font-size: 18px; font-weight: bold;">?</span>', { position: 'topright', title: this.strings.helpTitle });
+			var help = L.functionButtons([{ content: '<span style="font-size: 18px; font-weight: bold;">?</span>', title: this.strings.helpTitle }], { position: 'topright' });
 			help.on('clicked', function() {
 				var str = '',
 					help = this.strings.helpContents.split(/\n+/),
