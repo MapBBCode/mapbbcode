@@ -37,6 +37,7 @@ window.MapBBCode = L.Class.extend({
 		panelHook: null, // function({map, getBBCode(), ...})
 
 		externalEndpoint: 'http://share.mapbbcode.org/',
+		exportTypes: 'csv,geojson,gpx,plt,wpt,kml',
 		uploadButton: false
 	},
 

@@ -100,6 +100,7 @@ window.MapBBCode.include({
 						var ec = new L.ExportControl({
 							name: this.strings.exportName,
 							title: this.strings.exportTitle,
+							filter: typeof this.options.exportTypes === 'string' && this.options.exportTypes.length > 0 ? this.options.exportTypes.split(',') : this.options.exportTypes,
 							endpoint: endpoint,
 							codeid: id
 						});

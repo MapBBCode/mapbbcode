@@ -10,6 +10,7 @@ L.ExportControl = L.Control.extend({
 		title: '',
 		endpoint: 'http://share.mapbbcode.org/',
 		codeid: '',
+		filter: [],
 		types: false,
 		titles: false
 	},
@@ -52,15 +53,38 @@ L.ExportControl = L.Control.extend({
 		} else {
 			// request t&t from endpoint
 			this._ajax(this.options.endpoint + 'fmtlist', function(res) {
-				if( res && res.titles && res.titles.length > 0 && res.types && res.types.length == res.titles.length ) {
-					this.options.titles = res.titles;
-					this.options.types = res.types;
-					this._updateVariants();
-				}
+				if( res && res.types && res.titles )
+					this._updateTypesAndTitles(res.types, res.titles);
 			}, this);
 		}
 
 		return container;
+	},
+
+	_updateTypesAndTitles: function( types, titles ) {
+		if( !types || !titles || !types.length || types.length != titles.length )
+			return;
+
+		var filter = this.options.filter;
+		if( filter && filter.length ) {
+			var newTypes = [], newTitles = [], i, j;
+			for( i = 0; i < types.length; i++ ) {
+				for( j = 0; j < filter.length; j++ ) {
+					if( types[i] == filter[j] ) {
+						newTypes.push(types[i]);
+						newTitles.push(titles[i]);
+						break;
+					}
+				}
+			}
+			this.options.titles = newTitles;
+			this.options.types = newTypes;
+		} else {
+			this.options.titles = titles;
+			this.options.types = types;
+		}
+
+		this._updateVariants();
 	},
 
 	_updateVariants: function() {
@@ -107,20 +131,39 @@ L.ExportControl = L.Control.extend({
 		this.fire('export', { fmt: target._etype });
 	},
 
-	_ajax: function( url, func, context ) {
-		var http = null;
+	_ajax: function( url, callback, context ) {
+		var http;
 		if (window.XMLHttpRequest) {
 			http = new window.XMLHttpRequest();
-		} else if (window.ActiveXObject) { // Older IE.
-			http = new window.ActiveXObject("MSXML2.XMLHTTP.3.0");
 		}
-		http.onreadystatechange = function() {
-			if( http.readyState != 4 || http.status != 200 ) return;
-			var result = eval('('+http.responseText+')');
-			func.call(context, result);
-		};
-		http.open('GET', url, true);
-		http.send(null);
+		if( window.XDomainRequest && (!http || !('withCredentials' in http)) ) {
+			// older IE that does not support CORS
+			http = new XDomainRequest();
+		}
+		if( !http )
+			return;
+
+		function respond() {
+			var st = http.status;
+			if( (!st && http.responseText) || (st >= 200 && st < 300) ) {
+				try {
+					var result = eval('(' + http.responseText + ')');
+					callback.call(context, result);
+				} catch( err ) {
+				}
+			}
+		}
+
+		if( 'onload' in http )
+			http.onload = http.onerror = respond;
+		else
+			http.onreadystatechange = function() { if( http.readyState == 4 ) respond(); };
+
+		try {
+			http.open('GET', url, true);
+			http.send(null);
+		} catch( err ) {
+		}
 	}
 });
 
