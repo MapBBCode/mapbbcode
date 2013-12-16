@@ -16,15 +16,26 @@ window.MapBBCode.include({
 		var http;
 		if (window.XMLHttpRequest) {
 			http = new window.XMLHttpRequest();
-		} else if (window.ActiveXObject) { // Older IE.
-			http = new window.ActiveXObject("MSXML2.XMLHTTP.3.0");
+		}
+		if( window.XDomainRequest && (!http || !('withCredentials' in http)) ) {
+			// older IE that does not support CORS
+			http = new XDomainRequest();
 		}
 		if( !http )
 			return;
-		http.onreadystatechange = function() {
-			if( http.readyState == 4 )
-				callback.call(context, http.status == 200 ? false : (http.status || 499), http.responseText);
-		};
+
+		function respond() {
+			var st = http.status;
+			callback.call(context,
+				(!st && http.responseText) || (st >= 200 && st < 300) ? false : (st || 499),
+				http.responseText);
+		}
+
+		if( 'onload' in http )
+			http.onload = http.onerror = respond;
+		else
+			http.onreadystatechange = function() { if( http.readyState == 4 ) respond(); };
+
 		try {
 			if( post ) {
 				http.open('POST', url, true);

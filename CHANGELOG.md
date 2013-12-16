@@ -30,6 +30,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * `shareTag` option was moved from MapBBCodeUI to MapBBCodeProcessor, allowing for non-standard brackets around `mapid`. [#42](https://github.com/MapBBCode/mapbbcode/issues/42)
 * Added `L` parameter for `createOpenStreetMapLayer(L)`, fixes occasional disappearance of OSM layer. [#44](https://github.com/MapBBCode/mapbbcode/issues/44)
 * Style fixes and utf-8 charset in `mapbbcode-window.html`.
+* Downloading shared maps now works without warnings in IE8/9. [#8](https://github.com/MapBBCode/mapbbcode/issues/8)
 
 ## 1.1.2 (2013-11-29)
 
