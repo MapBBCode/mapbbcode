@@ -27,6 +27,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Map control creation and hooks calling were merged for `show()` and `editor()` methods.
 * Buttons for outer links are now regular links, without onclick handlers.
 * Added `filter` option to L.ExportButton to filter file types. [#48](https://github.com/MapBBCode/mapbbcode/issues/48)
+* Added `toggleObjects` method to viewer's control object, now `Handler.Toggle.js` toggles data layer. [#40](https://github.com/MapBBCode/mapbbcode/issues/40)
 
 ### Bugfixes
 
