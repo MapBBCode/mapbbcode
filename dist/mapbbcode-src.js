@@ -212,6 +212,7 @@ window.MapBBCode = L.Class.extend({
 		panelHook: null, // function({map, getBBCode(), ...})
 
 		externalEndpoint: 'http://share.mapbbcode.org/',
+		exportTypes: 'csv,geojson,gpx,plt,wpt,kml',
 		uploadButton: false
 	},
 
@@ -231,7 +232,7 @@ window.MapBBCode = L.Class.extend({
 		var handlers = window.mapBBCodeHandlers;
 		if( handlers ) {
 			for( var i = 0; i < handlers.length; i++ ) {
-				if( !layer || handlers[i].applicableTo(layer) ) {
+				if( !layer || ('applicableTo' in handlers[i] && handlers[i].applicableTo(layer)) ) {
 					callback.call(context || this, handlers[i]);
 				}
 			}
@@ -318,14 +319,15 @@ window.MapBBCode = L.Class.extend({
 			if( !this.options.preferStandardLayerSwitcher && L.StaticLayerSwitcher ) {
 				control = L.staticLayerSwitcher(null, { enforceOSM: true });
 				for( i = 0; i < layers.length; i++ )
-					control.addLayer(layers[i].options.name, layers[i]);
-				map.addControl(control);
+					if( layers[i] && 'options' in layers[i] )
+						control.addLayer(layers[i].options.name, layers[i]);
 			} else {
 				control = L.control.layers();
 				for( i = 0; i < layers.length; i++ )
-					control.addBaseLayer(layers[i], layers[i].options.name);
-				map.addControl(control);
+					if( layers[i] && 'options' in layers[i] )
+						control.addBaseLayer(layers[i], layers[i].options.name);
 			}
+			map.addControl(control);
 		}
 	},
 
@@ -343,7 +345,7 @@ window.MapBBCode = L.Class.extend({
 		return element.parentNode && this._hideClassPresent(element.parentNode);
 	},
 
-	_checkResize: function(map, drawn) {
+	_checkResize: function( map, drawn ) {
 		var size = new L.Point(map.getContainer().clientWidth, map.getContainer().clientHeight);
 		if( !('_oldSize' in map) )
 			map._oldSize = size;
@@ -357,6 +359,37 @@ window.MapBBCode = L.Class.extend({
 			if( !this.options.watchResize && map._bbSizePinger )
 				window.clearInterval(map._bbSizePinger);
 		}
+	},
+
+	_createControlAndCallHooks: function( mapDiv, map, drawn, extra ) {
+		var control = {
+			_ui: this,
+			map: map,
+			close: function() {
+				this.map = this._ui = null;
+				mapDiv.close();
+			},
+			eachLayer: function(callback, context) {
+				drawn.eachLayer(function(layer) {
+					callback.call(context || this, layer);
+				}, this);
+			},
+			zoomToData: function() {
+				this._ui._zoomToLayer(map, drawn);
+			}
+		};
+
+		control = L.extend(control, extra);
+
+		this._eachHandler(function(handler) {
+			if( 'panelHook' in handler )
+				handler.panelHook(control, this);
+		});
+
+		if( this.options.panelHook )
+			this.options.panelHook.call(this, control);
+
+		return control;
 	},
 	
 	_px: function( size ) {
@@ -414,7 +447,7 @@ window.MapBBCode = L.Class.extend({
 			map._bbSizePinger = window.setInterval(L.bind(this._checkResize, this, map, drawn), 500);
 
 		if( this.options.fullScreenButton && !this.options.fullFromStart ) {
-			var fs = new L.FunctionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [0, 0], title: this.strings.fullScreenTitle }),
+			var fs = L.functionButtons([{ content: window.MapBBCode.buttonsImage, bgPos: [0, 0], title: this.strings.fullScreenTitle }], { position: 'topright' }),
 				isFull = false, oldSize;
 			map.addControl(fs);
 			fs.on('clicked', function() {
@@ -432,24 +465,22 @@ window.MapBBCode = L.Class.extend({
 		}
 
 		if( this.options.outerLinkTemplate && this.options.outerLinkTemplate.substring(0, 4) == 'http' ) {
-			var outer = L.functionButton(window.MapBBCode.buttonsImage, { position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle });
-			outer.on('clicked', function() {
-				var template = this.options.outerLinkTemplate;
-				template = template.replace('{zoom}', map.getZoom()).replace('{lat}', map.getCenter().lat).replace('{lon}', map.getCenter().lng);
-				window.open(template, 'mapbbcode_outer');
-			}, this);
+			var outer = L.functionButtons([{ content: window.MapBBCode.buttonsImage, bgPos: [52, 0], title: this.strings.outerTitle, href: 'about:blank' }], { position: 'topright' });
+			var template = this.options.outerLinkTemplate;
+			var updateOuterLink = function() {
+				outer.setHref(template
+					.replace('{zoom}', map.getZoom())
+					.replace('{lat}', L.Util.formatNum(map.getCenter().lat, 4))
+					.replace('{lon}', L.Util.formatNum(map.getCenter().lng, 4))
+				);
+			};
+			updateOuterLink();
+			map.on('move', updateOuterLink);
 			map.addControl(outer);
 		}
 
-		var control = {
-			_ui: this,
+		return this._createControlAndCallHooks(mapDiv, map, drawn, {
 			editor: false,
-			map: map,
-			close: function() {
-				this.map = null;
-				this._ui = null;
-				mapDiv.close();
-			},
 			getBBCode: function() {
 				return bbcode;
 			},
@@ -462,25 +493,16 @@ window.MapBBCode = L.Class.extend({
 				if( !noZoom )
 					this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
 			},
-			eachLayer: function(callback, context) {
-				drawn.eachLayer(function(layer) {
-					callback.call(context || this, layer);
-				}, this);
-			},
-			zoomToData: function() {
-				this._ui._zoomToLayer(map, drawn);
+			toggleObjects: function( newState ) {
+				if( newState === undefined )
+					newState = !map.hasLayer(drawn);
+				if( newState )
+					map.addLayer(drawn);
+				else
+					map.removeLayer(drawn);
+				return newState;
 			}
-		};
-
-		this._eachHandler(function(handler) {
-			if( 'panelHook' in handler )
-				handler.panelHook(control, this);
 		});
-
-		if( this.options.panelHook )
-			this.options.panelHook.call(this, control);
-
-		return control;
 	}
 });
 
@@ -491,13 +513,12 @@ window.MapBBCode = L.Class.extend({
 L.FunctionButtons = L.Control.extend({
 	includes: L.Mixin.Events,
 
-	initialize: function( content, options ) {
-		this._content = content;
-		if( !options.titles )
-			options.titles = [];
-		if( options.titles.length < content.length )
-			for( var i = options.titles.length; i < content.length; i++ )
-				options.titles.push('');
+	initialize: function( buttons, options ) {
+		if( !('push' in buttons && 'splice' in buttons) )
+			buttons = [buttons];
+		this._buttons = buttons;
+		if( !options && buttons.length > 0 && 'position' in buttons[0] )
+			options = { position: buttons[0].position };
 		L.Control.prototype.initialize.call(this, options);
 	},
 
@@ -506,47 +527,55 @@ L.FunctionButtons = L.Control.extend({
 		this._links = [];
 
 		var container = L.DomUtil.create('div', 'leaflet-bar');
-		for( var i = 0; i < this._content.length; i++ ) {
-			var link = L.DomUtil.create('a', '', container);
-			link._buttonIndex = i;
-			link.href = '#';
+		for( var i = 0; i < this._buttons.length; i++ ) {
+			var button = this._buttons[i],
+				link = L.DomUtil.create('a', '', container);
+			link._buttonIndex = i; // todo: remove?
+			link.href = button.href || '#';
+			if( button.href )
+				link.target = 'funcbtn';
 			link.style.padding = '0 4px';
 			link.style.width = 'auto';
 			link.style.minWidth = '20px';
-			if( this.options.bgColor )
-				link.style.backgroundColor = this.options.bgColor;
-			if( this.options.titles && this.options.titles.length > i )
-				link.title = this.options.titles[i];
-			this._links.push(link);
+			if( button.bgColor )
+				link.style.backgroundColor = button.bgColor;
+			if( button.title )
+				link.title = button.title;
+			button.link = link;
 			this._updateContent(i);
 
 			var stop = L.DomEvent.stopPropagation;
 			L.DomEvent
 				.on(link, 'click', stop)
 				.on(link, 'mousedown', stop)
-				.on(link, 'dblclick', stop)
-				.on(link, 'click', L.DomEvent.preventDefault)
-				.on(link, 'click', this.clicked, this);
+				.on(link, 'dblclick', stop);
+			if( !button.href )
+				L.DomEvent
+					.on(link, 'click', L.DomEvent.preventDefault)
+					.on(link, 'click', this.clicked, this);
 		}
 
 		return container;
 	},
 
 	_updateContent: function( n ) {
-		if( n >= this._content.length )
+		if( n >= this._buttons.length )
 			return;
-		var link = this._links[n],
-			content = this._content[n];
+		var button = this._buttons[n],
+			link = button.link,
+			content = button.content;
+		if( !link )
+			return;
 		if( typeof content === 'string' ) {
 			var ext = content.length < 4 ? '' : content.substring(content.length - 4),
 				isData = content.substring(0, 11) === 'data:image/';
 			if( ext === '.png' || ext === '.gif' || ext === '.jpg' || isData ) {
-				link.style.width = '' + (this.options.imageSize || 26) + 'px';
-				link.style.height = '' + (this.options.imageSize || 26) + 'px';
+				link.style.width = '' + (button.imageSize || 26) + 'px';
+				link.style.height = '' + (button.imageSize || 26) + 'px';
 				link.style.padding = '0';
 				link.style.backgroundImage = 'url(' + content + ')';
 				link.style.backgroundRepeat = 'no-repeat';
-				link.style.backgroundPosition = this.options.bgPos && this.options.bgPos.length > n && this.options.bgPos[n] ? (-this.options.bgPos[n][0]) + 'px ' + (-this.options.bgPos[n][1]) + 'px' : '0px 0px';
+				link.style.backgroundPosition = button.bgPos ? (-button.bgPos[0]) + 'px ' + (-button.bgPos[1]) + 'px' : '0px 0px';
 			} else
 				link.innerHTML = content;
 		} else {
@@ -557,59 +586,83 @@ L.FunctionButtons = L.Control.extend({
 	},
 
 	setContent: function( n, content ) {
-		if( n >= this._content.length )
-			return;
-		this._content[n] = content;
-		this._updateContent(n);
+		if( content === undefined ) {
+			content = n;
+			n = 0;
+		}
+		if( n < this._buttons.length ) {
+			this._buttons[n].content = content;
+			this._updateContent(n);
+		}
 	},
 
 	setTitle: function( n, title ) {
-		this.options.titles[n] = title;
-		this._links[n].title = title;
+		if( title === undefined ) {
+			title = n;
+			n = 0;
+		}
+		if( n < this._buttons.length ) {
+			var button = this._buttons[n];
+			button.title = title;
+			if( button.link )
+				button.link.title = title;
+		}
 	},
 
 	setBgPos: function( n, bgPos ) {
-		this.options.bgPos[n] = bgPos;
-		this._links[n].style.backgroundPosition = bgPos ? (-bgPos[0]) + 'px ' + (-bgPos[1]) + 'px' : '0px 0px';
+		if( bgPos === undefined ) {
+			bgPos = n;
+			n = 0;
+		}
+		if( n < this._buttons.length ) {
+			var button = this._buttons[n];
+			button.bgPos = bgPos;
+			if( button.link )
+				button.link.style.backgroundPosition = bgPos ? (-bgPos[0]) + 'px ' + (-bgPos[1]) + 'px' : '0px 0px';
+		}
+	},
+
+	setHref: function( n, href ) {
+		if( href === undefined ) {
+			href = n;
+			n = 0;
+		}
+		if( n < this._buttons.length ) {
+			var button = this._buttons[n];
+			button.href = href;
+			if( button.link )
+				button.link.href = href;
+		}
 	},
 
 	clicked: function(e) {
 		var link = (window.event && window.event.srcElement) || e.target || e.srcElement;
 		while( link && 'tagName' in link && link.tagName !== 'A' && !('_buttonIndex' in link ) )
 			link = link.parentNode;
-		if( '_buttonIndex' in link )
-			this.fire('clicked', { idx: link._buttonIndex });
+		if( '_buttonIndex' in link ) {
+			var button = this._buttons[link._buttonIndex];
+			if( button ) {
+				if( 'callback' in button )
+					button.callback.call(button.context);
+				this.fire('clicked', { idx: link._buttonIndex });
+			}
+		}
 	}
 });
 
-L.functionButtons = function( content, options ) {
-	return new L.FunctionButtons(content, options);
+L.functionButtons = function( buttons, options ) {
+	return new L.FunctionButtons(buttons, options);
 };
 
-L.FunctionButton = L.FunctionButtons.extend({
-	initialize: function( content, options ) {
-		if( options.title )
-			options.titles = [options.title];
-		if( options.bgPos )
-			options.bgPos = [options.bgPos];
-		L.FunctionButtons.prototype.initialize.call(this, [content], options);
-	},
-
-	setContent: function( content ) {
-		L.FunctionButtons.prototype.setContent.call(this, 0, content);
-	},
-
-	setTitle: function( title ) {
-		L.FunctionButtons.prototype.setTitle.call(this, 0, title);
-	},
-	
-	setBgPos: function( bgPos ) {
-		L.FunctionButtons.prototype.setBgPos.call(this, 0, bgPos);
-	}
-});
-
-L.functionButton = function( content, options ) {
-	return new L.FunctionButton(content, options);
+/*
+ * Helper method from the old class. It is not recommended to use it, please use L.functionButtons().
+ */
+L.functionButton = function( content, button, options ) {
+	if( button )
+		button.content = content;
+	else
+		button = { content: content };
+	return L.functionButtons([button], options);
 };
 
 
@@ -969,7 +1022,7 @@ window.MapBBCode.include({
 		}, this);
 
 		if( this.options.editorCloseButtons ) {
-			var apply = L.functionButton('<b>'+this.strings.apply+'</b>', { position: 'topleft', title: this.strings.applyTitle });
+			var apply = L.functionButtons([{ content: '<b>'+this.strings.apply+'</b>', title: this.strings.applyTitle }], { position: 'topleft' });
 			apply.on('clicked', function() {
 				var newCode = this._getBBCode(map, drawn);
 				mapDiv.close();
@@ -981,7 +1034,7 @@ window.MapBBCode.include({
 			map.addControl(apply);
 
 			if( this.options.uploadButton && this._upload ) {
-				var upload = L.functionButton(this.strings.upload, { position: 'topleft', title: this.strings.uploadTitle });
+				var upload = L.functionButtons([{ content: this.strings.upload, title: this.strings.uploadTitle }], { position: 'topleft' });
 				upload.on('clicked', function() {
 					this._upload(mapDiv, drawn.getLayers().length ? this._getBBCode(map, drawn) : false, function(codeid) {
 						mapDiv.close();
@@ -995,7 +1048,7 @@ window.MapBBCode.include({
 				map.addControl(upload);
 			}
 
-			var cancel = L.functionButton(this.strings.cancel, { position: 'topright', title: this.strings.cancelTitle });
+			var cancel = L.functionButtons([{ content: this.strings.cancel, title: this.strings.cancelTitle }], { position: 'topright' });
 			cancel.on('clicked', function() {
 				mapDiv.close();
 				if( callback )
@@ -1005,7 +1058,7 @@ window.MapBBCode.include({
 		}
 
 		if( this.options.helpButton ) {
-			var help = L.functionButton('<span style="font-size: 18px; font-weight: bold;">?</span>', { position: 'topright', title: this.strings.helpTitle });
+			var help = L.functionButtons([{ content: '<span style="font-size: 18px; font-weight: bold;">?</span>', title: this.strings.helpTitle }], { position: 'topright' });
 			help.on('clicked', function() {
 				var str = '',
 					help = this.strings.helpContents.split(/\n+/),
@@ -1035,14 +1088,11 @@ window.MapBBCode.include({
 		if( this.options.confirmFormSubmit )
 			this._addSubmitHandler(map, drawn);
 		
-		var control = {
-			_ui: this,
+		return this._createControlAndCallHooks(mapDiv, map, drawn, {
 			editor: true,
-			map: map,
 			close: function() {
 				var finalCode = this.getBBCode();
-				this.map = null;
-				this._ui = null;
+				this.map = this._ui = null;
 				this.getBBCode = function() { return finalCode; };
 				mapDiv.close();
 			},
@@ -1058,26 +1108,8 @@ window.MapBBCode.include({
 				map.addLayer(drawn);
 				if( !noZoom )
 					this._ui._zoomToLayer(map, drawn, { zoom: data.zoom, pos: data.pos }, true);
-			},
-			eachLayer: function(callback, context) {
-				drawn.eachLayer(function(layer) {
-					callback.call(context || this, layer);
-				}, this);
-			},
-			zoomToData: function() {
-				this._ui.zoomToLayer(map, drawn);
 			}
-		};
-
-		this._eachHandler(function(handler) {
-			if( 'panelHook' in handler )
-				handler.panelHook(control, this);
 		});
-
-		if( this.options.panelHook )
-			this.options.panelHook.call(this, control);
-
-		return control;
 	},
 
 	// Opens editor window. Requires options.windowPath to be correct
@@ -1117,15 +1149,26 @@ window.MapBBCode.include({
 		var http;
 		if (window.XMLHttpRequest) {
 			http = new window.XMLHttpRequest();
-		} else if (window.ActiveXObject) { // Older IE.
-			http = new window.ActiveXObject("MSXML2.XMLHTTP.3.0");
+		}
+		if( window.XDomainRequest && (!http || !('withCredentials' in http)) ) {
+			// older IE that does not support CORS
+			http = new window.XDomainRequest();
 		}
 		if( !http )
 			return;
-		http.onreadystatechange = function() {
-			if( http.readyState == 4 )
-				callback.call(context, http.status == 200 ? false : (http.status || 499), http.responseText);
-		};
+
+		function respond() {
+			var st = http.status;
+			callback.call(context,
+				(!st && http.responseText) || (st >= 200 && st < 300) ? false : (st || 499),
+				http.responseText);
+		}
+
+		if( 'onload' in http )
+			http.onload = http.onerror = respond;
+		else
+			http.onreadystatechange = function() { if( http.readyState == 4 ) respond(); };
+
 		try {
 			if( post ) {
 				http.open('POST', url, true);
@@ -1179,17 +1222,18 @@ window.MapBBCode.include({
 				if( show ) {
 					var map = show.map;
 					if( !this.options.outerLinkTemplate ) {
-						var outer = L.functionButton(window.MapBBCode.buttonsImage,
-								{ position: 'topright', bgPos: [52, 0], title: this.strings.outerTitle });
-						outer.on('clicked', function() {
-							window.open(endpoint + id, 'mapbbcode_outer');
-						}, this);
-						map.addControl(outer);
+						map.addControl(L.functionButtons([{
+							content: window.MapBBCode.buttonsImage,
+							bgPos: [52, 0],
+							href: endpoint + id,
+							title: this.strings.outerTitle
+						}], { position: 'topright' }));
 					}
 					if( L.ExportControl ) {
 						var ec = new L.ExportControl({
 							name: this.strings.exportName,
 							title: this.strings.exportTitle,
+							filter: typeof this.options.exportTypes === 'string' && this.options.exportTypes.length > 0 ? this.options.exportTypes.split(',') : this.options.exportTypes,
 							endpoint: endpoint,
 							codeid: id
 						});
@@ -1748,6 +1792,7 @@ L.ExportControl = L.Control.extend({
 		title: '',
 		endpoint: 'http://share.mapbbcode.org/',
 		codeid: '',
+		filter: [],
 		types: false,
 		titles: false
 	},
@@ -1790,15 +1835,38 @@ L.ExportControl = L.Control.extend({
 		} else {
 			// request t&t from endpoint
 			this._ajax(this.options.endpoint + 'fmtlist', function(res) {
-				if( res && res.titles && res.titles.length > 0 && res.types && res.types.length == res.titles.length ) {
-					this.options.titles = res.titles;
-					this.options.types = res.types;
-					this._updateVariants();
-				}
+				if( res && res.types && res.titles )
+					this._updateTypesAndTitles(res.types, res.titles);
 			}, this);
 		}
 
 		return container;
+	},
+
+	_updateTypesAndTitles: function( types, titles ) {
+		if( !types || !titles || !types.length || types.length != titles.length )
+			return;
+
+		var filter = this.options.filter;
+		if( filter && filter.length ) {
+			var newTypes = [], newTitles = [], i, j;
+			for( i = 0; i < types.length; i++ ) {
+				for( j = 0; j < filter.length; j++ ) {
+					if( types[i] == filter[j] ) {
+						newTypes.push(types[i]);
+						newTitles.push(titles[i]);
+						break;
+					}
+				}
+			}
+			this.options.titles = newTitles;
+			this.options.types = newTypes;
+		} else {
+			this.options.titles = titles;
+			this.options.types = types;
+		}
+
+		this._updateVariants();
 	},
 
 	_updateVariants: function() {
@@ -1845,20 +1913,39 @@ L.ExportControl = L.Control.extend({
 		this.fire('export', { fmt: target._etype });
 	},
 
-	_ajax: function( url, func, context ) {
-		var http = null;
+	_ajax: function( url, callback, context ) {
+		var http;
 		if (window.XMLHttpRequest) {
 			http = new window.XMLHttpRequest();
-		} else if (window.ActiveXObject) { // Older IE.
-			http = new window.ActiveXObject("MSXML2.XMLHTTP.3.0");
 		}
-		http.onreadystatechange = function() {
-			if( http.readyState != 4 || http.status != 200 ) return;
-			var result = eval('('+http.responseText+')');
-			func.call(context, result);
-		};
-		http.open('GET', url, true);
-		http.send(null);
+		if( window.XDomainRequest && (!http || !('withCredentials' in http)) ) {
+			// older IE that does not support CORS
+			http = new window.XDomainRequest();
+		}
+		if( !http )
+			return;
+
+		function respond() {
+			var st = http.status;
+			if( (!st && http.responseText) || (st >= 200 && st < 300) ) {
+				try {
+					var result = eval('(' + http.responseText + ')');
+					callback.call(context, result);
+				} catch( err ) {
+				}
+			}
+		}
+
+		if( 'onload' in http )
+			http.onload = http.onerror = respond;
+		else
+			http.onreadystatechange = function() { if( http.readyState == 4 ) respond(); };
+
+		try {
+			http.open('GET', url, true);
+			http.send(null);
+		} catch( err ) {
+		}
 	}
 });
 

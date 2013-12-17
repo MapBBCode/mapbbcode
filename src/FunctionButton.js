@@ -154,4 +154,4 @@ L.functionButton = function( content, button, options ) {
 	else
 		button = { content: content };
 	return L.functionButtons([button], options);
-}
+};

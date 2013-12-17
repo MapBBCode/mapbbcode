@@ -138,7 +138,7 @@ L.ExportControl = L.Control.extend({
 		}
 		if( window.XDomainRequest && (!http || !('withCredentials' in http)) ) {
 			// older IE that does not support CORS
-			http = new XDomainRequest();
+			http = new window.XDomainRequest();
 		}
 		if( !http )
 			return;

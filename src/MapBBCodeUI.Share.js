@@ -19,7 +19,7 @@ window.MapBBCode.include({
 		}
 		if( window.XDomainRequest && (!http || !('withCredentials' in http)) ) {
 			// older IE that does not support CORS
-			http = new XDomainRequest();
+			http = new window.XDomainRequest();
 		}
 		if( !http )
 			return;
@@ -92,8 +92,8 @@ window.MapBBCode.include({
 						map.addControl(L.functionButtons([{
 							content: window.MapBBCode.buttonsImage,
 							bgPos: [52, 0],
-							title: this.strings.outerTitle,
-							href: endpoint + id 
+							href: endpoint + id,
+							title: this.strings.outerTitle
 						}], { position: 'topright' }));
 					}
 					if( L.ExportControl ) {

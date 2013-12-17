@@ -292,13 +292,13 @@ window.MapBBCode = L.Class.extend({
 		if( this.options.outerLinkTemplate && this.options.outerLinkTemplate.substring(0, 4) == 'http' ) {
 			var outer = L.functionButtons([{ content: window.MapBBCode.buttonsImage, bgPos: [52, 0], title: this.strings.outerTitle, href: 'about:blank' }], { position: 'topright' });
 			var template = this.options.outerLinkTemplate;
-			function updateOuterLink() {
+			var updateOuterLink = function() {
 				outer.setHref(template
 					.replace('{zoom}', map.getZoom())
 					.replace('{lat}', L.Util.formatNum(map.getCenter().lat, 4))
 					.replace('{lon}', L.Util.formatNum(map.getCenter().lng, 4))
 				);
-			}
+			};
 			updateOuterLink();
 			map.on('move', updateOuterLink);
 			map.addControl(outer);
