@@ -1,0 +1,43 @@
+en:
+    common:
+        tagHelp: 'Insert a map: [map]latitude,longitude(title); ...[/map]'
+        description: 'Maps for your forum: adds [map] bbcode, map editor button and MapBBCode Share integration.'
+        descriptionMoreInfo: 'More info on <a href="http://mapbbcode.org">MapBBCode website</a>.'
+        noConfig: 'Dimensions and panel modes will be configurable after the plugin is enabled.'
+        title: 'MapBBCode Configuration'
+        adminGuide: "For information on configuring and extending the MapBBCode Plugin, see <a href=\"http://mapbbcode.org/admin.html\">Administrator's Guide</a>."
+        bbcodeAdded: 'Added Map BBCode to the bbcode table'
+        bbcodeRemoved: 'Removed Map BBCode from the bbcode table'
+
+    configPanel:
+        panelTitle: 'Map panel settings'
+        panelDescription: 'This form allows you to customize map panels and layers in both view and edit modes.'
+        layersTitle: 'Tile layers setup'
+        layersLabel: 'Map layers'
+        defaultZoomPos: 'Default zoom level and coordinates'
+        panelSize: 'View panel size'
+        fullHeight: 'Maximized panel size'
+        editorHeight: 'Inline editor panel height'
+        windowSize: 'Editor window size'
+
+    options:
+        settingsTitle: 'Other settings'
+        mapsEnable: 'Allow maps'
+        standardSwitcher: 'Hide layer list behind a button control'
+        outerLink: 'External link template, if a button is needed (parameters: {zoom}, {lat}, {lon})'
+        outerLinkExample: 'Example: http://www.openstreetmap.org/#map={zoom}/{lat}/{lon}'
+        allowedTags: 'Allowed HTML tags in popups (regular expression)'
+        enableExternal: 'Enable including and uploading maps to MapBBCode Share'
+        shareServer: 'MapBBCode Share server address'
+
+        standardSwitcherShort: 'Standard layer switcher'
+        outerLinkShort: 'External link template'
+        allowedTagsShort: 'Allowed tags'
+        enableExternalShort: 'Enable sharing'
+        shareServerShort: 'MapBBCode Share URL'
+
+    errors:
+        errorDefaultPos: 'Default position is incorrect'
+        errorOuterLink: 'Outer link should be an URL'
+        errorShareServer: 'MapBBCode Share server should be specified'
+        errorAllowedTags: 'Regular expression for allowed tags is too complex'
