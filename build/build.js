@@ -117,16 +117,21 @@ function combineFiles(files) {
 	return content;
 }
 
+function pad0(num) {
+	return num < 10 ? num : '0' + (num + '');
+}
+
 exports.build = function (compsBase32, buildName) {
 
 	var files = getFiles({ compsBase32: compsBase32, configOnly: buildName === 'config' });
 
 	console.log('Concatenating ' + files.length + ' files...');
 
-	var copy = fs.readFileSync('src/copyright.js', 'utf8'),
+	var date = new Date(), dateStr = pad0(date.getDate()) + '.' + pad0(date.getMonth() + 1) + '.' + date.getFullYear(),
+	    copy = fs.readFileSync('src/copyright.js', 'utf8').replace(/\$\$DATE\$\$/g, dateStr),
 	    intro = '(function (window, document, undefined) {\nvar L = window.L;\n',
 	    outro = '}(window, document));',
-		pjson = require('../package.json'),
+	    pjson = require('../package.json'),
 	    newSrc = copy + intro + combineFiles(files) + outro,
 	    newSrc = newSrc.replace(/\$\$VERSION\$\$/g, pjson.version || 'dev'),
 

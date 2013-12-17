@@ -19,6 +19,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Leaflet 0.7.1, Leaflet.draw 0.2.3. [#28](https://github.com/MapBBCode/mapbbcode/issues/28)
 * "Delete last point" button when drawing a polyline/polygon. [Leaflet.draw#242](https://github.com/Leaflet/Leaflet.draw/pull/242)
 * Proprietary layers and `LayerList.js` were moved to `src/layers` (no changes in the distribution). [#38](https://github.com/MapBBCode/mapbbcode/issues/38)
+* Leaflet controls and icons were moved to `src/controls` (no changes in distribution).
 * Proprietary layers can be added before LayerList is initialized.
 * `isEmpty()` and `getBBCodeRegExp()` methods in MapBBCodeProcessor.
 * Allow quotes as in `[map="15,42.45,18.54"]`. [#45](https://github.com/MapBBCode/mapbbcode/issues/45)
@@ -28,6 +29,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Buttons for outer links are now regular links, without onclick handlers.
 * Added `filter` option to L.ExportButton to filter file types. [#48](https://github.com/MapBBCode/mapbbcode/issues/48)
 * Added `toggleObjects` method to viewer's control object, now `Handler.Toggle.js` toggles data layer. [#40](https://github.com/MapBBCode/mapbbcode/issues/40)
+* Added build date to files' header.
 
 ### Bugfixes
 

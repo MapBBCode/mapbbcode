@@ -6,8 +6,8 @@ var deps = {
 
 	UI: {
 		src: ['MapBBCodeUI.js',
-		      'FunctionButton.js',
-		      'EditorSprites.js',
+		      'controls/FunctionButton.js',
+		      'images/EditorSprites.js',
 		      'handlers/Handler.Text.js'],
 		desc: 'User Interface: displaying and editing map bbcode',
 		deps: ['Core']
@@ -50,33 +50,33 @@ var deps = {
 	},
 
 	LetterIcon: {
-		src: ['LetterIcon.js'],
+		src: ['controls/LetterIcon.js'],
 		desc: 'Optional LetterIcon',
 		heading: 'Plugins'
 	},
 
 	PopupIcon: {
-		src: ['PopupIcon.js'],
+		src: ['controls/PopupIcon.js'],
 		desc: 'Icon that looks like a popup panel'
 	},
 
 	Search: {
-		src: ['Leaflet.Search.js'],
+		src: ['controls/Leaflet.Search.js'],
 		desc: 'Nominatim search control'
 	},
 
 	Attribution: {
-		src: ['PermalinkAttribution.js'],
+		src: ['controls/PermalinkAttribution.js'],
 		desc: 'Make permalinks out of OSM attribution'
 	},
 
 	Export: {
-		src: ['ExportButton.js'],
+		src: ['controls/ExportButton.js'],
 		desc: 'Export to share.mapbbcode.org button'
 	},
 
 	LayerSwitcher: {
-		src: ['StaticLayerSwitcher.js'],
+		src: ['controls/StaticLayerSwitcher.js'],
 		desc: 'Layer switcher that is not a single button'
 	},
 
@@ -125,8 +125,8 @@ var deps = {
 
 	Configuration: {
 		src: ['config/MapBBCodeUI.Config.js',
-			  'StaticLayerSwitcher.js',
-		      'FunctionButton.js'],
+		      'controls/StaticLayerSwitcher.js',
+		      'controls/FunctionButton.js'],
 		desc: 'MapBBCode UI configuration module',
 		heading: 'Configuration',
 		config: true,
