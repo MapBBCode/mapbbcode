@@ -118,7 +118,7 @@ function combineFiles(files) {
 }
 
 function pad0(num) {
-	return num < 10 ? num : '0' + (num + '');
+	return num >= 10 ? num : '0' + (num + '');
 }
 
 exports.build = function (compsBase32, buildName) {
