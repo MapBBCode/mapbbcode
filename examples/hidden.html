@@ -15,13 +15,14 @@
 <script src="../src/layers/LayerList.js"></script>
 <script src="../src/strings/English.js"></script>
 
+<p>This page tests <i>display:hidden</i> processing by regular and shared maps, <i>exportTypes</i>.</p>
 <input type="button" value="Regular" onclick="javascript:document.getElementById('b_regular').style.display='block';document.getElementById('b_shared').style.display = 'none';">
 <input type="button" value="Shared" onclick="javascript:document.getElementById('b_regular').style.display='none';document.getElementById('b_shared').style.display = 'block';">
 <div id="b_shared" style="display: none;"><div id="shared"></div></div>
 <div id="b_regular" style="display: none;"><div id="regular" map="">59.56772,29.10828 60.21526,31.28357</div></div>
 <script>
 L.DomEvent.on(window, 'load', function() {
-var mapBB = new MapBBCode({ layers: 'CycleMap,OpenStreetMap' });
+var mapBB = new MapBBCode({ layers: 'CycleMap,OpenStreetMap', exportTypes: 'gpx,geojson,kml' });
 mapBB.showExternal('shared', 'gkdi');
 mapBB.show('regular');
 });

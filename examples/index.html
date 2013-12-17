@@ -14,12 +14,14 @@
 <script src="../src/controls/PopupIcon.js"></script>
 <script src="../src/controls/Leaflet.Search.js"></script>
 <script src="../src/controls/PermalinkAttribution.js"></script>
+<script src="../src/controls/StaticLayerSwitcher.js"></script>
 <script src="../src/handlers/Handler.Text.js"></script>
 <script src="../src/handlers/Handler.Color.js"></script>
 <script src="../src/handlers/Handler.Width.js"></script>
 <script src="../src/handlers/Handler.Measure.js"></script>
 <script src="../src/strings/English.js"></script>
 
+<p>This is the main example. It tests viewing and editing bbcode from textarea, updating it without recreating a panel, search in editing, permalinkAttribution (see MapSurfer), text icon types, Width and Measure handlers, <i>createLayers</i> and <i>preferStandardLayerSwitcher</i> options.</p>
 <textarea id="code" style="width: 50%; height: 6em;">[map]60,30(OK); 60.01,30.01 60.02,30.015[/map]</textarea>
 <input type="button" value="Update" onclick="javascript:update();">
 <input type="button" value="Edit" onclick="javascript:edit();">
@@ -29,11 +31,12 @@
 var mapBB = new MapBBCode({
     defaultPosition: [59.95, 30.3],
     defaultZoom: 13,
+	preferStandardLayerSwitcher: false,
     createLayers: function(L) { return [
         MapBBCode.prototype.createOpenStreetMapLayer(),
         L.tileLayer('http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png', { name: 'CycleMap' }),
         L.tileLayer('http://129.206.74.245:8001/tms_r.ashx?x={x}&y={y}&z={z}', { name: 'MapSurfer',
-            attribution: 'Map &copy; <a href="http://openstreetmap.org">OSM</a> | Tiles &copy; <a href="http://giscience.uni-hd.de/">GIScience Heidelberg</a>'
+			attribution: 'Map &copy; <a href="http://openstreetmap.org">OSM</a> | Tiles &copy; <a href="http://www.openmapsurfer.uni-hd.de/?zoom={zoom}&lat={lat}&lon={lon}&layers=B000000FFFF">GIScience Heidelberg</a>'
         })
     ]}
 });

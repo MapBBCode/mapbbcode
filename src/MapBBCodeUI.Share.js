@@ -93,6 +93,7 @@ window.MapBBCode.include({
 							content: window.MapBBCode.buttonsImage,
 							bgPos: [52, 0],
 							href: endpoint + id,
+							alt: '&#x21B7;',
 							title: this.strings.outerTitle
 						}], { position: 'topright' }));
 					}

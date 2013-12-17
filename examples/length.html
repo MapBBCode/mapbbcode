@@ -16,11 +16,12 @@
 <script src="../src/handlers/Handler.Color.js"></script>
 <script src="../src/handlers/Handler.Length.js"></script>
 <script src="../src/handlers/Handler.Toggle.js"></script>
-<script src="../src/strings/English.js"></script>
+<script src="../dist/lang/ru.js"></script>
 
-<textarea id="code" style="width: 50%; height: 6em;">[map]60,30(OK); 60.01,30.01 60.02,30.015; 60.017,29.992 60.005,30.009(red|)[/map]</textarea>
+<p>This example tests <i>input type="text"</i> editing, Length and Toggle handlers for viewing and editing, <i>outerLinkTemplate</i> option, Russian translation.</p>
 <input type="button" value="Update" onclick="javascript:update();">
 <input type="button" value="Edit" onclick="javascript:edit();">
+<input type="text" id="code" style="width: 70%;" value="[map]60,30(OK); 60.01,30.01 60.02,30.015; 60.017,29.992 60.005,30.009(red|)[/map]">
 <div id="edit"></div>
 <div id="test"></div>
 <script>
@@ -28,6 +29,7 @@ var mapBB = new MapBBCode({
     defaultPosition: [59.95, 30.3],
     defaultZoom: 13,
     outerLinkTemplate: 'http://openstreetmap.ru/#layer=M&zoom={zoom}&lat={lat}&lon={lon}',
+	enablePolygons: false,
     measureButton: false,
     metric: true
 });
