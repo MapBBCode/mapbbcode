@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="../dist/lib/leaflet.css" />
 <script src="../dist/lib/leaflet.js"></script>
 <script src="../src/controls/StaticLayerSwitcher.js"></script>
+<script src="../src/controls/Leaflet.Search.js"></script>
 <script src="../src/layers/LayerList.js"></script>
 <script src="../src/layers/Bing.js"></script>
 <script src="../src/layers/Esri.js"></script>
@@ -15,6 +16,7 @@
 <script>
 L.DomEvent.on(window, 'load', function() {
 var map = L.map('map').setView([59.9, 30.3], 13);
+map.addControl(L.control.search());
 map.addControl(L.staticLayerSwitcher(['Zverik\'s|MapBox:zverik.map-p0ooyt47', 'National Geographic', 'Google Roads', 'Google Hybrid', 'Yandex Map', 'Yandex People\'s Map', '2GIS', 'Nokia Map:key1:key2'], { maxLayers: 15 }));
 });
 </script>
