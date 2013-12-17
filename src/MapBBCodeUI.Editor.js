@@ -171,6 +171,8 @@ window.MapBBCode.include({
 		// now is the time to update leaflet.draw strings
 		L.drawLocal.draw.toolbar.actions.text = this.strings.cancel;
 		L.drawLocal.draw.toolbar.actions.title = this.strings.drawCancelTitle;
+		L.drawLocal.draw.toolbar.undo.text = this.strings.undoPoint;
+		L.drawLocal.draw.toolbar.undo.title = this.strings.undoPointTitle;
 		L.drawLocal.draw.toolbar.buttons.polyline = this.strings.polylineTitle;
 		L.drawLocal.draw.toolbar.buttons.polygon = this.strings.polygonTitle;
 		L.drawLocal.draw.toolbar.buttons.marker = this.strings.markerTitle;
