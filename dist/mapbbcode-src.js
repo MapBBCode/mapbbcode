@@ -985,7 +985,7 @@ window.MapBBCode.include({
 					showLength: false,
 					guidelineDistance: 10,
 					shapeOptions: {
-						color: '#000000',
+						color: '#0033FF',
 						weight: 5,
 						opacity: 0.7
 					}
@@ -994,7 +994,7 @@ window.MapBBCode.include({
 					showArea: false,
 					guidelineDistance: 10,
 					shapeOptions: {
-						color: '#000000',
+						color: '#0033FF',
 						weight: 3,
 						opacity: 0.7,
 						fillOpacity: this.options.polygonOpacity
@@ -1418,7 +1418,8 @@ window.mapBBCodeHandlers.push({
 	
 	initDrawControl: function(draw) {
 		draw.options.draw.polyline.shapeOptions.color = this.lineColors.def;
-		draw.options.draw.polygon.shapeOptions.color = this.lineColors.def;
+		if( draw.options.draw.polygon )
+			draw.options.draw.polygon.shapeOptions.color = this.lineColors.def;
 	},
 	
 	createEditorPanel: function( layer ) {
@@ -1498,6 +1499,7 @@ L.LetterIcon = L.Icon.extend({
 		div.style.borderRadius = (radius + 2) + 'px';
 		div.style.borderWidth = '2px';
 		div.style.borderColor = 'white';
+		div.style.borderStyle = 'solid';
 		div.style.fontSize   = '10px';
 		div.style.fontFamily = 'sans-serif';
 		div.style.fontWeight = 'bold';
@@ -1505,6 +1507,7 @@ L.LetterIcon = L.Icon.extend({
 		div.style.lineHeight = diameter + 'px';
 		div.style.color      = 'white';
 		div.style.backgroundColor = this.options.color;
+		div.style.padding = '0';
 		this._setIconStyles(div, 'icon');
 		return div;
 	},
@@ -1549,6 +1552,8 @@ L.PopupIcon = L.Icon.extend({
 		div.style.bottom = '-3px';
 		div.style.pointerEvents = 'none';
 		div.style.left = (-width / 2) + 'px';
+		div.style.margin = div.style.padding = '0';
+		pdiv.style.margin = pdiv.style.padding = '0';
 
 		var contentDiv = document.createElement('div');
 		contentDiv.innerHTML = this._text;
@@ -1574,6 +1579,8 @@ L.PopupIcon = L.Icon.extend({
 		tipcDiv.className = 'leaflet-popup-tip-container';
 		tipcDiv.style.width = '20px';
 		tipcDiv.style.height = '11px';
+		tipcDiv.style.padding = '0';
+		tipcDiv.style.margin = '0 auto';
 		var tipDiv = document.createElement('div');
 		tipDiv.className = 'leaflet-popup-tip';
 		tipDiv.style.width = tipDiv.style.height = '8px';
@@ -2161,6 +2168,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		div.style.backgroundColor = this.options.bgColor;
 		this._addHoverStyle(div, 'backgroundColor', this.options.selectedColor);
 		div.style.padding = '4px 10px';
+		div.style.margin = '0';
 		div.style.color = 'black';
 		div.style.cursor = 'default';
 		var label = !layerMeta.fromList ? layerMeta.id : (this._layerList ? window.layerList.getLayerName(layerMeta.id) : 'Layer');
