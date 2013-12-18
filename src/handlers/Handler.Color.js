@@ -42,7 +42,8 @@ window.mapBBCodeHandlers.push({
 	
 	initDrawControl: function(draw) {
 		draw.options.draw.polyline.shapeOptions.color = this.lineColors.def;
-		draw.options.draw.polygon.shapeOptions.color = this.lineColors.def;
+		if( draw.options.draw.polygon )
+			draw.options.draw.polygon.shapeOptions.color = this.lineColors.def;
 	},
 	
 	createEditorPanel: function( layer ) {

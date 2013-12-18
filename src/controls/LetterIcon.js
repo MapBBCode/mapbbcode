@@ -26,6 +26,7 @@ L.LetterIcon = L.Icon.extend({
 		div.style.borderRadius = (radius + 2) + 'px';
 		div.style.borderWidth = '2px';
 		div.style.borderColor = 'white';
+		div.style.borderStyle = 'solid';
 		div.style.fontSize   = '10px';
 		div.style.fontFamily = 'sans-serif';
 		div.style.fontWeight = 'bold';
@@ -33,6 +34,7 @@ L.LetterIcon = L.Icon.extend({
 		div.style.lineHeight = diameter + 'px';
 		div.style.color      = 'white';
 		div.style.backgroundColor = this.options.color;
+		div.style.padding = '0';
 		this._setIconStyles(div, 'icon');
 		return div;
 	},

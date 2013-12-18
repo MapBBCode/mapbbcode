@@ -199,6 +199,7 @@ L.StaticLayerSwitcher = L.Control.extend({
 		div.style.backgroundColor = this.options.bgColor;
 		this._addHoverStyle(div, 'backgroundColor', this.options.selectedColor);
 		div.style.padding = '4px 10px';
+		div.style.margin = '0';
 		div.style.color = 'black';
 		div.style.cursor = 'default';
 		var label = !layerMeta.fromList ? layerMeta.id : (this._layerList ? window.layerList.getLayerName(layerMeta.id) : 'Layer');

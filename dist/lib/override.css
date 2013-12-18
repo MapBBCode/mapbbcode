@@ -1,4 +1,147 @@
-.leaflet-container div, .leaflet-container img {
+/* make some leaflet and leaflet.draw CSS declarations stronger to override external engine's styles */
+
+/* tiles */
+
+.leaflet-container div img {
 	padding: 0;
 	margin: 0;
 }
+
+.leaflet-tile {
+	padding: 0 !important;
+	margin: 0 !important;
+}
+
+/* main panes */
+
+.leaflet-container.leaflet-fade-anim,
+.leaflet-container .leaflet-map-pane,
+.leaflet-map-pane .leaflet-tile-pane,
+.leaflet-map-pane .leaflet-tile-pane div,
+.leaflet-map-pane .leaflet-objects-pane,
+.leaflet-objects-pane .leaflet-marker-pane,
+.leaflet-objects-pane .leaflet-shadow-pane,
+.leaflet-objects-pane .leaflet-overlay-pane,
+.leaflet-objects-pane .leaflet-popup-pane {
+	padding: 0;
+	margin: 0;
+}
+
+/* control margins */
+
+.leaflet-control-container .leaflet-control,
+.leaflet-control-container .leaflet-top,
+.leaflet-control-container .leaflet-bottom,
+.leaflet-control-container .leaflet-right {
+	margin: 0;
+	padding: 0;
+}
+
+/* link and text colors */
+
+.leaflet-container div a {
+	color: #0078A8;
+}
+
+.leaflet-container .leaflet-bar a {
+	color: black;
+	text-decoration: none;
+}
+
+.leaflet-control-container div,
+.leaflet-objects-pane .leaflet-marker-pane div,
+.leaflet-objects-pane .leaflet-popup-pane div {
+	color: black;
+}
+
+/* layers control */
+
+.leaflet-control-layers.leaflet-control div {
+	padding: 0;
+	margin: 0;
+}
+
+.leaflet-control-layers.leaflet-control .leaflet-control-layers-separator {
+	margin: 5px -10px 5px -6px;
+	border-top: 1px solid #ddd;
+}
+
+.leaflet-control-layers.leaflet-control.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+}
+
+/* attribution */
+
+.leaflet-control-container .leaflet-control-attribution {
+	color: #333333;
+	padding: 0 5px;
+}
+
+/* popups */
+
+.leaflet-popup-pane .leaflet-popup {
+	margin: 0;
+	padding: 0;
+}
+
+.leaflet-container .leaflet-popup-tip {
+	margin: -10px auto 0;
+	padding: 1px;
+}
+
+.leaflet-container .leaflet-popup-tip-container {
+	padding: 0;
+	margin: 0 auto;
+}
+
+.leaflet-popup .leaflet-popup-content-wrapper {
+	margin: 0;
+	padding: 1px;
+}
+
+.leaflet-popup .leaflet-popup-content {
+	padding: 0;
+	margin: 13px 19px;
+}
+
+.leaflet-popup .leaflet-popup-content div {
+	padding: 0;
+	margin: 0;
+}
+
+/* leaflet.draw */
+
+.leaflet-draw .leaflet-draw-section,
+.leaflet-draw .leaflet-bar,
+.leaflet-overlay-pane .leaflet-draw-guides,
+.leaflet-draw-guides .leaflet-draw-guide-dash {
+	margin: 0;
+	padding: 0;
+}
+
+.leaflet-draw .leaflet-draw-actions a {
+	background-color: #919187;
+	color: white;
+}
+
+.leaflet-container .leaflet-popup-pane .leaflet-draw-tooltip {
+	color: white;
+	margin: -21px 0 0 20px;
+	padding: 4px 8px;
+	border: 1px solid transparent;
+}
+
+.leaflet-container .leaflet-popup-pane .leaflet-draw-tooltip-single {
+	margin-top: -12px;
+}
+
+.leaflet-marker-pane .leaflet-div-icon {
+	padding: 0;
+	margin: 0;
+	border: 1px solid #666666;
+}
+
+/* original CSS goes here */
+

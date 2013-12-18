@@ -231,7 +231,7 @@ exports.pack = function() {
     var commands = [
         'mkdir -p ' + mapbb,
         'cp -r dist/lib/* ' + mapbb,
-        'cat ' + mapbb + 'override.css >> ' + mapbb + 'leaflet.css',
+        'cat ' + mapbb + 'override.css dist/lib/leaflet.css > ' + mapbb + 'leaflet.css',
 		'rm ' + mapbb + 'override.css',
         'cp -r dist/lang ' + mapbb,
         'cp -r src/layers ' + mapbb + 'proprietary',

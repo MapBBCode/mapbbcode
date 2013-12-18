@@ -194,7 +194,7 @@ window.MapBBCode.include({
 					showLength: false,
 					guidelineDistance: 10,
 					shapeOptions: {
-						color: '#000000',
+						color: '#0033FF',
 						weight: 5,
 						opacity: 0.7
 					}
@@ -203,7 +203,7 @@ window.MapBBCode.include({
 					showArea: false,
 					guidelineDistance: 10,
 					shapeOptions: {
-						color: '#000000',
+						color: '#0033FF',
 						weight: 3,
 						opacity: 0.7,
 						fillOpacity: this.options.polygonOpacity

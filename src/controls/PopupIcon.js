@@ -30,6 +30,8 @@ L.PopupIcon = L.Icon.extend({
 		div.style.bottom = '-3px';
 		div.style.pointerEvents = 'none';
 		div.style.left = (-width / 2) + 'px';
+		div.style.margin = div.style.padding = '0';
+		pdiv.style.margin = pdiv.style.padding = '0';
 
 		var contentDiv = document.createElement('div');
 		contentDiv.innerHTML = this._text;
@@ -55,6 +57,8 @@ L.PopupIcon = L.Icon.extend({
 		tipcDiv.className = 'leaflet-popup-tip-container';
 		tipcDiv.style.width = '20px';
 		tipcDiv.style.height = '11px';
+		tipcDiv.style.padding = '0';
+		tipcDiv.style.margin = '0 auto';
 		var tipDiv = document.createElement('div');
 		tipDiv.className = 'leaflet-popup-tip';
 		tipDiv.style.width = tipDiv.style.height = '8px';
