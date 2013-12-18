@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="../dist/lib/leaflet.css" />
+<link rel="stylesheet" href="../dist/lib/leaflet.draw.css" />
+<script src="../dist/lib/leaflet.js"></script>
+<script src="../dist/lib/leaflet.draw.js"></script>
+
+<script src="../src/MapBBCode.js"></script>
+<script src="../src/MapBBCodeUI.js"></script>
+<script src="../src/MapBBCodeUI.Editor.js"></script>
+<script src="../src/images/EditorSprites.js"></script>
+<script src="../src/controls/FunctionButton.js"></script>
+<script src="../src/controls/LetterIcon.js"></script>
+<script src="../src/controls/PopupIcon.js"></script>
+<script src="../src/handlers/Handler.Text.js"></script>
+<script src="../src/strings/English.js"></script>
+
+<style type="text/css">
+.margin0 div { margin: 0; padding: 0; border: none; }
+.margin0 img { box-sizing: border-box; padding: 20px; }
+.margin10 { color: #ccc; }
+.margin10 a { color: #aaf; }
+.margin10 div { margin: 10px; padding: 10px; }
+</style>
+
+<p>This is a test for CSS that breaks styling of leaflet maps.</p>
+<input type="button" value="Edit" onclick="javascript:mapBB.editor('edit', code);">
+<div class="margin0">
+<div id="edit"></div>
+<div id="test"></div>
+</div>
+<input type="button" value="Edit" onclick="javascript:mapBB.editor('edit2', code);">
+<div class="margin10">
+<div id="edit2"></div>
+<div id="test2"></div>
+</div>
+
+<script type="text/javascript">
+code = '[map]59.9342,30.3367(S); 59.4366,24.7529(F); 59.377,28.204(Border control); 59.934,30.337 59.718,30.037 59.39,28.532 59.372,27.444 59.428,26.807 59.367,26.433 59.469,26.016 59.437,24.753[/map]';
+L.DomEvent.on(window, 'load', function() {
+	mapBB = new MapBBCode();
+	mapBB.show('test', code);
+	mapBB.show('test2', code);
+});
+</script>
