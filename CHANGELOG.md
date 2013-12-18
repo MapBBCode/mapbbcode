@@ -38,6 +38,7 @@ All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 * Added `L` parameter for `createOpenStreetMapLayer(L)`, fixes occasional disappearance of OSM layer. [#44](https://github.com/MapBBCode/mapbbcode/issues/44)
 * Style fixes and UTF-8 charset in `mapbbcode-window.html`.
 * Downloading shared maps now works without warnings in IE8/9. [#8](https://github.com/MapBBCode/mapbbcode/issues/8)
+* Leaflet CSS was made stronger, now it overrides some of critical properties engines impose on elements. [#52](https://github.com/MapBBCode/mapbbcode/issues/52)
 
 ## 1.1.2 (2013-11-29)
 
