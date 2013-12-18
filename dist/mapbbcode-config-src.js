@@ -1,9 +1,8 @@
 /*
- JavaScript library for parsing, displaying and editing [map] BBCode.
- Version 1.2.0-dev built on 17.12.2013
- https://github.com/MapBBCode/mapbbcode
+ MapBBCode, a JavaScript library for parsing, displaying and editing [map] code.
+ Version 1.2.0-dev built on 18.12.2013
+ http://mapbbcode.org
  (c) 2013, Ilya Zverev
- Licensed WTFPL.
 */
 (function (window, document, undefined) {
 var L = window.L;
