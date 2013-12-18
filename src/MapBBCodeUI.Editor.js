@@ -146,12 +146,13 @@ window.MapBBCode.include({
 		var mapDiv = this._createMapPanel(element, true);
 		if( !mapDiv ) return;
 
+		var str = this.strings; // a shortcut
 		var map = L.map(mapDiv, L.extend({}, { zoomControl: false }, this.options.leafletOptions));
-		map.addControl(new L.Control.Zoom({ zoomInTitle: this.strings.zoomInTitle, zoomOutTitle: this.strings.zoomOutTitle }));
+		map.addControl(new L.Control.Zoom({ zoomInTitle: str.zoomInTitle, zoomOutTitle: str.zoomOutTitle }));
 		if( map.attributionControl )
-			map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="' + this.strings.mapbbcodeTitle + '">MapBBCode</a>');
+			map.attributionControl.setPrefix('<a href="http://mapbbcode.org" title="' + str.mapbbcodeTitle + '">MapBBCode</a>');
 		if( L.Control.Search )
-			map.addControl(new L.Control.Search({ title: this.strings.searchTitle }));
+			map.addControl(new L.Control.Search({ title: str.searchTitle }));
 		this._addLayers(map);
 
 		var textArea;
@@ -169,20 +170,21 @@ window.MapBBCode.include({
 		map.wasPositionSet = objs.length > 0 && !(!data.pos);
 
 		// now is the time to update leaflet.draw strings
-		L.drawLocal.draw.toolbar.actions.text = this.strings.cancel;
-		L.drawLocal.draw.toolbar.actions.title = this.strings.drawCancelTitle;
-		L.drawLocal.draw.toolbar.undo.text = this.strings.undoPoint;
-		L.drawLocal.draw.toolbar.undo.title = this.strings.undoPointTitle;
-		L.drawLocal.draw.toolbar.buttons.polyline = this.strings.polylineTitle;
-		L.drawLocal.draw.toolbar.buttons.polygon = this.strings.polygonTitle;
-		L.drawLocal.draw.toolbar.buttons.marker = this.strings.markerTitle;
-		L.drawLocal.draw.handlers.marker.tooltip.start = this.strings.markerTooltip;
-		L.drawLocal.draw.handlers.polyline.tooltip.start = this.strings.polylineStartTooltip;
-		L.drawLocal.draw.handlers.polyline.tooltip.cont = this.strings.polylineContinueTooltip;
-		L.drawLocal.draw.handlers.polyline.tooltip.end = this.strings.polylineEndTooltip;
-		L.drawLocal.draw.handlers.polygon.tooltip.start = this.strings.polygonStartTooltip;
-		L.drawLocal.draw.handlers.polygon.tooltip.cont = this.strings.polygonContinueTooltip;
-		L.drawLocal.draw.handlers.polygon.tooltip.end = this.strings.polygonEndTooltip;
+		var dlt = L.drawLocal.draw.toolbar, dlh = L.drawLocal.draw.handlers;
+		dlt.actions.text = str.cancel;
+		dlt.actions.title = str.drawCancelTitle;
+		dlt.undo.text = str.undoPoint;
+		dlt.undo.title = str.undoPointTitle;
+		dlt.buttons.polyline = str.polylineTitle;
+		dlt.buttons.polygon = str.polygonTitle;
+		dlt.buttons.marker = str.markerTitle;
+		dlh.marker.tooltip.start = str.markerTooltip;
+		dlh.polyline.tooltip.start = str.polylineStartTooltip;
+		dlh.polyline.tooltip.cont = str.polylineContinueTooltip;
+		dlh.polyline.tooltip.end = str.polylineEndTooltip;
+		dlh.polygon.tooltip.start = str.polygonStartTooltip;
+		dlh.polygon.tooltip.cont = str.polygonContinueTooltip;
+		dlh.polygon.tooltip.end = str.polygonEndTooltip;
 
 		var drawControl = new L.Control.Draw({
 			position: 'topleft',
@@ -234,7 +236,7 @@ window.MapBBCode.include({
 		}, this);
 
 		if( this.options.editorCloseButtons ) {
-			var apply = L.functionButtons([{ content: '<b>'+this.strings.apply+'</b>', title: this.strings.applyTitle }], { position: 'topleft' });
+			var apply = L.functionButtons([{ content: '<b>'+str.apply+'</b>', title: str.applyTitle }], { position: 'topleft' });
 			apply.on('clicked', function() {
 				var newCode = this._getBBCode(map, drawn);
 				mapDiv.close();
@@ -246,7 +248,7 @@ window.MapBBCode.include({
 			map.addControl(apply);
 
 			if( this.options.uploadButton && this._upload ) {
-				var upload = L.functionButtons([{ content: this.strings.upload, title: this.strings.uploadTitle }], { position: 'topleft' });
+				var upload = L.functionButtons([{ content: str.upload, title: str.uploadTitle }], { position: 'topleft' });
 				upload.on('clicked', function() {
 					this._upload(mapDiv, drawn.getLayers().length ? this._getBBCode(map, drawn) : false, function(codeid) {
 						mapDiv.close();
@@ -260,7 +262,7 @@ window.MapBBCode.include({
 				map.addControl(upload);
 			}
 
-			var cancel = L.functionButtons([{ content: this.strings.cancel, title: this.strings.cancelTitle }], { position: 'topright' });
+			var cancel = L.functionButtons([{ content: str.cancel, title: str.cancelTitle }], { position: 'topright' });
 			cancel.on('clicked', function() {
 				mapDiv.close();
 				if( callback )
@@ -270,10 +272,10 @@ window.MapBBCode.include({
 		}
 
 		if( this.options.helpButton ) {
-			var help = L.functionButtons([{ content: '<span style="font-size: 18px; font-weight: bold;">?</span>', title: this.strings.helpTitle }], { position: 'topright' });
+			var help = L.functionButtons([{ content: '<span style="font-size: 18px; font-weight: bold;">?</span>', title: str.helpTitle }], { position: 'topright' });
 			help.on('clicked', function() {
 				var str = '',
-					help = this.strings.helpContents.split(/\n+/),
+					help = str.helpContents.split(/\n+/),
 					version = '$$VERSION$$',
 					features = 'resizable,dialog,scrollbars,height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
 				var win = window.open('', 'mapbbcode_help', features);
@@ -281,7 +283,7 @@ window.MapBBCode.include({
 					str += !i ? '<h1>'+help[0]+'</h1>' : help[i].substring(0, 1) === '#' ? '<h2>'+help[i].replace(/^#\s*/, '')+'</h2>' : '<p>'+help[i]+'</p>';
 				}
 				str = str.replace('{version}', version);
-				str += '<div id="close"><input type="button" value="' + this.strings.close + '" onclick="javascript:window.close();"></div>';
+				str += '<div id="close"><input type="button" value="' + str.close + '" onclick="javascript:window.close();"></div>';
 				var css = '<style>body { font-family: sans-serif; font-size: 12pt; } p { line-height: 1.5; } h1 { text-align: center; font-size: 18pt; } h2 { font-size: 14pt; } #close { text-align: center; margin-top: 1em; }</style>';
 				win.document.open();
 				win.document.write(css);
