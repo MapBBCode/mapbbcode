@@ -5,6 +5,7 @@
 L.PopupIcon = L.Icon.extend({
 	options: {
 		selectable: false,
+		color: 'white',
 		width: 150
 	},
 	
@@ -37,7 +38,7 @@ L.PopupIcon = L.Icon.extend({
 		contentDiv.innerHTML = this._text;
 		contentDiv.style.textAlign = 'center';
 		contentDiv.style.lineHeight = '1.2';
-		contentDiv.style.backgroundColor = 'white';
+		contentDiv.style.backgroundColor = this.options.color;
 		contentDiv.style.boxShadow = '0px 1px 10px rgba(0, 0, 0, 0.655)';
 		contentDiv.style.padding = '4px 7px';
 		contentDiv.style.borderRadius = '5px';
