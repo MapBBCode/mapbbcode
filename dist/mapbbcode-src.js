@@ -1,6 +1,6 @@
 /*
  MapBBCode, a JavaScript library for parsing, displaying and editing [map] code.
- Version 1.2.0-dev built on 18.12.2013
+ Version 1.2.0-dev built on 20.12.2013
  http://mapbbcode.org
  (c) 2013, Ilya Zverev
 */
@@ -1065,20 +1065,20 @@ window.MapBBCode.include({
 		if( this.options.helpButton ) {
 			var help = L.functionButtons([{ content: '<span style="font-size: 18px; font-weight: bold;">?</span>', title: str.helpTitle }], { position: 'topright' });
 			help.on('clicked', function() {
-				var str = '',
+				var res = '',
 					help = str.helpContents.split(/\n+/),
 					version = '1.2.0-dev',
 					features = 'resizable,dialog,scrollbars,height=' + this.options.windowHeight + ',width=' + this.options.windowWidth;
 				var win = window.open('', 'mapbbcode_help', features);
 				for( var i = 0; i < help.length; i++ ) {
-					str += !i ? '<h1>'+help[0]+'</h1>' : help[i].substring(0, 1) === '#' ? '<h2>'+help[i].replace(/^#\s*/, '')+'</h2>' : '<p>'+help[i]+'</p>';
+					res += !i ? '<h1>'+help[0]+'</h1>' : help[i].substring(0, 1) === '#' ? '<h2>'+help[i].replace(/^#\s*/, '')+'</h2>' : '<p>'+help[i]+'</p>';
 				}
-				str = str.replace('{version}', version);
-				str += '<div id="close"><input type="button" value="' + str.close + '" onclick="javascript:window.close();"></div>';
+				res = res.replace('{version}', version);
+				res += '<div id="close"><input type="button" value="' + str.close + '" onclick="javascript:window.close();"></div>';
 				var css = '<style>body { font-family: sans-serif; font-size: 12pt; } p { line-height: 1.5; } h1 { text-align: center; font-size: 18pt; } h2 { font-size: 14pt; } #close { text-align: center; margin-top: 1em; }</style>';
 				win.document.open();
 				win.document.write(css);
-				win.document.write(str);
+				win.document.write(res);
 				win.document.close();
 				win.onkeypress = function(e) {
 					var keyCode = (window.event) ? (e || window.event).which : e.keyCode;
@@ -1527,6 +1527,7 @@ L.letterIcon = function(letter, options) {
 L.PopupIcon = L.Icon.extend({
 	options: {
 		selectable: false,
+		color: 'white',
 		width: 150
 	},
 	
@@ -1559,7 +1560,7 @@ L.PopupIcon = L.Icon.extend({
 		contentDiv.innerHTML = this._text;
 		contentDiv.style.textAlign = 'center';
 		contentDiv.style.lineHeight = '1.2';
-		contentDiv.style.backgroundColor = 'white';
+		contentDiv.style.backgroundColor = this.options.color;
 		contentDiv.style.boxShadow = '0px 1px 10px rgba(0, 0, 0, 0.655)';
 		contentDiv.style.padding = '4px 7px';
 		contentDiv.style.borderRadius = '5px';
