@@ -1,6 +1,6 @@
 /*
  MapBBCode, a JavaScript library for parsing, displaying and editing [map] code.
- Version 1.2.0-dev built on 20.12.2013
+ Version 1.2.0 built on 25.12.2013
  http://mapbbcode.org
  (c) 2013, Ilya Zverev
 */
