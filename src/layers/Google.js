@@ -204,7 +204,7 @@ L.Google.asyncInitialize = function() {
 	var el = document.createElement('script');
 	el.type = 'text/javascript';
 	el.src = 'http://maps.google.com/maps/api/js?v=3&sensor=false&callback=L.Google.asyncInitialize';
-	if( document.readyState == 'interactive' || document.readyState == 'complete' )
+	if( document.readyState == 'complete' )
 		document.body.appendChild(el);
 	else
 		L.DomEvent.on(window, 'load', function() { document.body.appendChild(el); });

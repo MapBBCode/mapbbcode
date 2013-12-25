@@ -226,7 +226,7 @@ window.MapBBCode = L.Class.extend({
 		if( !el ) return;
 		var bbcode = el.getAttribute('bbcode') || el.getAttribute('value') || el.innerHTML.replace(/^\s+|\s+$/g, '');
 		var closeTag = window.MapBBCodeProcessor.getCloseTag();
-		if( (bbcode && bbcode.indexOf(closeTag) < 0) || (!bbcode && el.getAttribute('map')) ) {
+		if( (bbcode && bbcode.toLowerCase().indexOf(closeTag) < 0) || (!bbcode && el.getAttribute('map')) ) {
 			var pos = el.getAttribute('map'),
 				openTag = window.MapBBCodeProcessor.getOpenTagWithPart(pos);
 			bbcode = openTag + bbcode + closeTag;

@@ -22,6 +22,7 @@
 .leaflet-objects-pane .leaflet-marker-pane,
 .leaflet-objects-pane .leaflet-shadow-pane,
 .leaflet-objects-pane .leaflet-overlay-pane,
+.leaflet-overlay-pane .leaflet-vml-container,
 .leaflet-objects-pane .leaflet-popup-pane {
 	padding: 0;
 	margin: 0;
