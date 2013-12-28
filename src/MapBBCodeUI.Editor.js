@@ -340,6 +340,8 @@ window.MapBBCode.include({
 			windowPath = this.options.windowPath,
 			url = windowPath.substring(windowPath.length - 1) == '/' ? windowPath + 'mapbbcode-window.html' : windowPath;
 
-		window.open(url, 'mapbbcode_editor', features + ',' + featSize);
+		if( this._edWnd && !this._edWnd.closed )
+			this._edWnd.close();
+		this._edWnd = window.open(url, 'mapbbcode_editor', features + ',' + featSize);
 	}
 });

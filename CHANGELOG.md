@@ -4,6 +4,14 @@ Versions are numbered "major.minor.patch", with the `master` branch being "major
 
 All changes without author are by [Ilya Zverev](https://github.com/Zverik).
 
+## 1.2.1-dev (master)
+
+### Improvements
+
+* Editor window is always reopened on subsequent `editorWindow` calls, bringing it to the foreground.
+
+### Bugfixes
+
 ## 1.2.0 (2013-12-25)
 
 ### Notable Changes
